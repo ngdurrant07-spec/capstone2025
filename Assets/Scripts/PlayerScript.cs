@@ -66,6 +66,23 @@ public class PlayerScript : MonoBehaviour
     bool isGroundPounding;
     bool isAnticipating;
 
+    [Header("Roll Attack")]
+    public float rollSpeed = 20f;
+    public float rollDuration = 0.5f;
+    public float rollCooldown = 0.3f;
+    public float rollSpeedBoost = 10f; // Extra ground speed after hitting enemy
+    public float rollSpeedBoostDuration = 0.3f;
+    public LayerMask enemyLayer;
+
+    bool isRolling;
+    float rollTimer;
+    float rollCooldownTimer;
+    float speedBoostTimer;
+
+    [Header("Coyote Jump")]
+    public float coyoteTime = 0.1f; // Time window to jump after leaving ground
+    float coyoteTimer;
+
   [Header("Health")]
 public float health = 100f;
 
@@ -79,6 +96,7 @@ public float health = 100f;
     {
         GroundCheck();
         HandleGroundPound();
+        HandleRoll();
         HandleMovement();
         HandleGlide();
         ApplyGravity();
@@ -104,14 +122,22 @@ public float health = 100f;
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 jumpsRemaining = maxJumps - 1;
+                coyoteTimer = 0; // Use up coyote time
             }
             else if (!isGliding && !isGroundPounding && jumpsRemaining > 0)
             {
+                // Prioritize gliding over coyote jump
                 isGliding = true;
                 glideDirection = facingDirection;
                 jumpsRemaining--;
                 liftEnergy = maxLiftEnergy;
                 isStalled = false;
+            }
+            else if (coyoteTimer > 0)
+            {
+                // Coyote jump - only if glide isn't available
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                coyoteTimer = 0; // Use up coyote time, but don't consume jumps
             }
         }
 
@@ -129,6 +155,16 @@ public float health = 100f;
         if (IsGrounded() || isGroundPounding || isAnticipating) return;
 
         StartCoroutine(GroundPoundAnticipation());
+    }
+
+    // Roll Attack - bind to a key like Shift or D
+    public void RollAttack(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        if (!IsGrounded() || isRolling || rollCooldownTimer > 0) return;
+
+        isRolling = true;
+        rollTimer = rollDuration;
     }
 
     // ───────── ANTICIPATION ─────────
@@ -156,9 +192,15 @@ public float health = 100f;
 
     void HandleMovement()
     {
-        if (isGliding || isGroundPounding || isAnticipating) return;
+        if (isGliding || isGroundPounding || isAnticipating || isRolling) return;
 
-        rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+        float speed = horizontalInput * moveSpeed;
+        
+        // Apply speed boost if active and grounded
+        if (speedBoostTimer > 0 && IsGrounded())
+            speed += rollSpeedBoost * facingDirection;
+
+        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
     }
 
     void ApplyGravity()
@@ -232,6 +274,51 @@ public float health = 100f;
 
     // ───────── GROUND POUND ─────────
 
+    void HandleRoll()
+    {
+        // Decrement cooldown timer
+        if (rollCooldownTimer > 0)
+            rollCooldownTimer -= Time.deltaTime;
+
+        // Decrement speed boost timer
+        if (speedBoostTimer > 0)
+            speedBoostTimer -= Time.deltaTime;
+
+        if (!isRolling) return;
+
+        rollTimer -= Time.deltaTime;
+
+        // Move the player in the roll direction
+        rb.linearVelocity = new Vector2(facingDirection * rollSpeed, rb.linearVelocity.y);
+
+        // Check for enemies to hit
+        RaycastHit2D hit = Physics2D.Raycast(
+            transform.position,
+            Vector2.right * facingDirection,
+            1f,
+            enemyLayer
+        );
+
+        if (hit.collider != null)
+        {
+            // Deal damage or destroy enemy
+            EnemyType1 enemy = hit.collider.GetComponent<EnemyType1>();
+            if (enemy != null)
+            {
+                Destroy(enemy.gameObject);
+                // Give player a speed boost on the ground after hitting enemy
+                speedBoostTimer = rollSpeedBoostDuration;
+            }
+        }
+
+        // End roll when timer expires
+        if (rollTimer <= 0)
+        {
+            isRolling = false;
+            rollCooldownTimer = rollCooldown;
+        }
+    }
+
     void HandleGroundPound()
     {
         if (!isGroundPounding) return;
@@ -259,6 +346,12 @@ public float health = 100f;
             isStalled = false;
             liftEnergy = maxLiftEnergy;
             rb.gravityScale = 1f;
+            coyoteTimer = coyoteTime; // Reset coyote timer when grounded
+        }
+        else
+        {
+            // Decrement coyote timer while in the air
+            coyoteTimer -= Time.deltaTime;
         }
     }
 
