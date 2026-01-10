@@ -1,12 +1,11 @@
 using UnityEngine;
-using System.Collections;
 using System;
-using JetBrains.Annotations;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 3;
-    private int currentHealth; 
+    private int currentHealth;
 
     public HealthUI healthUI;
 
@@ -14,36 +13,38 @@ public class PlayerHealth : MonoBehaviour
 
     public static event Action OnPlayerDied;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHealth = maxHealth;
         healthUI.SetMaxHearts(maxHealth);
+        healthUI.UpdateHearts(currentHealth);
 
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void TakeDamage(int damage)
     {
-       EnemyType1 enemy = collision.GetComponent<EnemyType1>();
-       if(enemy)
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(currentHealth, 0);
+
+        healthUI.UpdateHearts(currentHealth);
+        StartCoroutine(FlashRed());
+
+        if (currentHealth <= 0)
         {
-            TakeDamage(enemy.damage);
+            OnPlayerDied?.Invoke();
         }
     }
 
-    private void TakeDamage(int damage)
+    // ✅ NEW METHOD (this is what changed)
+    public bool TryHeal(int amount)
     {
-        currentHealth -= damage;
-        healthUI.UpdateHearts(currentHealth);
+        if (currentHealth >= maxHealth)
+            return false;
 
-        StartCoroutine(FlashRed());
-        
-        if(currentHealth <= 0)
-        {
-            //Player is dead
-            OnPlayerDied.Invoke();
-        }
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        healthUI.UpdateHearts(currentHealth);
+        return true;
     }
 
     private IEnumerator FlashRed()
@@ -52,5 +53,4 @@ public class PlayerHealth : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         spriteRenderer.color = Color.white;
     }
-
 }

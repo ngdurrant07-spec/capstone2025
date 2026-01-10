@@ -86,6 +86,11 @@ public class PlayerScript : MonoBehaviour
   [Header("Health")]
 public float health = 100f;
 
+    [Header("Throwable Fruit")]
+    public Transform fruitCarryPoint; // Child object or position where fruit is held
+    ThrowableFruitObj heldFruit;
+    public float fruitPickupRange = 2f;
+
     void Start()
     {
         jumpsRemaining = maxJumps;
@@ -165,6 +170,64 @@ public float health = 100f;
 
         isRolling = true;
         rollTimer = rollDuration;
+    }
+
+    // Throw / Pickup - bind to E
+    // Press E to pick up a nearby fruit (if not holding), press E while holding to throw immediately.
+    public void Throw(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        // If holding a fruit, pressing E will throw it
+        if (heldFruit != null)
+        {
+            heldFruit.Throw(Vector2.right * facingDirection);
+            heldFruit = null;
+            return;
+        }
+
+        // Not holding: try to pick up a nearby fruit (within pickup range)
+        ThrowableFruitObj nearbyFruit = FindNearbyFruit();
+        if (nearbyFruit != null)
+        {
+            PickUpFruit(nearbyFruit);
+        }
+    }
+
+    /// <summary>
+    /// Find a nearby fruit in front of the player
+    /// </summary>
+    ThrowableFruitObj FindNearbyFruit()
+    {
+        // Use an overlap circle centered on the player so only nearby fruits are found
+        Vector2 center = transform.position;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(center, fruitPickupRange);
+
+        foreach (Collider2D c in hits)
+        {
+            ThrowableFruitObj fruit = c.GetComponentInParent<ThrowableFruitObj>();
+            if (fruit != null && !fruit.IsPickedUp() && !fruit.IsRespawning())
+            {
+                return fruit;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Called when player touches a throwable fruit
+    /// </summary>
+    public void PickUpFruit(ThrowableFruitObj fruit)
+    {
+        if (fruitCarryPoint == null)
+        {
+            Debug.LogError("Fruit Carry Point not assigned on PlayerScript!");
+            return;
+        }
+
+        heldFruit = fruit;
+        heldFruit.PickUp(fruitCarryPoint);
     }
 
     // ───────── ANTICIPATION ─────────
