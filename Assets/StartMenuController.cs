@@ -15,4 +15,9 @@ public class StartMenuController : MonoBehaviour
         #endif
         Application.Quit();
     }
+
+    public void OnSettingsButtonClick()
+    {
+        SceneManager.LoadScene("SettingsScene");
+    }
 }
