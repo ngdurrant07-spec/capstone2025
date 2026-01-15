@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-
 public class EnemyType1 : MonoBehaviour
 {
     public Transform Player;
