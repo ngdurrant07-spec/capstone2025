@@ -1,32 +1,30 @@
 using UnityEngine;
 
-public class StompHitbox : MonoBehaviour
+public class PlayerStomp : MonoBehaviour
 {
-    [Header("References")]
-    public Rigidbody2D playerRb;       // Drag in Player Rigidbody2D
-    public float bounceForce = 12f;    // How high player bounces after stomping
+    public Rigidbody2D rb;
+    public float bounceForce = 12f;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Only trigger if player is falling
-        if (playerRb.linearVelocity.y > 0f)
+        if (!collision.gameObject.CompareTag("Enemy"))
             return;
 
-        // Check if the object is stompable
-        IStompable stompable = other.GetComponent<IStompable>();
-        if (stompable != null)
+        // Check if we hit the enemy from above
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            // Optional: ensure player is above enemy
-            if (playerRb.transform.position.y > other.bounds.max.y)
+            if (contact.normal.y > 0.5f && rb.linearVelocity.y <= 0f)
             {
-                // Bounce the player up
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, bounceForce);
+                // Bounce player up
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, bounceForce);
 
-                // Tell enemy it was stomped
-                stompable.OnStomped();
+                // Kill enemy
+                Destroy(collision.gameObject);
+                return;
             }
         }
     }
 }
+
 
 
