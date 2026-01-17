@@ -1,39 +1,59 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-using Microsoft.Unity.VisualStudio.Editor;
-using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
+    // ───────── PLAYER STATE ─────────
+    public enum PlayerState
+    {
+        Normal,
+        Jumping,
+        Rolling,
+        Gliding,
+        GroundPounding
+    }
+
+    [HideInInspector]
+    public PlayerState currentState = PlayerState.Normal;
+
+
+    // ───────── COMPONENTS ─────────
     [Header("Components")]
     public Rigidbody2D rb;
     public ParticleSystem particleFX;
 
+    // ───────── MOVEMENT ─────────
     [Header("Movement")]
     public float moveSpeed = 6f;
     float horizontalInput;
     float facingDirection = 1f;
 
+    // ───────── JUMP ─────────
     [Header("Jump")]
     public float jumpForce = 12f;
     public int maxJumps = 1;
     int jumpsRemaining;
     bool jumpHeld;
 
+    // ───────── GROUND CHECK ─────────
     [Header("Ground Check")]
     public Transform groundCheck;
     public Vector2 groundCheckSize = new Vector2(0.2f, 0.2f);
     public LayerMask groundLayer;
+    public float coyoteTime = 0.1f;
+    float coyoteTimer;
 
+    // ───────── GRAVITY ─────────
     [Header("Gravity")]
     public float baseGravity = 30f;
     public float maxFallSpeed = 22f;
 
+    // ───────── GLIDE ─────────
     [Header("Glide")]
     public float glideGravityScale = 0.4f;
     bool isGliding;
-    bool glideUsed; // locks glide until grounded
+    bool glideUsed; 
     float glideDirection;
 
     [Header("Glide Horizontal")]
@@ -51,22 +71,20 @@ public class PlayerScript : MonoBehaviour
     public float maxLiftEnergy = 1f;
     public float liftDrainRate = 1f;
     public float liftRegenRate = 0.5f;
-
-    [Header("Momentum Lift")]
+    float liftEnergy;
+    bool isStalled;
     public float momentumMultiplier = 0.5f;
     public float baseLift = 5f;
 
-    float liftEnergy;
-    bool isStalled;
-
+    // ───────── GROUND POUND ─────────
     [Header("Ground Pound")]
     public float groundPoundSpeed = 30f;
     public float groundPoundFallCap = 35f;
     public float anticipationTime = 0.06f;
-
     bool isGroundPounding;
     bool isAnticipating;
 
+    // ───────── ROLL ATTACK ─────────
     [Header("Roll Attack")]
     public float rollSpeed = 20f;
     public float rollDuration = 0.5f;
@@ -80,10 +98,13 @@ public class PlayerScript : MonoBehaviour
     float rollCooldownTimer;
     float speedBoostTimer;
 
-    [Header("Coyote Jump")]
-    public float coyoteTime = 0.1f;
-    float coyoteTimer;
+    [Header("Speed Boost")]
+    public float hitSpeedBoost = 10f;      // extra speed added after hitting an enemy
+    public float hitSpeedBoostDuration = 0.3f; // how long the boost lasts
+    public float hitSpeedBoostTimer = 0f;          // tracks remaining time
 
+
+    // ───────── HEALTH ─────────
     [Header("Health")]
     public float health = 100f;
 
@@ -104,12 +125,11 @@ public class PlayerScript : MonoBehaviour
     }
 
     // ───────── INPUT ─────────
-
     public void Move(InputAction.CallbackContext context)
     {
         horizontalInput = context.ReadValue<Vector2>().x;
 
-        if (!isGliding && !isGroundPounding && horizontalInput != 0)
+        if (currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding && horizontalInput != 0)
             facingDirection = Mathf.Sign(horizontalInput);
     }
 
@@ -123,47 +143,45 @@ public class PlayerScript : MonoBehaviour
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 jumpsRemaining = maxJumps - 1;
-                coyoteTimer = 0;
+                coyoteTimer = 0f;
+                currentState = PlayerState.Jumping;
             }
             else if (!IsGrounded() && !glideUsed && !isGroundPounding)
             {
-                StartGlide(); // start glide automatically in midair
+                StartGlide();
             }
-            else if (coyoteTimer > 0)
+            else if (coyoteTimer > 0f)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-                coyoteTimer = 0;
+                coyoteTimer = 0f;
+                currentState = PlayerState.Jumping;
             }
         }
 
         if (context.canceled)
         {
             jumpHeld = false;
-            isGliding = false; // stop glide immediately
-            rb.gravityScale = 1f;
+            isGliding = false;
         }
     }
 
     void StartGlide()
     {
         isGliding = true;
-        glideUsed = true; // prevents re-glide midair
+        glideUsed = true;
         glideDirection = facingDirection;
         liftEnergy = maxLiftEnergy;
         isStalled = false;
+        currentState = PlayerState.Gliding;
 
-        // stop upward momentum for smooth glide
-        if (rb.linearVelocity.y > 0)
+        if (rb.linearVelocity.y > 0f)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
     }
 
     // ───────── GROUND POUND ─────────
-
     public void GroundPound(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
-        if (IsGrounded() || isGroundPounding || isAnticipating) return;
-
+        if (!context.performed || IsGrounded() || isGroundPounding || isAnticipating) return;
         StartCoroutine(GroundPoundAnticipation());
     }
 
@@ -181,68 +199,94 @@ public class PlayerScript : MonoBehaviour
 
         isAnticipating = false;
         isGroundPounding = true;
+        currentState = PlayerState.GroundPounding;
 
         rb.linearVelocity = Vector2.down * groundPoundSpeed;
         particleFX.Play();
     }
 
-    // ───────── ROLL ATTACK ─────────
+    void HandleGroundPound()
+    {
+        if (!isGroundPounding) return;
 
+        float yVel = rb.linearVelocity.y;
+        if (yVel < -groundPoundFallCap)
+            yVel = -groundPoundFallCap;
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVel);
+        if (IsGrounded())
+        {
+            isGroundPounding = false;
+            rb.gravityScale = 1f;
+            currentState = PlayerState.Normal;
+        }
+    }
+
+    // ───────── ROLL ATTACK ─────────
     public void RollAttack(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
-        if (!IsGrounded() || isRolling || rollCooldownTimer > 0) return;
+        if (!context.performed || !IsGrounded() || isRolling || rollCooldownTimer > 0f) return;
 
         isRolling = true;
         rollTimer = rollDuration;
+        currentState = PlayerState.Rolling;
     }
 
     void HandleRoll()
     {
-        if (rollCooldownTimer > 0) rollCooldownTimer -= Time.deltaTime;
-        if (speedBoostTimer > 0) speedBoostTimer -= Time.deltaTime;
+        if (rollCooldownTimer > 0f) rollCooldownTimer -= Time.deltaTime;
+        if (speedBoostTimer > 0f) speedBoostTimer -= Time.deltaTime;
         if (!isRolling) return;
 
         rollTimer -= Time.deltaTime;
+
         rb.linearVelocity = new Vector2(facingDirection * rollSpeed, rb.linearVelocity.y);
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * facingDirection, 1f, enemyLayer);
-        if (hit.collider != null)
+        // Detect enemies using OverlapBoxAll
+        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position + Vector3.right * facingDirection, new Vector2(1f, 1f), 0f, enemyLayer);
+        foreach (Collider2D hit in hits)
         {
-            EnemyType1 enemy = hit.collider.GetComponent<EnemyType1>();
-            if (enemy != null)
+            IStompable stompable = hit.GetComponent<IStompable>();
+            if (stompable != null)
             {
-                Destroy(enemy.gameObject);
+                stompable.OnStomped();
                 speedBoostTimer = rollSpeedBoostDuration;
             }
         }
 
-        if (rollTimer <= 0)
+        if (rollTimer <= 0f)
         {
             isRolling = false;
+            currentState = PlayerState.Normal;
             rollCooldownTimer = rollCooldown;
         }
     }
 
     // ───────── MOVEMENT ─────────
-
     void HandleMovement()
     {
-        if (isGliding || isGroundPounding || isAnticipating || isRolling) return;
+        if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || currentState == PlayerState.Rolling) return;
 
         float speed = horizontalInput * moveSpeed;
-
-        if (speedBoostTimer > 0 && IsGrounded())
+        if (speedBoostTimer > 0f && IsGrounded())
             speed += rollSpeedBoost * facingDirection;
 
         rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
+
+        //Apply temporary hit speed boost
+
+        if (hitSpeedBoostTimer > 0f)
+        {
+            speed += hitSpeedBoostTimer / hitSpeedBoostDuration * hitSpeedBoost * facingDirection;
+            hitSpeedBoostTimer -= Time.deltaTime;
+        }
     }
 
     void ApplyGravity()
     {
-        if (isGroundPounding || isAnticipating) return;
+        if (currentState == PlayerState.GroundPounding) return;
 
-        if (!isGliding)
+        if (currentState != PlayerState.Gliding)
         {
             rb.gravityScale = 1f;
             rb.linearVelocity += Vector2.down * baseGravity * Time.deltaTime;
@@ -252,7 +296,7 @@ public class PlayerScript : MonoBehaviour
 
     void HandleGlide()
     {
-        if (!isGliding || !jumpHeld || isGroundPounding || isAnticipating)
+        if (!isGliding || !jumpHeld || currentState == PlayerState.GroundPounding) 
         {
             rb.gravityScale = 1f;
             return;
@@ -286,65 +330,36 @@ public class PlayerScript : MonoBehaviour
         if (liftEnergy <= 0f) isStalled = true;
 
         if (isStalled)
-        {
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -stallFallSpeed, 40f * Time.deltaTime);
-        }
         else if (relativeInput < 0)
-        {
-            float fallSpeed = -rb.linearVelocity.y;
-            float momentumLift = baseLift + fallSpeed * momentumMultiplier;
-            verticalVelocity = Mathf.Lerp(verticalVelocity, momentumLift, 5f * Time.deltaTime);
-        }
+            verticalVelocity = Mathf.Lerp(verticalVelocity, baseLift + -rb.linearVelocity.y * momentumMultiplier, 5f * Time.deltaTime);
         else
-        {
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -maxGlideDescendSpeed, 25f * Time.deltaTime);
-        }
 
         verticalVelocity = Mathf.Clamp(verticalVelocity, -stallFallSpeed, maxGlideAscendSpeed);
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, verticalVelocity);
     }
 
     // ───────── GROUND CHECK ─────────
-
     void GroundCheck()
     {
         if (IsGrounded())
         {
             jumpsRemaining = maxJumps;
             isGliding = false;
-            glideUsed = false; // reset glide availability
+            glideUsed = false;
             isStalled = false;
             liftEnergy = maxLiftEnergy;
             rb.gravityScale = 1f;
             coyoteTimer = coyoteTime;
+            if (currentState != PlayerState.Rolling)
+                currentState = PlayerState.Normal;
         }
         else
         {
             coyoteTimer -= Time.deltaTime;
         }
     }
-
-    void HandleGroundPound()
-{
-    if (!isGroundPounding) return;
-
-    // Keep horizontal velocity as is (optional: lock if needed)
-    float yVelocity = rb.linearVelocity.y;
-
-    // Clamp downward speed to groundPoundFallCap
-    if (yVelocity < -groundPoundFallCap)
-        yVelocity = -groundPoundFallCap;
-
-    rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVelocity);
-
-    // Stop ground pound on landing
-    if (IsGrounded())
-    {
-        isGroundPounding = false;
-        rb.gravityScale = 1f;
-    }
-}
-
 
     bool IsGrounded()
     {
@@ -353,7 +368,10 @@ public class PlayerScript : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.white;
-        Gizmos.DrawCube(groundCheck.position, groundCheckSize);
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawCube(groundCheck.position, groundCheckSize);
+        }
     }
 }

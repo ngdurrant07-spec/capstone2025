@@ -7,7 +7,7 @@ public class PlayerStomp : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag("Enemy"))
+        if (!collision.gameObject.CompareTag("EnemyType1"))
             return;
 
         // Check if we hit the enemy from above
