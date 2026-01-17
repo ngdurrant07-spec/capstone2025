@@ -5,18 +5,8 @@ using System.Collections;
 public class PlayerScript : MonoBehaviour
 {
     // ───────── PLAYER STATE ─────────
-    public enum PlayerState
-    {
-        Normal,
-        Jumping,
-        Rolling,
-        Gliding,
-        GroundPounding
-    }
-
-    [HideInInspector]
-    public PlayerState currentState = PlayerState.Normal;
-
+    public enum PlayerState { Normal, Jumping, Rolling, Gliding, GroundPounding }
+    [HideInInspector] public PlayerState currentState = PlayerState.Normal;
 
     // ───────── COMPONENTS ─────────
     [Header("Components")]
@@ -53,7 +43,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Glide")]
     public float glideGravityScale = 0.4f;
     bool isGliding;
-    bool glideUsed; 
+    bool glideUsed;
     float glideDirection;
 
     [Header("Glide Horizontal")]
@@ -84,6 +74,10 @@ public class PlayerScript : MonoBehaviour
     bool isGroundPounding;
     bool isAnticipating;
 
+    public Transform groundPoundPoint;
+    public Vector2 groundPoundSize = new Vector2(1.2f, 0.6f);
+    public LayerMask enemyLayer;
+
     // ───────── ROLL ATTACK ─────────
     [Header("Roll Attack")]
     public float rollSpeed = 20f;
@@ -91,7 +85,6 @@ public class PlayerScript : MonoBehaviour
     public float rollCooldown = 0.3f;
     public float rollSpeedBoost = 10f;
     public float rollSpeedBoostDuration = 0.3f;
-    public LayerMask enemyLayer;
 
     bool isRolling;
     float rollTimer;
@@ -99,10 +92,9 @@ public class PlayerScript : MonoBehaviour
     float speedBoostTimer;
 
     [Header("Speed Boost")]
-    public float hitSpeedBoost = 10f;      // extra speed added after hitting an enemy
-    public float hitSpeedBoostDuration = 0.3f; // how long the boost lasts
-    public float hitSpeedBoostTimer = 0f;          // tracks remaining time
-
+    public float hitSpeedBoost = 10f;
+    public float hitSpeedBoostDuration = 0.3f;
+    public float hitSpeedBoostTimer = 0f;
 
     // ───────── HEALTH ─────────
     [Header("Health")]
@@ -128,7 +120,6 @@ public class PlayerScript : MonoBehaviour
     public void Move(InputAction.CallbackContext context)
     {
         horizontalInput = context.ReadValue<Vector2>().x;
-
         if (currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding && horizontalInput != 0)
             facingDirection = Mathf.Sign(horizontalInput);
     }
@@ -200,25 +191,42 @@ public class PlayerScript : MonoBehaviour
         isAnticipating = false;
         isGroundPounding = true;
         currentState = PlayerState.GroundPounding;
-
         rb.linearVelocity = Vector2.down * groundPoundSpeed;
-        particleFX.Play();
+
+        if (particleFX != null)
+            particleFX.Play();
     }
 
     void HandleGroundPound()
     {
         if (!isGroundPounding) return;
 
+        // Limit fall speed
         float yVel = rb.linearVelocity.y;
         if (yVel < -groundPoundFallCap)
             yVel = -groundPoundFallCap;
-
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVel);
+
+        // Impact
         if (IsGrounded())
         {
             isGroundPounding = false;
             rb.gravityScale = 1f;
             currentState = PlayerState.Normal;
+
+            // Detect enemies under the player’s feet
+            EnemyType2[] enemies = Object.FindObjectsByType<EnemyType2>(FindObjectsSortMode.None);
+
+            foreach (EnemyType2 enemy in enemies)
+            {
+                if (enemy.topCollider == null) continue;
+
+                // Player feet position
+                Vector2 playerFeet = new Vector2(transform.position.x, groundCheck.position.y);
+
+                if (enemy.topCollider.bounds.Contains(playerFeet))
+                    enemy.OnGroundPounded();
+            }
         }
     }
 
@@ -239,7 +247,6 @@ public class PlayerScript : MonoBehaviour
         if (!isRolling) return;
 
         rollTimer -= Time.deltaTime;
-
         rb.linearVelocity = new Vector2(facingDirection * rollSpeed, rb.linearVelocity.y);
 
         // Detect enemies using OverlapBoxAll
@@ -265,21 +272,20 @@ public class PlayerScript : MonoBehaviour
     // ───────── MOVEMENT ─────────
     void HandleMovement()
     {
-        if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || currentState == PlayerState.Rolling) return;
+        if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || currentState == PlayerState.Rolling)
+            return;
 
         float speed = horizontalInput * moveSpeed;
         if (speedBoostTimer > 0f && IsGrounded())
             speed += rollSpeedBoost * facingDirection;
-
-        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
-
-        //Apply temporary hit speed boost
 
         if (hitSpeedBoostTimer > 0f)
         {
             speed += hitSpeedBoostTimer / hitSpeedBoostDuration * hitSpeedBoost * facingDirection;
             hitSpeedBoostTimer -= Time.deltaTime;
         }
+
+        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
     }
 
     void ApplyGravity()
@@ -306,7 +312,6 @@ public class PlayerScript : MonoBehaviour
 
         float speed = Mathf.Abs(rb.linearVelocity.x);
         float relativeInput = horizontalInput * glideDirection;
-
         speed -= glideDrag * Time.deltaTime;
 
         if (relativeInput > 0)
@@ -322,12 +327,9 @@ public class PlayerScript : MonoBehaviour
 
         liftEnergy = Mathf.Clamp(liftEnergy, 0f, maxLiftEnergy);
         speed = Mathf.Clamp(speed, minGlideSpeed, maxGlideSpeed);
-
         rb.linearVelocity = new Vector2(glideDirection * speed, rb.linearVelocity.y);
 
         float verticalVelocity = rb.linearVelocity.y;
-
-        if (liftEnergy <= 0f) isStalled = true;
 
         if (isStalled)
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -stallFallSpeed, 40f * Time.deltaTime);
@@ -373,5 +375,13 @@ public class PlayerScript : MonoBehaviour
             Gizmos.color = Color.white;
             Gizmos.DrawCube(groundCheck.position, groundCheckSize);
         }
+
+        if (groundPoundPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(groundPoundPoint.position, groundPoundSize);
+        }
     }
 }
+
+
