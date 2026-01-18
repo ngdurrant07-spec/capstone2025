@@ -84,6 +84,17 @@ public class PlayerScript : MonoBehaviour
     bool isGroundPounding;
     bool isAnticipating;
 
+    public void CancelGroundPound()
+    {
+        if (isGroundPounding || isAnticipating)
+        {
+            isGroundPounding = false;
+            isAnticipating = false;
+            rb.gravityScale = 1f;
+            currentState = PlayerState.Normal;
+        }
+    }
+
     // ───────── ROLL ATTACK ─────────
     [Header("Roll Attack")]
     public float rollSpeed = 20f;

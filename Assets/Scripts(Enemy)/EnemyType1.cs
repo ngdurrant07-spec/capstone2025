@@ -58,20 +58,29 @@ private void OnCollisionStay2D(Collision2D collision)
         return;
 
     Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
-    if (playerRb == null)
-        return;
-
-    // 🚫 If player is falling downward, do NOT damage (stomp case)
-    if (playerRb.linearVelocity.y <= 0f)
-        return;
-
     PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-    if (playerHealth != null)
+
+    if (playerRb == null || playerHealth == null)
+        return;
+
+    // ✅ Check if player is ABOVE enemy
+    bool playerAbove = collision.transform.position.y > transform.position.y + 0.3f;
+
+    // ✅ Check if player is FALLING
+    bool falling = playerRb.linearVelocity.y < 0f;
+
+    if (playerAbove && falling)
     {
-        playerHealth.TakeDamage(damage);
-        attackTimer = attackCooldown;
+        // This is a stomp → DO NOTHING here
+        // Enemy will die via OnStomp()
+        return;
     }
+
+    // ❌ Otherwise, player gets hurt
+    playerHealth.TakeDamage(damage);
+    attackTimer = attackCooldown;
 }
+
 
 
     // -------------------------
