@@ -249,7 +249,7 @@ public class PlayerScript : MonoBehaviour
             IStompable stompable = hit.GetComponent<IStompable>();
             if (stompable != null)
             {
-                stompable.OnStomped();
+                stompable.OnStomp();
                 speedBoostTimer = rollSpeedBoostDuration;
             }
         }

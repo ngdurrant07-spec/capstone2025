@@ -12,7 +12,7 @@ public class RollHitbox : MonoBehaviour
         IStompable stompable = other.GetComponent<IStompable>();
         if(stompable != null)
         {
-            stompable.OnStomped();
+            stompable.OnStomp();
 
             // Add momentum boost
             player.hitSpeedBoostTimer = player.hitSpeedBoostDuration;

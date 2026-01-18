@@ -1,5 +1,5 @@
 public interface IStompable
 {
-    void OnStomped();
+    void OnStomp();
 }
 

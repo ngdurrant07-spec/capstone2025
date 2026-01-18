@@ -23,7 +23,7 @@ public class StompHitbox : MonoBehaviour
                 playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, bounceForce);
 
                 // Tell enemy it was stomped
-                stompable.OnStomped();
+                stompable.OnStomp();
             }
         }
     }

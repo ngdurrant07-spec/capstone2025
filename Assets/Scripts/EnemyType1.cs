@@ -2,75 +2,91 @@ using UnityEngine;
 
 public class EnemyType1 : MonoBehaviour, IStompable
 {
-    [Header("Target")]
-    public Transform Player;
+    [Header("References")]
+    public Transform target;                 // Player transform
+    private Rigidbody2D rb;
 
     [Header("Movement")]
     public float chaseSpeed = 2f;
-    public float jumpForce = 6f;
-    public LayerMask groundLayer;
+    public float stopDistance = 1f;
 
     [Header("Combat")]
     public int damage = 1;
-    public float attackRange = 1f;
     public float attackCooldown = 1f;
+    private float attackTimer;
 
-    private float lastAttackTime;
-    private Rigidbody2D rb;
-    private bool isGrounded;
-    private bool shouldJump;
+    [Header("Ground Check")]
+    public LayerMask groundLayer;
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        if (Player == null) return;
+        if (target == null)
+            return;
 
-        // Ground check
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer);
-
-        float direction = Mathf.Sign(Player.position.x - transform.position.x);
-
-        if (isGrounded)
-        {
-            // Chase player (LINEAR VELOCITY)
-            rb.linearVelocity = new Vector2(direction * chaseSpeed, rb.linearVelocity.y);
-
-            // Raycasts
-            RaycastHit2D groundInFront =
-                Physics2D.Raycast(transform.position, Vector2.right * direction, 1.5f, groundLayer);
-
-            RaycastHit2D gapAhead =
-                Physics2D.Raycast(transform.position + Vector3.right * direction, Vector2.down, 2f, groundLayer);
-
-            if (!groundInFront && !gapAhead)
-                shouldJump = true;
-        }
-
-        // Melee attack
-        float dist = Vector2.Distance(transform.position, Player.position);
-        if (dist <= attackRange && Time.time - lastAttackTime >= attackCooldown)
-        {
-            lastAttackTime = Time.time;
-            Player.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
-        }
+        attackTimer -= Time.deltaTime;
+        FollowPlayer();
     }
 
-    void FixedUpdate()
+    // -------------------------
+    // MOVEMENT
+    // -------------------------
+    void FollowPlayer()
     {
-        if (isGrounded && shouldJump)
-        {
-            shouldJump = false;
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
+        float distance = Vector2.Distance(transform.position, target.position);
+
+        if (distance <= stopDistance)
+            return;
+
+        Vector2 direction = (target.position - transform.position).normalized;
+        rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
     }
 
-    // STOMP RESPONSE
-    public void OnStomped()
+    // -------------------------
+    // DAMAGE PLAYER (NORMAL HIT)
+    // -------------------------
+private void OnCollisionStay2D(Collision2D collision)
+{
+    if (!collision.gameObject.CompareTag("Player"))
+        return;
+
+    if (attackTimer > 0f)
+        return;
+
+    Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+    if (playerRb == null)
+        return;
+
+    // 🚫 If player is falling downward, do NOT damage (stomp case)
+    if (playerRb.linearVelocity.y <= 0f)
+        return;
+
+    PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+    if (playerHealth != null)
+    {
+        playerHealth.TakeDamage(damage);
+        attackTimer = attackCooldown;
+    }
+}
+
+
+    // -------------------------
+    // STOMPED BY PLAYER
+    // -------------------------
+    public void OnStomp()
     {
         Destroy(gameObject);
     }
+
+    // -------------------------
+    // DEATH
+    // -------------------------
+    //private void Die()
+    //{
+        //Destroy(gameObject);
+    //}
 }
