@@ -286,15 +286,8 @@ public class PlayerScript : MonoBehaviour
             IStompable stompable = hit.GetComponent<IStompable>();
             if (stompable != null)
             {
-                if (linearVelocity.y < 0f)
-                {
-                    stompable.OnStomp();
-                    linearVelocity = new Vector2(linearVelocity.x, 10f);
-                }
-                else
-                {
+                stompable.OnStomp();
                     speedBoostTimer = rollSpeedBoostDuration;
-                }
             }
         }
 

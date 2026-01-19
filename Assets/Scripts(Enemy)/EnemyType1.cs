@@ -1,9 +1,12 @@
 using UnityEngine;
 
+/// <summary>
+/// Enemy that can chase the player, deal damage, and be stomped.
+/// </summary>
 public class EnemyType1 : MonoBehaviour, IStompable
 {
     [Header("References")]
-    public Transform target;                 // Player transform
+    public Transform target; // Player transform
     private Rigidbody2D rb;
 
     [Header("Movement")]
@@ -15,23 +18,31 @@ public class EnemyType1 : MonoBehaviour, IStompable
     public float attackCooldown = 1f;
     private float attackTimer;
 
-    [Header("Ground Check")]
-    public LayerMask groundLayer;
+    [Header("Damage Trigger")]
+    public Collider2D damageTrigger; // Trigger collider for dealing damage
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // Make enemy kinematic to avoid pushing player during roll
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        // Rigidbody setup
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+
+        // Ensure trigger is enabled
+        if (damageTrigger != null)
+            damageTrigger.isTrigger = true;
     }
 
     void Update()
     {
-        if (target == null)
-            return;
+        if (target == null) return;
 
+        // Reduce attack cooldown
         attackTimer -= Time.deltaTime;
+
+        // Move toward player
         FollowPlayer();
     }
 
@@ -53,34 +64,17 @@ public class EnemyType1 : MonoBehaviour, IStompable
     }
 
     // -------------------------
-    // DAMAGE PLAYER (NORMAL HIT)
+    // DAMAGE PLAYER (TRIGGER)
     // -------------------------
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        if (!collision.gameObject.CompareTag("Player"))
-            return;
+        if (attackTimer > 0f) return;
 
-        if (attackTimer > 0f)
-            return;
+        // Only damage objects that implement IDamageable
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        if (damageable == null) return;
 
-        PlayerScript player = collision.gameObject.GetComponent<PlayerScript>();
-        PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-
-        if (player == null || playerHealth == null)
-            return;
-
-        // If player is stomping (above & falling) → ignore damage
-        bool playerAbove = collision.transform.position.y > transform.position.y + 0.3f;
-        bool falling = player.linearVelocity.y < 0f;
-
-        if (playerAbove && falling)
-        {
-            // Stomp handled via StompHitbox / OnStomp
-            return;
-        }
-
-        // Otherwise, damage player
-        playerHealth.TakeDamage(damage);
+        damageable.TakeDamage(damage);
         attackTimer = attackCooldown;
     }
 
@@ -91,4 +85,17 @@ public class EnemyType1 : MonoBehaviour, IStompable
     {
         Destroy(gameObject);
     }
+
+    // -------------------------
+    // OPTIONAL DEBUG
+    // -------------------------
+    private void OnDrawGizmosSelected()
+    {
+        if (damageTrigger != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(damageTrigger.bounds.center, damageTrigger.bounds.size);
+        }
+    }
 }
+

@@ -1,11 +1,12 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pauseMenuUI;
+    [Header("UI")]
+    public GameObject pauseMenuUI;   // Assign your Pause Panel here
+
     private bool isPaused;
 
     private FlightSchooledPlayerControls controls;
@@ -13,6 +14,8 @@ public class PauseMenu : MonoBehaviour
     void Awake()
     {
         controls = new FlightSchooledPlayerControls();
+
+        // Toggle pause with the Pause action
         controls.UI.Pause.performed += _ => TogglePause();
     }
 
@@ -26,12 +29,49 @@ public class PauseMenu : MonoBehaviour
         controls.Disable();
     }
 
+    void Start()
+    {
+        isPaused = false;
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+    // -------------------------
+    // PAUSE LOGIC
+    // -------------------------
     void TogglePause()
     {
-        isPaused = !isPaused;
+        if (!isPaused)
+            PauseGame();
+        else
+            ResumeGame();
+    }
 
-        pauseMenuUI.SetActive(isPaused);
-        Time.timeScale = isPaused ? 0f : 1f;
+    void PauseGame()
+    {
+        isPaused = true;
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+
+        // Reset Pause Input to avoid missed triggers
+        controls.UI.Pause.Disable();
+        controls.UI.Pause.Enable();
+    }
+
+    // -------------------------
+    // BUTTON FUNCTIONS
+    // -------------------------
+    public void ExitToSelectGame()
+    {
+        Time.timeScale = 1f; // unfreeze time
+        SceneManager.LoadScene("SelectgameScene"); // exact scene name
     }
 }
 
