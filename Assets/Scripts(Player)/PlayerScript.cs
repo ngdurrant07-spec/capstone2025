@@ -5,23 +5,16 @@ using System.Collections;
 public class PlayerScript : MonoBehaviour
 {
     // ───────── PLAYER STATE ─────────
-    public enum PlayerState
-    {
-        Normal,
-        Jumping,
-        Rolling,
-        Gliding,
-        GroundPounding
-    }
-
-    [HideInInspector]
-    public PlayerState currentState = PlayerState.Normal;
-
+    public enum PlayerState { Normal, Jumping, Rolling, Gliding, GroundPounding }
+    [HideInInspector] public PlayerState currentState = PlayerState.Normal;
 
     // ───────── COMPONENTS ─────────
     [Header("Components")]
     public Rigidbody2D rb;
     public ParticleSystem particleFX;
+
+    [Header("Stomp")]
+    public StompHitbox stompHitbox; // Assign the child StompHitbox here
 
     // ───────── MOVEMENT ─────────
     [Header("Movement")]
@@ -84,16 +77,9 @@ public class PlayerScript : MonoBehaviour
     bool isGroundPounding;
     bool isAnticipating;
 
-    public void CancelGroundPound()
-    {
-        if (isGroundPounding || isAnticipating)
-        {
-            isGroundPounding = false;
-            isAnticipating = false;
-            rb.gravityScale = 1f;
-            currentState = PlayerState.Normal;
-        }
-    }
+    public Transform groundPoundPoint;
+    public Vector2 groundPoundSize = new Vector2(1.2f, 0.6f);
+    public LayerMask enemyLayer;
 
     // ───────── ROLL ATTACK ─────────
     [Header("Roll Attack")]
@@ -117,12 +103,14 @@ public class PlayerScript : MonoBehaviour
 
     // ───────── HEALTH ─────────
     [Header("Health")]
-    public float health = 100f;
+    public int maxHearts = 3;   // Total hearts
+    public int currentHearts;   // Current hearts
 
     void Start()
     {
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
+        currentHearts = maxHearts;
     }
 
     void Update()
@@ -260,7 +248,7 @@ public class PlayerScript : MonoBehaviour
             IStompable stompable = hit.GetComponent<IStompable>();
             if (stompable != null)
             {
-                stompable.OnStomp();
+                stompable.OnStomped();
                 speedBoostTimer = rollSpeedBoostDuration;
             }
         }
@@ -281,10 +269,6 @@ public class PlayerScript : MonoBehaviour
         float speed = horizontalInput * moveSpeed;
         if (speedBoostTimer > 0f && IsGrounded())
             speed += rollSpeedBoost * facingDirection;
-
-        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
-
-        //Apply temporary hit speed boost
 
         if (hitSpeedBoostTimer > 0f)
         {
