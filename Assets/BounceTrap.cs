@@ -14,7 +14,7 @@ public class BounceTrap : MonoBehaviour
 
         if (rb == null) return;
 
-        // ✅ CANCEL ground pound
+        // ✅ Cancel ground pound
         if (player != null)
             player.CancelGroundPound();
 
@@ -26,4 +26,5 @@ public class BounceTrap : MonoBehaviour
         rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
     }
 }
+
 

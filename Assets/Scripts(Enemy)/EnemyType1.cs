@@ -21,6 +21,9 @@ public class EnemyType1 : MonoBehaviour, IStompable
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Make enemy kinematic to avoid pushing player during roll
+        rb.bodyType = RigidbodyType2D.Kinematic;
     }
 
     void Update()
@@ -40,7 +43,10 @@ public class EnemyType1 : MonoBehaviour, IStompable
         float distance = Vector2.Distance(transform.position, target.position);
 
         if (distance <= stopDistance)
+        {
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
+        }
 
         Vector2 direction = (target.position - transform.position).normalized;
         rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
@@ -49,39 +55,34 @@ public class EnemyType1 : MonoBehaviour, IStompable
     // -------------------------
     // DAMAGE PLAYER (NORMAL HIT)
     // -------------------------
-private void OnCollisionStay2D(Collision2D collision)
-{
-    if (!collision.gameObject.CompareTag("Player"))
-        return;
-
-    if (attackTimer > 0f)
-        return;
-
-    Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
-    PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-
-    if (playerRb == null || playerHealth == null)
-        return;
-
-    // ✅ Check if player is ABOVE enemy
-    bool playerAbove = collision.transform.position.y > transform.position.y + 0.3f;
-
-    // ✅ Check if player is FALLING
-    bool falling = playerRb.linearVelocity.y < 0f;
-
-    if (playerAbove && falling)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        // This is a stomp → DO NOTHING here
-        // Enemy will die via OnStomp()
-        return;
+        if (!collision.gameObject.CompareTag("Player"))
+            return;
+
+        if (attackTimer > 0f)
+            return;
+
+        PlayerScript player = collision.gameObject.GetComponent<PlayerScript>();
+        PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
+        if (player == null || playerHealth == null)
+            return;
+
+        // If player is stomping (above & falling) → ignore damage
+        bool playerAbove = collision.transform.position.y > transform.position.y + 0.3f;
+        bool falling = player.linearVelocity.y < 0f;
+
+        if (playerAbove && falling)
+        {
+            // Stomp handled via StompHitbox / OnStomp
+            return;
+        }
+
+        // Otherwise, damage player
+        playerHealth.TakeDamage(damage);
+        attackTimer = attackCooldown;
     }
-
-    // ❌ Otherwise, player gets hurt
-    playerHealth.TakeDamage(damage);
-    attackTimer = attackCooldown;
-}
-
-
 
     // -------------------------
     // STOMPED BY PLAYER
@@ -90,12 +91,4 @@ private void OnCollisionStay2D(Collision2D collision)
     {
         Destroy(gameObject);
     }
-
-    // -------------------------
-    // DEATH
-    // -------------------------
-    //private void Die()
-    //{
-        //Destroy(gameObject);
-    //}
 }

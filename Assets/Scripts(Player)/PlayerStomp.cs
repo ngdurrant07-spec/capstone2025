@@ -2,28 +2,29 @@ using UnityEngine;
 
 public class StompHitbox : MonoBehaviour
 {
-    [Header("References")]
-    public Rigidbody2D playerRb;       // Drag in Player Rigidbody2D
-    public float bounceForce = 12f;    // How high player bounces after stomping
+    public float bounceForce = 10f;
+    private Rigidbody2D playerRb;
+
+    private void Start()
+    {
+        playerRb = GetComponentInParent<Rigidbody2D>();
+        if (playerRb == null)
+            Debug.LogWarning("Player Rigidbody2D not found on parent!");
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Only trigger if player is falling
-        if (playerRb.linearVelocity.y > 0f)
-            return;
-
-        // Check if the object is stompable
+        // Check if the object implements IStompable
         IStompable stompable = other.GetComponent<IStompable>();
         if (stompable != null)
         {
-            // Optional: ensure player is above enemy
-            if (playerRb.transform.position.y > other.bounds.max.y)
-            {
-                // Bounce the player up
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, bounceForce);
+            // Tell enemy it was stomped
+            stompable.OnStomp();
 
-                // Tell enemy it was stomped
-                stompable.OnStomp();
+            // Bounce player up
+            if (playerRb != null)
+            {
+                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, bounceForce);
             }
         }
     }

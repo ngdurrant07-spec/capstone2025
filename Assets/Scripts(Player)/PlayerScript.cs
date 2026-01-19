@@ -12,9 +12,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Components")]
     public Rigidbody2D rb;
     public ParticleSystem particleFX;
-
-    [Header("Stomp")]
-    public StompHitbox stompHitbox; // Assign the child StompHitbox here
+    public StompHitbox stompHitbox;
 
     // ───────── MOVEMENT ─────────
     [Header("Movement")]
@@ -29,6 +27,9 @@ public class PlayerScript : MonoBehaviour
     int jumpsRemaining;
     bool jumpHeld;
 
+    [Header("Stomp")]
+    public float stompBounceForce = 10f;
+
     // ───────── GROUND CHECK ─────────
     [Header("Ground Check")]
     public Transform groundCheck;
@@ -37,37 +38,29 @@ public class PlayerScript : MonoBehaviour
     public float coyoteTime = 0.1f;
     float coyoteTimer;
 
-    // ───────── GRAVITY ─────────
-    [Header("Gravity")]
+    // ───────── GRAVITY & GLIDE ─────────
+    [Header("Gravity & Glide")]
     public float baseGravity = 30f;
     public float maxFallSpeed = 22f;
-
-    // ───────── GLIDE ─────────
-    [Header("Glide")]
     public float glideGravityScale = 0.4f;
-    bool isGliding;
-    bool glideUsed; 
-    float glideDirection;
-
-    [Header("Glide Horizontal")]
     public float glideAcceleration = 12f;
     public float glideDrag = 3f;
     public float minGlideSpeed = 3f;
     public float maxGlideSpeed = 14f;
-
-    [Header("Glide Vertical Caps")]
     public float maxGlideAscendSpeed = 6f;
     public float maxGlideDescendSpeed = 6f;
     public float stallFallSpeed = 12f;
-
-    [Header("Lift Energy")]
     public float maxLiftEnergy = 1f;
     public float liftDrainRate = 1f;
     public float liftRegenRate = 0.5f;
+    public float baseLift = 5f;
+    public float momentumMultiplier = 0.5f;
+
+    bool isGliding;
+    bool glideUsed;
+    float glideDirection;
     float liftEnergy;
     bool isStalled;
-    public float momentumMultiplier = 0.5f;
-    public float baseLift = 5f;
 
     // ───────── GROUND POUND ─────────
     [Header("Ground Pound")]
@@ -77,34 +70,39 @@ public class PlayerScript : MonoBehaviour
     bool isGroundPounding;
     bool isAnticipating;
 
-    public Transform groundPoundPoint;
-    public Vector2 groundPoundSize = new Vector2(1.2f, 0.6f);
-    public LayerMask enemyLayer;
-
-    // ───────── ROLL ATTACK ─────────
-    [Header("Roll Attack")]
+    // ───────── ROLL ─────────
+    [Header("Roll")]
     public float rollSpeed = 20f;
     public float rollDuration = 0.5f;
     public float rollCooldown = 0.3f;
     public float rollSpeedBoost = 10f;
     public float rollSpeedBoostDuration = 0.3f;
-    public LayerMask enemyLayer;
-
     bool isRolling;
     float rollTimer;
     float rollCooldownTimer;
     float speedBoostTimer;
 
+    // ───────── SPEED BOOST ─────────
     [Header("Speed Boost")]
-    public float hitSpeedBoost = 10f;      // extra speed added after hitting an enemy
-    public float hitSpeedBoostDuration = 0.3f; // how long the boost lasts
-    public float hitSpeedBoostTimer = 0f;          // tracks remaining time
-
+    public float hitSpeedBoost = 10f;
+    public float hitSpeedBoostDuration = 0.3f;
+    public float hitSpeedBoostTimer = 0f;
 
     // ───────── HEALTH ─────────
     [Header("Health")]
-    public int maxHearts = 3;   // Total hearts
-    public int currentHearts;   // Current hearts
+    public int maxHearts = 3;
+    public int currentHearts;
+
+    // ───────── ENEMIES ─────────
+    [Header("Enemies")]
+    public LayerMask enemyLayer;
+
+    // ───────── VELOCITY WRAPPER ─────────
+    public Vector2 linearVelocity
+    {
+        get => rb.linearVelocity;
+        set => rb.linearVelocity = value;
+    }
 
     void Start()
     {
@@ -116,19 +114,18 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
         GroundCheck();
-        HandleGroundPound();
-        HandleRoll();
+        ApplyGravity();
         HandleMovement();
         HandleGlide();
-        ApplyGravity();
+        HandleRoll();
+        HandleGroundPound();
     }
 
-    // ───────── INPUT ─────────
+    // ───────── INPUT SYSTEM ─────────
     public void Move(InputAction.CallbackContext context)
     {
         horizontalInput = context.ReadValue<Vector2>().x;
-
-        if (currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding && horizontalInput != 0)
+        if (horizontalInput != 0 && currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding)
             facingDirection = Mathf.Sign(horizontalInput);
     }
 
@@ -140,7 +137,7 @@ public class PlayerScript : MonoBehaviour
 
             if (IsGrounded())
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                linearVelocity = new Vector2(linearVelocity.x, jumpForce);
                 jumpsRemaining = maxJumps - 1;
                 coyoteTimer = 0f;
                 currentState = PlayerState.Jumping;
@@ -151,7 +148,7 @@ public class PlayerScript : MonoBehaviour
             }
             else if (coyoteTimer > 0f)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                linearVelocity = new Vector2(linearVelocity.x, jumpForce);
                 coyoteTimer = 0f;
                 currentState = PlayerState.Jumping;
             }
@@ -164,109 +161,28 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    void StartGlide()
-    {
-        isGliding = true;
-        glideUsed = true;
-        glideDirection = facingDirection;
-        liftEnergy = maxLiftEnergy;
-        isStalled = false;
-        currentState = PlayerState.Gliding;
-
-        if (rb.linearVelocity.y > 0f)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-    }
-
-    // ───────── GROUND POUND ─────────
     public void GroundPound(InputAction.CallbackContext context)
     {
         if (!context.performed || IsGrounded() || isGroundPounding || isAnticipating) return;
         StartCoroutine(GroundPoundAnticipation());
     }
 
-    IEnumerator GroundPoundAnticipation()
-    {
-        isAnticipating = true;
-        isGliding = false;
-        isStalled = false;
-        liftEnergy = 0f;
-
-        rb.linearVelocity = Vector2.zero;
-        rb.gravityScale = 0f;
-
-        yield return new WaitForSeconds(anticipationTime);
-
-        isAnticipating = false;
-        isGroundPounding = true;
-        currentState = PlayerState.GroundPounding;
-
-        rb.linearVelocity = Vector2.down * groundPoundSpeed;
-        particleFX.Play();
-    }
-
-    void HandleGroundPound()
-    {
-        if (!isGroundPounding) return;
-
-        float yVel = rb.linearVelocity.y;
-        if (yVel < -groundPoundFallCap)
-            yVel = -groundPoundFallCap;
-
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVel);
-        if (IsGrounded())
-        {
-            isGroundPounding = false;
-            rb.gravityScale = 1f;
-            currentState = PlayerState.Normal;
-        }
-    }
-
-    // ───────── ROLL ATTACK ─────────
     public void RollAttack(InputAction.CallbackContext context)
     {
         if (!context.performed || !IsGrounded() || isRolling || rollCooldownTimer > 0f) return;
-
         isRolling = true;
         rollTimer = rollDuration;
         currentState = PlayerState.Rolling;
     }
 
-    void HandleRoll()
-    {
-        if (rollCooldownTimer > 0f) rollCooldownTimer -= Time.deltaTime;
-        if (speedBoostTimer > 0f) speedBoostTimer -= Time.deltaTime;
-        if (!isRolling) return;
-
-        rollTimer -= Time.deltaTime;
-
-        rb.linearVelocity = new Vector2(facingDirection * rollSpeed, rb.linearVelocity.y);
-
-        // Detect enemies using OverlapBoxAll
-        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position + Vector3.right * facingDirection, new Vector2(1f, 1f), 0f, enemyLayer);
-        foreach (Collider2D hit in hits)
-        {
-            IStompable stompable = hit.GetComponent<IStompable>();
-            if (stompable != null)
-            {
-                stompable.OnStomped();
-                speedBoostTimer = rollSpeedBoostDuration;
-            }
-        }
-
-        if (rollTimer <= 0f)
-        {
-            isRolling = false;
-            currentState = PlayerState.Normal;
-            rollCooldownTimer = rollCooldown;
-        }
-    }
-
     // ───────── MOVEMENT ─────────
     void HandleMovement()
     {
-        if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || currentState == PlayerState.Rolling) return;
+        if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || isRolling)
+            return;
 
         float speed = horizontalInput * moveSpeed;
+
         if (speedBoostTimer > 0f && IsGrounded())
             speed += rollSpeedBoost * facingDirection;
 
@@ -275,6 +191,8 @@ public class PlayerScript : MonoBehaviour
             speed += hitSpeedBoostTimer / hitSpeedBoostDuration * hitSpeedBoost * facingDirection;
             hitSpeedBoostTimer -= Time.deltaTime;
         }
+
+        linearVelocity = new Vector2(speed, linearVelocity.y);
     }
 
     void ApplyGravity()
@@ -284,14 +202,28 @@ public class PlayerScript : MonoBehaviour
         if (currentState != PlayerState.Gliding)
         {
             rb.gravityScale = 1f;
-            rb.linearVelocity += Vector2.down * baseGravity * Time.deltaTime;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -maxFallSpeed));
+            linearVelocity += Vector2.down * baseGravity * Time.deltaTime;
+            linearVelocity = new Vector2(linearVelocity.x, Mathf.Max(linearVelocity.y, -maxFallSpeed));
         }
+    }
+
+    // ───────── GLIDE ─────────
+    void StartGlide()
+    {
+        isGliding = true;
+        glideUsed = true;
+        glideDirection = facingDirection;
+        liftEnergy = maxLiftEnergy;
+        isStalled = false;
+        currentState = PlayerState.Gliding;
+
+        if (linearVelocity.y > 0f)
+            linearVelocity = new Vector2(linearVelocity.x, 0f);
     }
 
     void HandleGlide()
     {
-        if (!isGliding || !jumpHeld || currentState == PlayerState.GroundPounding) 
+        if (!isGliding || !jumpHeld || currentState == PlayerState.GroundPounding)
         {
             rb.gravityScale = 1f;
             return;
@@ -299,7 +231,7 @@ public class PlayerScript : MonoBehaviour
 
         rb.gravityScale = glideGravityScale;
 
-        float speed = Mathf.Abs(rb.linearVelocity.x);
+        float speed = Mathf.Abs(linearVelocity.x);
         float relativeInput = horizontalInput * glideDirection;
 
         speed -= glideDrag * Time.deltaTime;
@@ -318,21 +250,115 @@ public class PlayerScript : MonoBehaviour
         liftEnergy = Mathf.Clamp(liftEnergy, 0f, maxLiftEnergy);
         speed = Mathf.Clamp(speed, minGlideSpeed, maxGlideSpeed);
 
-        rb.linearVelocity = new Vector2(glideDirection * speed, rb.linearVelocity.y);
+        linearVelocity = new Vector2(glideDirection * speed, linearVelocity.y);
 
-        float verticalVelocity = rb.linearVelocity.y;
+        float verticalVelocity = linearVelocity.y;
 
         if (liftEnergy <= 0f) isStalled = true;
 
         if (isStalled)
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -stallFallSpeed, 40f * Time.deltaTime);
         else if (relativeInput < 0)
-            verticalVelocity = Mathf.Lerp(verticalVelocity, baseLift + -rb.linearVelocity.y * momentumMultiplier, 5f * Time.deltaTime);
+            verticalVelocity = Mathf.Lerp(verticalVelocity, baseLift - linearVelocity.y * momentumMultiplier, 5f * Time.deltaTime);
         else
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -maxGlideDescendSpeed, 25f * Time.deltaTime);
 
         verticalVelocity = Mathf.Clamp(verticalVelocity, -stallFallSpeed, maxGlideAscendSpeed);
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, verticalVelocity);
+        linearVelocity = new Vector2(linearVelocity.x, verticalVelocity);
+    }
+
+    // ───────── ROLL ─────────
+    void HandleRoll()
+    {
+        if (rollCooldownTimer > 0f) rollCooldownTimer -= Time.deltaTime;
+        if (speedBoostTimer > 0f) speedBoostTimer -= Time.deltaTime;
+        if (!isRolling) return;
+
+        rollTimer -= Time.deltaTime;
+
+        // Keep horizontal movement, preserve vertical
+        linearVelocity = new Vector2(facingDirection * rollSpeed, linearVelocity.y);
+
+        // Detect enemies
+        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position + Vector3.right * facingDirection, new Vector2(1f, 1f), 0f, enemyLayer);
+        foreach (Collider2D hit in hits)
+        {
+            IStompable stompable = hit.GetComponent<IStompable>();
+            if (stompable != null)
+            {
+                if (linearVelocity.y < 0f)
+                {
+                    stompable.OnStomp();
+                    linearVelocity = new Vector2(linearVelocity.x, 10f);
+                }
+                else
+                {
+                    speedBoostTimer = rollSpeedBoostDuration;
+                }
+            }
+        }
+
+        if (rollTimer <= 0f)
+        {
+            isRolling = false;
+            currentState = PlayerState.Normal;
+            rollCooldownTimer = rollCooldown;
+        }
+    }
+
+    // ───────── GROUND POUND ─────────
+    IEnumerator GroundPoundAnticipation()
+    {
+        isAnticipating = true;
+        isGliding = false;
+        isStalled = false;
+        liftEnergy = 0f;
+
+        linearVelocity = Vector2.zero;
+        rb.gravityScale = 0f;
+
+        yield return new WaitForSeconds(anticipationTime);
+
+        isAnticipating = false;
+        isGroundPounding = true;
+        currentState = PlayerState.GroundPounding;
+
+        linearVelocity = Vector2.down * groundPoundSpeed;
+        particleFX.Play();
+    }
+
+    void HandleGroundPound()
+    {
+        if (!isGroundPounding) return;
+
+        float yVel = linearVelocity.y;
+        if (yVel < -groundPoundFallCap)
+            yVel = -groundPoundFallCap;
+
+        linearVelocity = new Vector2(linearVelocity.x, yVel);
+
+        if (IsGrounded())
+        {
+            isGroundPounding = false;
+            rb.gravityScale = 1f;
+            currentState = PlayerState.Normal;
+        }
+    }
+
+    public void CancelGroundPound()
+    {
+        if (isGroundPounding || isAnticipating)
+        {
+            isGroundPounding = false;
+            isAnticipating = false;
+            currentState = PlayerState.Normal;
+
+            rb.gravityScale = 1f;
+            linearVelocity = new Vector2(linearVelocity.x, 0f);
+
+            if (particleFX != null && particleFX.isPlaying)
+                particleFX.Stop();
+        }
     }
 
     // ───────── GROUND CHECK ─────────
@@ -370,3 +396,4 @@ public class PlayerScript : MonoBehaviour
         }
     }
 }
+

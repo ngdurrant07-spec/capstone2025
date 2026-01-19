@@ -556,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 547304613}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.11, y: -0.65, z: 0}
+  m_LocalPosition: {x: 0.02, y: -0.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2857,9 +2857,11 @@ MonoBehaviour:
   currentState: 0
   rb: {fileID: 1760675823}
   particleFX: {fileID: 1828316395}
+  stompHitbox: {fileID: 0}
   moveSpeed: 10
   jumpForce: 10
   maxJumps: 1
+  stompBounceForce: 10
   groundCheck: {fileID: 283266843}
   groundCheckSize: {x: 1.5, y: 0.05}
   groundLayer:
@@ -2879,8 +2881,8 @@ MonoBehaviour:
   maxLiftEnergy: 1
   liftDrainRate: 1
   liftRegenRate: 0.5
-  momentumMultiplier: 0.5
   baseLift: 5
+  momentumMultiplier: 0.5
   groundPoundSpeed: 30
   groundPoundFallCap: 35
   anticipationTime: 0.3
@@ -2889,13 +2891,14 @@ MonoBehaviour:
   rollCooldown: 0.3
   rollSpeedBoost: 15
   rollSpeedBoostDuration: 0.3
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
   hitSpeedBoost: 10
   hitSpeedBoostDuration: 0.3
   hitSpeedBoostTimer: 0
-  health: 100
+  maxHearts: 3
+  currentHearts: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &1760675821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3216,7 +3219,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5ff6c59b9fe4685b58caa2a83ff7fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StompHitbox
-  playerRb: {fileID: 1760675823}
   bounceForce: 12
 --- !u!1 &1773201177
 GameObject:
