@@ -21,6 +21,13 @@ public class EnemyType1 : MonoBehaviour, IStompable
     [Header("Damage Trigger")]
     public Collider2D damageTrigger; // Trigger collider for dealing damage
 
+    [Header("Death")]
+    public float deathPopForce = 8f;
+    public float deathFallGravity = 3f;
+    public float deathLifetime = 2f;
+
+    bool isDead;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -78,13 +85,33 @@ public class EnemyType1 : MonoBehaviour, IStompable
         attackTimer = attackCooldown;
     }
 
-    // -------------------------
+   // -------------------------
     // STOMPED BY PLAYER
     // -------------------------
     public void OnStomp()
-    {
-        Destroy(gameObject);
-    }
+{
+    if (isDead) return;
+    isDead = true;
+
+    // Disable AI logic
+    enabled = false;
+
+    // Stop movement
+    rb.linearVelocity = Vector2.zero;
+
+    // Physics fall
+    rb.bodyType = RigidbodyType2D.Dynamic;
+    rb.gravityScale = deathFallGravity;
+
+    // Pop upward
+    rb.AddForce(Vector2.up * deathPopForce, ForceMode2D.Impulse);
+
+    // Disable colliders so it can't hurt or block player
+    foreach (Collider2D col in GetComponents<Collider2D>())
+        col.enabled = false;
+
+    Destroy(gameObject, deathLifetime);
+}
 
     // -------------------------
     // OPTIONAL DEBUG
@@ -97,5 +124,6 @@ public class EnemyType1 : MonoBehaviour, IStompable
             Gizmos.DrawWireCube(damageTrigger.bounds.center, damageTrigger.bounds.size);
         }
     }
+    
 }
 
