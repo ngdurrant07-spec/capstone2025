@@ -5,26 +5,25 @@ public class PlayerStomp : MonoBehaviour
     public Rigidbody2D rb;
     public float bounceForce = 12f;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+  private void OnTriggerEnter2D(Collider2D collision)
+{
+    if (!collision.CompareTag("Enemy")) return;
+
+    IStompable stompable = collision.GetComponent<IStompable>();
+    if (stompable != null)
     {
-        if (!collision.gameObject.CompareTag("Enemy"))
-            return;
+        stompable.OnStomp();
 
-        // Check if we hit the enemy from above
-        foreach (ContactPoint2D contact in collision.contacts)
+        // Bounce player
+        Rigidbody2D rb = GetComponentInParent<Rigidbody2D>();
+        if (rb != null)
         {
-            if (contact.normal.y > 0.5f && rb.linearVelocity.y <= 0f)
-            {
-                // Bounce player up
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, bounceForce);
-
-                // Kill enemy
-                Destroy(collision.gameObject);
-                return;
-            }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 10f); // your bounce
         }
     }
 }
+}
+
 
 
 

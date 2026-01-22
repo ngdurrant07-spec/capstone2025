@@ -93,6 +93,10 @@ public class PlayerScript : MonoBehaviour
     public int maxHearts = 3;
     public int currentHearts;
 
+    [Header("References")]
+    public PlayerHealth playerHealth;
+
+
     // ───────── ENEMIES ─────────
     [Header("Enemies")]
     public LayerMask enemyLayer;

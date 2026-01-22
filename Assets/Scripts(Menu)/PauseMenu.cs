@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -22,6 +22,8 @@ public class PauseMenu : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstSelectedButton);
     }
 
     void OnDisable()
@@ -73,5 +75,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f; // unfreeze time
         SceneManager.LoadScene("SelectgameScene"); // exact scene name
     }
+
+    public GameObject firstSelectedButton;
 }
 
