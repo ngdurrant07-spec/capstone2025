@@ -56,6 +56,45 @@ public class PlayerScript : MonoBehaviour
     public float baseLift = 5f;
     public float momentumMultiplier = 0.5f;
 
+    // ───────── AIR BOOST PAD INTERFACE ─────────
+public void AirBoost(Vector2 boostVelocity, float liftRestore = 1f, float gravityLockTime = 0.12f)
+{
+    // Cancel conflicting states
+    CancelGroundPound();
+    isRolling = false;
+
+    // Reset vertical fall so boost feels clean
+    linearVelocity = new Vector2(linearVelocity.x, Mathf.Max(linearVelocity.y, 0f));
+
+    // Apply boost
+    linearVelocity += boostVelocity;
+
+    // Force glide state
+    isGliding = true;
+    glideUsed = false;                 // IMPORTANT: allows chaining pads
+    glideDirection = Mathf.Sign(boostVelocity.x);
+    liftEnergy = Mathf.Clamp(liftEnergy + liftRestore, 0f, maxLiftEnergy);
+    isStalled = false;
+    currentState = PlayerState.Gliding;
+
+    // Brief gravity lock so player doesn't instantly drop
+    StartCoroutine(AirBoostGravityLock(gravityLockTime));
+}
+
+IEnumerator AirBoostGravityLock(float time)
+{
+    float originalGravity = rb.gravityScale;
+    rb.gravityScale = 0f;
+
+    yield return new WaitForSeconds(time);
+
+    if (currentState == PlayerState.Gliding)
+        rb.gravityScale = glideGravityScale;
+    else
+        rb.gravityScale = originalGravity;
+}
+
+
     bool isGliding;
     bool glideUsed;
     float glideDirection;
