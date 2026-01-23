@@ -1976,12 +1976,6 @@ MonoBehaviour:
   deathPopForce: 8
   deathFallGravity: 3
   deathLifetime: 2
-  gravityScale: 1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheck: {fileID: 1344093064}
-  groundCheckSize: {x: 0.2, y: 0.2}
 --- !u!61 &747611967
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4205,6 +4199,9 @@ MonoBehaviour:
   rollCooldown: 0.3
   rollSpeedBoost: 15
   rollSpeedBoostDuration: 0.3
+  rollHitbox: {fileID: 1773201178}
+  rollHitboxSize: {x: 1.5, y: 1}
+  rollHitboxDuration: 0.2
   hitSpeedBoost: 10
   hitSpeedBoostDuration: 0.3
   hitSpeedBoostTimer: 0

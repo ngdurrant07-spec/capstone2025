@@ -121,6 +121,12 @@ IEnumerator AirBoostGravityLock(float time)
     float rollCooldownTimer;
     float speedBoostTimer;
 
+    [Header("Roll Hitbox")]
+    public Transform rollHitbox;       // Empty child object in front of player
+    public Vector2 rollHitboxSize = new Vector2(1.5f, 1f);
+    public float rollHitboxDuration = 0.2f;
+
+
     // ───────── SPEED BOOST ─────────
     [Header("Speed Boost")]
     public float hitSpeedBoost = 10f;
