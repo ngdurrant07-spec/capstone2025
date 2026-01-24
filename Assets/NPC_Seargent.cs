@@ -44,7 +44,3 @@ public class NPC_Seargent : MonoBehaviour
         }
     }
 }
-
-
-
-

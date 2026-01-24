@@ -4,95 +4,81 @@ using System.Collections;
 
 public class DialogueManager : MonoBehaviour
 {
-    public static DialogueManager Instance; // Singleton
+    public static DialogueManager Instance;
 
     [Header("UI Elements")]
-    public GameObject dialoguePanel;       // Panel background
-    public TextMeshProUGUI dialogueText;   // Text inside panel (TMP)
+    public GameObject dialoguePanel;
+    public TextMeshProUGUI dialogueText;
 
     [Header("Settings")]
-    public float typingSpeed = 0.02f;      // Letters per second
-    public Vector3 panelOffset = new Vector3(0, -4f, 0); // Offset from player
+    public float typingSpeed = 0.02f;
+    public Vector3 panelOffset = new Vector3(0, 1f, 0); // offset above NPC
 
     private string[] sentences;
     private int index;
-    private Transform player;
+    private Transform currentNPC; // follow the NPC talking, not player
+    private Coroutine typingCoroutine;
 
     private void Awake()
     {
-        // Setup singleton
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-        // Hide panel by default
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(false);
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
     }
 
     private void Update()
     {
-        // Make panel follow the player
-        if (player != null && dialoguePanel != null && dialoguePanel.activeSelf)
+        // Panel follows the NPC currently talking
+        if (currentNPC != null && dialoguePanel != null && dialoguePanel.activeSelf)
         {
-            Vector3 worldPos = player.position + panelOffset;
+            Vector3 worldPos = currentNPC.position + panelOffset;
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
             dialoguePanel.transform.position = screenPos;
         }
 
         // Advance dialogue
-        if (dialoguePanel != null && dialoguePanel.activeSelf)
+        if (dialoguePanel.activeSelf && Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-            {
-                ShowNextSentence();
-            }
+            ShowNextSentence();
         }
     }
 
-    public void StartDialogue(Transform playerTransform, string[] newSentences)
+    // Each NPC passes itself
+    public void StartDialogue(Transform npcTransform, string[] newSentences)
     {
-        if (playerTransform == null || newSentences == null || newSentences.Length == 0)
-            return;
+        if (npcTransform == null || newSentences == null || newSentences.Length == 0) return;
 
-        player = playerTransform;
+        // Stop previous dialogue
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+
+        currentNPC = npcTransform;
         sentences = newSentences;
         index = 0;
 
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(true);
+        dialoguePanel.SetActive(true);
 
         ShowNextSentence();
     }
 
     private void ShowNextSentence()
     {
-        if (sentences == null || sentences.Length == 0)
+        if (sentences == null || index >= sentences.Length)
         {
             EndDialogue();
             return;
         }
 
-        if (index < sentences.Length)
+        if (dialogueText != null)
         {
-            if (dialogueText != null)
-            {
-                StopAllCoroutines();
-                StartCoroutine(TypeSentence(sentences[index]));
-            }
-            index++;
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            typingCoroutine = StartCoroutine(TypeSentence(sentences[index]));
         }
-        else
-        {
-            EndDialogue();
-        }
+        index++;
     }
 
     private IEnumerator TypeSentence(string sentence)
     {
-        if (dialogueText == null) yield break;
-
         dialogueText.text = "";
         foreach (char letter in sentence)
         {
@@ -103,10 +89,10 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(false);
-        player = null;
+        dialoguePanel.SetActive(false);
         sentences = null;
+        currentNPC = null;
         index = 0;
+        typingCoroutine = null;
     }
 }
