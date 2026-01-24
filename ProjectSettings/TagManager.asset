@@ -17,10 +17,10 @@ TagManager:
   - Fruit
   - Enemy
   - Player
-  - PlayerAttack
+  - PlayerStomp
   - EnemyDamage
   - EnemyBody
-  - 
+  - PlayerAttack
   - 
   - 
   - 

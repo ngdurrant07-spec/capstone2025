@@ -429,6 +429,12 @@ IEnumerator AirBoostGravityLock(float time)
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
     }
 
+    public bool CanTakeDamage()
+{
+    return currentState != PlayerState.Rolling;
+}
+
+
     void OnDrawGizmosSelected()
     {
         if (groundCheck != null)

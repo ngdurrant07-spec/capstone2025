@@ -1212,7 +1212,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 547304614}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: GroundPoundPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1901,7 +1901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b45992439caa42968df1397c2fd4d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStomp
-  rb: {fileID: 0}
+  rb: {fileID: 1760675823}
   bounceForce: 12
 --- !u!1 &727102478
 GameObject:
@@ -2037,7 +2037,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2045,9 +2045,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!212 &747611969
 SpriteRenderer:
@@ -2132,7 +2132,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 747611965}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -3572,7 +3572,7 @@ Transform:
   m_GameObject: {fileID: 1631646487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.100753784, y: -1.322623, z: 0}
+  m_LocalPosition: {x: -0.10380554, y: -1.4, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4210,7 +4210,7 @@ MonoBehaviour:
   playerHealth: {fileID: 269315528}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 128
 --- !u!114 &1760675821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4545,7 +4545,7 @@ GameObject:
   - component: {fileID: 1773201178}
   - component: {fileID: 1773201179}
   - component: {fileID: 1773201180}
-  m_Layer: 8
+  m_Layer: 12
   m_Name: TailHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

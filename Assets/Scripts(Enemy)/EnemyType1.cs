@@ -74,16 +74,22 @@ public class EnemyType1 : MonoBehaviour, IStompable
     // DAMAGE PLAYER (TRIGGER)
     // -------------------------
     private void OnTriggerStay2D(Collider2D other)
-    {
-        if (attackTimer > 0f) return;
+{
+    if (attackTimer > 0f) return;
 
-        // Only damage objects that implement IDamageable
-        IDamageable damageable = other.GetComponent<IDamageable>();
-        if (damageable == null) return;
+    PlayerScript player = other.GetComponent<PlayerScript>();
+    if (player == null) return;
 
-        damageable.TakeDamage(damage);
-        attackTimer = attackCooldown;
-    }
+    // ❗ BLOCK DAMAGE WHILE ROLLING
+    if (!player.CanTakeDamage())
+        return;
+
+    IDamageable damageable = other.GetComponent<IDamageable>();
+    if (damageable == null) return;
+
+    damageable.TakeDamage(damage);
+    attackTimer = attackCooldown;
+}
 
    // -------------------------
     // STOMPED BY PLAYER
