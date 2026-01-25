@@ -190,10 +190,18 @@ IEnumerator AirBoostGravityLock(float time)
                 jumpsRemaining = maxJumps - 1;
                 coyoteTimer = 0f;
                 currentState = PlayerState.Jumping;
+
+                //jump sound effect plays
+
+                SoundEffectManager.Play("Jump");
             }
             else if (!IsGrounded() && !glideUsed && !isGroundPounding)
             {
                 StartGlide();
+
+                //jump sound effect plays
+
+                SoundEffectManager.Play("Glide");
             }
             else if (coyoteTimer > 0f)
             {
@@ -222,6 +230,7 @@ IEnumerator AirBoostGravityLock(float time)
         isRolling = true;
         rollTimer = rollDuration;
         currentState = PlayerState.Rolling;
+        SoundEffectManager.Play("Hit_Tail");
     }
 
     // ───────── MOVEMENT ─────────

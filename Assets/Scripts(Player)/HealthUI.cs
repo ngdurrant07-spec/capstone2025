@@ -39,6 +39,7 @@ public class HealthUI : MonoBehaviour
             {
                 hearts[i].sprite = emptyHeartSprite;
                 hearts[i].color = Color.white;
+                SoundEffectManager.Play("Hurt");
             }
         }
     }

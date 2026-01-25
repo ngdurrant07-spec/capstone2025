@@ -98,6 +98,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
 {
     if (isDead) return;
     isDead = true;
+    SoundEffectManager.Play("Hit_Stomp");
 
     // Disable AI logic
     enabled = false;

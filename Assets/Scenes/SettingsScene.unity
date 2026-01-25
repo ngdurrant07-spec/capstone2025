@@ -575,7 +575,7 @@ GameObject:
   - component: {fileID: 448608696}
   - component: {fileID: 448608695}
   m_Layer: 5
-  m_Name: VolSlider
+  m_Name: VolumeSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1066,7 +1066,7 @@ GameObject:
   - component: {fileID: 1025612496}
   - component: {fileID: 1025612495}
   m_Layer: 5
-  m_Name: SFXSlider
+  m_Name: SFXVolumeSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
