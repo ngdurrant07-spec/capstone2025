@@ -4,6 +4,9 @@ using UnityEngine.UI;
 public class GameOverScreen : MonoBehaviour
 {
     public Button retryButton;
+    [Header("Animation")]
+    public Animator gameOverAnimator;
+    public string gameOverTrigger = "GameOverAnimation";
 
     void Start()
     {
@@ -22,6 +25,9 @@ public class GameOverScreen : MonoBehaviour
     {
         // Show the game over screen
         gameObject.SetActive(true);
+
+        if (gameOverAnimator != null && !string.IsNullOrEmpty(gameOverTrigger))
+            gameOverAnimator.SetTrigger(gameOverTrigger);
 
         // Pause the game
         Time.timeScale = 0f;

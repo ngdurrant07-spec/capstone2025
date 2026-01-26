@@ -38,10 +38,15 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Advance dialogue
-        if (dialoguePanel.activeSelf && Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        if (dialoguePanel.activeSelf && (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)))
         {
             ShowNextSentence();
         }
+    }
+
+    public bool IsDialogueActive()
+    {
+        return dialoguePanel != null && dialoguePanel.activeSelf;
     }
 
     // Each NPC passes itself

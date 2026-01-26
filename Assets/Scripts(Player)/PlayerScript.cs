@@ -50,7 +50,7 @@ public class PlayerScript : MonoBehaviour
     public float maxGlideAscendSpeed = 6f;
     public float maxGlideDescendSpeed = 6f;
     public float stallFallSpeed = 12f;
-    public float maxLiftEnergy = 1f;
+    public float maxLiftEnergy = 3f;
     public float liftDrainRate = 1f;
     public float liftRegenRate = 0.5f;
     public float baseLift = 5f;
@@ -108,6 +108,8 @@ IEnumerator AirBoostGravityLock(float time)
     public float anticipationTime = 0.06f;
     bool isGroundPounding;
     bool isAnticipating;
+    bool groundPoundInvincibilityActive;
+    public float groundPoundInvincibilityTime = 0.5f;
 
     // ───────── ROLL ─────────
     [Header("Roll")]
@@ -120,6 +122,7 @@ IEnumerator AirBoostGravityLock(float time)
     float rollTimer;
     float rollCooldownTimer;
     float speedBoostTimer;
+    bool rollInvincibilityActive;
 
     [Header("Roll Hitbox")]
     public Transform rollHitbox;       // Empty child object in front of player
@@ -141,6 +144,14 @@ IEnumerator AirBoostGravityLock(float time)
     [Header("References")]
     public PlayerHealth playerHealth;
 
+    // ───────── THROWABLE ─────────
+    [Header("Throwable")]
+    public GameObject throwablePrefab;
+    public Transform throwPoint;
+    public float throwSpeed = 12f;
+    private bool hasThrowable;
+    public GameObject heldThrowableVisual;
+
 
     // ───────── ENEMIES ─────────
     [Header("Enemies")]
@@ -158,6 +169,9 @@ IEnumerator AirBoostGravityLock(float time)
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
         currentHearts = maxHearts;
+        if (playerHealth == null)
+            playerHealth = GetComponent<PlayerHealth>();
+
     }
 
     void Update()
@@ -168,6 +182,7 @@ IEnumerator AirBoostGravityLock(float time)
         HandleGlide();
         HandleRoll();
         HandleGroundPound();
+        HandleHeldThrowableInput();
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -197,7 +212,8 @@ IEnumerator AirBoostGravityLock(float time)
             }
             else if (!IsGrounded() && !glideUsed && !isGroundPounding)
             {
-                StartGlide();
+                if (!hasThrowable)
+                    StartGlide();
 
                 //jump sound effect plays
 
@@ -226,12 +242,54 @@ IEnumerator AirBoostGravityLock(float time)
 
     public void RollAttack(InputAction.CallbackContext context)
     {
-        if (!context.performed || !IsGrounded() || isRolling || rollCooldownTimer > 0f) return;
+        if (!context.performed || !IsGrounded() || isRolling || rollCooldownTimer > 0f || hasThrowable) return;
         isRolling = true;
         rollTimer = rollDuration;
         currentState = PlayerState.Rolling;
+        if (playerHealth == null)
+            playerHealth = GetComponent<PlayerHealth>();
+
+        if (playerHealth != null && !rollInvincibilityActive)
+        {
+            playerHealth.SetInvincible(true);
+            rollInvincibilityActive = true;
+        }
         SoundEffectManager.Play("Hit_Tail");
     }
+
+    public bool TryPickupThrowable(GameObject prefab = null)
+    {
+        if (hasThrowable) return false;
+        if (prefab != null)
+            throwablePrefab = prefab;
+        hasThrowable = true;
+        if (heldThrowableVisual != null)
+            heldThrowableVisual.SetActive(true);
+        isGliding = false;
+        return true;
+    }
+
+    void HandleHeldThrowableInput()
+    {
+        if (!hasThrowable)
+            return;
+
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            Debug.Log($"[PlayerScript] E released. hasThrowable={hasThrowable} prefab={(throwablePrefab != null)} throwPoint={(throwPoint != null)}");
+            if (throwablePrefab == null || throwPoint == null)
+                return;
+            GameObject obj = Instantiate(throwablePrefab, throwPoint.position, Quaternion.identity);
+            ThrowableItem throwable = obj.GetComponent<ThrowableItem>();
+            Vector2 dir = new Vector2(facingDirection, 0f);
+            if (throwable != null)
+                throwable.Launch(dir, throwSpeed);
+            hasThrowable = false;
+            if (heldThrowableVisual != null)
+                heldThrowableVisual.SetActive(false);
+        }
+    }
+
 
     // ───────── MOVEMENT ─────────
     void HandleMovement()
@@ -354,8 +412,14 @@ IEnumerator AirBoostGravityLock(float time)
             isRolling = false;
             currentState = PlayerState.Normal;
             rollCooldownTimer = rollCooldown;
+            if (playerHealth != null && rollInvincibilityActive)
+            {
+                playerHealth.SetInvincible(false);
+                rollInvincibilityActive = false;
+            }
         }
     }
+
 
     // ───────── GROUND POUND ─────────
     IEnumerator GroundPoundAnticipation()
@@ -364,6 +428,12 @@ IEnumerator AirBoostGravityLock(float time)
         isGliding = false;
         isStalled = false;
         liftEnergy = 0f;
+
+        if (playerHealth != null && !groundPoundInvincibilityActive)
+        {
+            playerHealth.SetInvincible(true);
+            groundPoundInvincibilityActive = true;
+        }
 
         linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
@@ -393,6 +463,8 @@ IEnumerator AirBoostGravityLock(float time)
             isGroundPounding = false;
             rb.gravityScale = 1f;
             currentState = PlayerState.Normal;
+            if (groundPoundInvincibilityActive)
+                StartCoroutine(EndGroundPoundInvincibility());
         }
     }
 
@@ -435,13 +507,46 @@ IEnumerator AirBoostGravityLock(float time)
 
     bool IsGrounded()
     {
-        return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
+        // BoxCast down so walls (side hits) don't count as grounded
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(
+            groundCheck.position,
+            groundCheckSize,
+            0f,
+            Vector2.down,
+            0.02f,
+            groundLayer
+        );
+
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider == null)
+                continue;
+
+            // Only accept surfaces that are mostly "up"
+            if (hit.normal.y > 0.5f)
+                return true;
+        }
+
+        return false;
     }
 
     public bool CanTakeDamage()
-{
-    return currentState != PlayerState.Rolling;
-}
+    {
+        Debug.Log($"[PlayerScript] CanTakeDamage? state={currentState} anticipating={isAnticipating}");
+        if (playerHealth != null && playerHealth.IsInvincible())
+            return false;
+        return currentState != PlayerState.Rolling &&
+               currentState != PlayerState.GroundPounding &&
+               !isAnticipating;
+    }
+
+    IEnumerator EndGroundPoundInvincibility()
+    {
+        yield return new WaitForSeconds(groundPoundInvincibilityTime);
+        if (playerHealth != null)
+            playerHealth.SetInvincible(false);
+        groundPoundInvincibilityActive = false;
+    }
 
 
     void OnDrawGizmosSelected()
@@ -453,4 +558,3 @@ IEnumerator AirBoostGravityLock(float time)
         }
     }
 }
-

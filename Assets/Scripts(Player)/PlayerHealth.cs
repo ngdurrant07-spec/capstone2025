@@ -46,6 +46,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (healthUI != null)
             healthUI.UpdateHearts(currentHealth);
 
+        SoundEffectManager.Play("Hurt");
+
         StartCoroutine(FlashRed());
 
         // Start normal i-frames
@@ -118,4 +120,3 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         isInvincible = invincibilitySources > 0;
     }
 }
-

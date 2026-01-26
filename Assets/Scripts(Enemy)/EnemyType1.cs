@@ -12,6 +12,14 @@ public class EnemyType1 : MonoBehaviour, IStompable
     [Header("Movement")]
     public float chaseSpeed = 2f;
     public float stopDistance = 1f;
+    public float gravityScale = 1f;
+
+    [Header("Ledge Check")]
+    public bool preventLedgeFall = true;
+    public Transform edgeCheck;
+    public float edgeCheckForwardOffset = 0.3f;
+    public float edgeCheckDistance = 0.6f;
+    public LayerMask groundLayer;
 
     [Header("Combat")]
     public int damage = 1;
@@ -34,7 +42,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
 
         // Rigidbody setup
         rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.gravityScale = 0f;
+        rb.gravityScale = gravityScale;
         rb.freezeRotation = true;
 
         // Ensure trigger is enabled
@@ -66,8 +74,18 @@ public class EnemyType1 : MonoBehaviour, IStompable
             return;
         }
 
-        Vector2 direction = (target.position - transform.position).normalized;
-        rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
+        float moveDir = Mathf.Sign(target.position.x - transform.position.x);
+
+        if (preventLedgeFall && edgeCheck != null && !IsGroundAhead(moveDir))
+            moveDir = -moveDir;
+
+        rb.linearVelocity = new Vector2(moveDir * chaseSpeed, rb.linearVelocity.y);
+    }
+
+    bool IsGroundAhead(float direction)
+    {
+        Vector2 origin = (Vector2)edgeCheck.position + Vector2.right * edgeCheckForwardOffset * direction;
+        return Physics2D.Raycast(origin, Vector2.down, edgeCheckDistance, groundLayer);
     }
 
     // -------------------------
@@ -133,4 +151,3 @@ public class EnemyType1 : MonoBehaviour, IStompable
     }
     
 }
-

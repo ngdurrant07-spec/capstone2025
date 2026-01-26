@@ -29,7 +29,7 @@ public class EnemyType2 : MonoBehaviour, IStompable
 
         Animator anim = GetComponent<Animator>();
         if (anim != null)
-        anim.ResetTrigger("Fly");
+        anim.ResetTrigger("EnemyType2Fly");
     }
 
     void Start()
@@ -97,4 +97,3 @@ public class EnemyType2 : MonoBehaviour, IStompable
 }
 
 }
-

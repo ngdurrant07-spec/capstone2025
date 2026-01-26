@@ -9,11 +9,18 @@ public class EnemyDamageTrigger : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        PlayerHealth health = other.GetComponent<PlayerHealth>();
+        PlayerScript player = other.GetComponentInParent<PlayerScript>();
+        if (player != null)
+        {
+            Debug.Log($"[EnemyDamageTrigger] PlayerState={player.currentState}");
+            if (!player.CanTakeDamage())
+                return;
+        }
+
+        PlayerHealth health = other.GetComponentInParent<PlayerHealth>();
         if (health == null)
             return;
 
         health.TakeDamage(damage);
     }
 }
-

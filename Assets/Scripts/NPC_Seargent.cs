@@ -14,8 +14,13 @@ public class NPC_Seargent : MonoBehaviour
 
     private void Update()
     {
-        if (playerInRange && (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            Debug.Log($"[NPC_Seargent] Input detected. playerInRange={playerInRange}, dialogueActive={(DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive())}");
+
+        if (playerInRange && !DialogueManager.Instance.IsDialogueActive() &&
+            (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)))
         {
+            Debug.Log("[NPC_Seargent] Starting dialogue.");
             DialogueManager.Instance.StartDialogue(player, sentences);
         }
     }
@@ -24,6 +29,7 @@ public class NPC_Seargent : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            Debug.Log("[NPC_Seargent] Player entered range.");
             playerInRange = true;
             player = collision.transform;
 
@@ -36,6 +42,7 @@ public class NPC_Seargent : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            Debug.Log("[NPC_Seargent] Player exited range.");
             playerInRange = false;
             player = null;
 
