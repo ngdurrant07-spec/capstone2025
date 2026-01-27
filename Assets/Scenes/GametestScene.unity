@@ -1198,6 +1198,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 622717213}
+  - {fileID: 612215528}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &316247844 stripped
@@ -1717,6 +1718,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1760675825}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &612215528 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
+  m_PrefabInstance: {fileID: 5624629845909516824}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -11763,15 +11769,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 295680043}
     m_Modifications:
     - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 6.3817067
+      objectReference: {fileID: 0}
+    - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 6.798377
+      objectReference: {fileID: 0}
+    - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.94
+      value: -25.351196
       objectReference: {fileID: 0}
     - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8
+      value: 3.7684302
       objectReference: {fileID: 0}
     - target: {fileID: 272468577066945833, guid: 9de8ac71b3c1c478fa61415ba1b31741, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12034,7 +12052,6 @@ SceneRoots:
   - {fileID: 657015708}
   - {fileID: 1760675825}
   - {fileID: 295680043}
-  - {fileID: 5624629845909516824}
   - {fileID: 1681780721}
   - {fileID: 1902724372}
   - {fileID: 526902117}
