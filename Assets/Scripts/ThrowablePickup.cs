@@ -20,7 +20,7 @@ public class ThrowablePickup : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        if (!Input.GetKeyDown(KeyCode.E))
+        if (!Input.GetKey(KeyCode.E))
             return;
 
         PlayerScript player = other.GetComponentInParent<PlayerScript>();

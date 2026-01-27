@@ -144,6 +144,12 @@ IEnumerator AirBoostGravityLock(float time)
     [Header("References")]
     public PlayerHealth playerHealth;
 
+    [Header("Fall Death")]
+    public float fallDeathY = -20f;
+    public bool dieWhenOffScreen = true;
+    public float offScreenBottomPadding = 1f;
+    bool hasFallenToDeath;
+
     // ───────── THROWABLE ─────────
     [Header("Throwable")]
     public GameObject throwablePrefab;
@@ -166,6 +172,8 @@ IEnumerator AirBoostGravityLock(float time)
 
     void Start()
     {
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
         currentHearts = maxHearts;
@@ -183,6 +191,7 @@ IEnumerator AirBoostGravityLock(float time)
         HandleRoll();
         HandleGroundPound();
         HandleHeldThrowableInput();
+        CheckFallDeath();
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -487,6 +496,8 @@ IEnumerator AirBoostGravityLock(float time)
     // ───────── GROUND CHECK ─────────
     void GroundCheck()
     {
+        if (groundCheck == null)
+            return;
         if (IsGrounded())
         {
             jumpsRemaining = maxJumps;
@@ -507,6 +518,8 @@ IEnumerator AirBoostGravityLock(float time)
 
     bool IsGrounded()
     {
+        if (groundCheck == null)
+            return false;
         // BoxCast down so walls (side hits) don't count as grounded
         RaycastHit2D[] hits = Physics2D.BoxCastAll(
             groundCheck.position,
@@ -556,5 +569,73 @@ IEnumerator AirBoostGravityLock(float time)
             Gizmos.color = Color.white;
             Gizmos.DrawCube(groundCheck.position, groundCheckSize);
         }
+    }
+
+    public void RespawnAt(Vector3 position)
+    {
+        transform.position = position;
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 1f;
+        currentState = PlayerState.Normal;
+        isGliding = false;
+        glideUsed = false;
+        isStalled = false;
+        isRolling = false;
+        isGroundPounding = false;
+        isAnticipating = false;
+        jumpsRemaining = maxJumps;
+        coyoteTimer = 0f;
+        liftEnergy = maxLiftEnergy;
+        hasFallenToDeath = false;
+        if (particleFX != null && particleFX.isPlaying)
+            particleFX.Stop();
+        if (playerHealth != null)
+            playerHealth.ResetToFull();
+    }
+
+    void CheckFallDeath()
+    {
+        if (hasFallenToDeath)
+            return;
+        if (dieWhenOffScreen)
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                if (cam.orthographic)
+                {
+                    float halfHeight = cam.orthographicSize;
+                    Vector3 camPos = cam.transform.position;
+                    float bottomY = camPos.y - halfHeight;
+                    if (transform.position.y < bottomY - offScreenBottomPadding)
+                    {
+                        KillPlayer();
+                    }
+                }
+                else
+                {
+                    Vector3 vp = cam.WorldToViewportPoint(transform.position);
+                    if (vp.y < 0f || vp.x < 0f || vp.x > 1f)
+                        KillPlayer();
+                }
+                return;
+            }
+        }
+
+        if (transform.position.y >= fallDeathY)
+            return;
+        KillPlayer();
+    }
+
+    void KillPlayer()
+    {
+        if (hasFallenToDeath)
+            return;
+        if (playerHealth == null)
+            playerHealth = GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+            playerHealth.Kill();
+        hasFallenToDeath = true;
     }
 }

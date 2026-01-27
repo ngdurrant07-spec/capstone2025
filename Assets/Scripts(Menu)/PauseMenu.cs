@@ -22,8 +22,12 @@ public class PauseMenu : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            if (firstSelectedButton != null)
+                EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        }
     }
 
     void OnDisable()
@@ -34,7 +38,8 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         isPaused = false;
-        pauseMenuUI.SetActive(false);
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -52,14 +57,16 @@ public class PauseMenu : MonoBehaviour
     void PauseGame()
     {
         isPaused = true;
-        pauseMenuUI.SetActive(true);
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
     }
 
     public void ResumeGame()
     {
         isPaused = false;
-        pauseMenuUI.SetActive(false);
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
 
         // Reset Pause Input to avoid missed triggers
@@ -78,4 +85,3 @@ public class PauseMenu : MonoBehaviour
 
     public GameObject firstSelectedButton;
 }
-

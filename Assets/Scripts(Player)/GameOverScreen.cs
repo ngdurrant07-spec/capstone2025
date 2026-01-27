@@ -38,7 +38,17 @@ public class GameOverScreen : MonoBehaviour
         // Resume game time
         Time.timeScale = 1f;
 
-        // Reload the current scene
+        // Hide game over UI
+        gameObject.SetActive(false);
+
+        // Respawn at checkpoint if possible
+        if (CheckpointManager.Instance != null)
+        {
+            CheckpointManager.Instance.RespawnPlayer();
+            return;
+        }
+
+        // Fallback: reload the current scene
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }

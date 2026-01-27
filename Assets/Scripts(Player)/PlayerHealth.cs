@@ -13,6 +13,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private SpriteRenderer spriteRenderer;
 
     public static event Action OnPlayerDied;
+    private bool isDead;
 
     // ───────── INVINCIBILITY ─────────
     [Header("Invincibility")]
@@ -37,6 +38,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     // ───────── DAMAGE ─────────
     public void TakeDamage(int damage)
     {
+        if (isDead)
+            return;
         if (isInvincible)
             return;
 
@@ -54,9 +57,41 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         StartCoroutine(DamageInvincibility());
 
         if (currentHealth <= 0)
-        {
-            OnPlayerDied?.Invoke();
-        }
+            Die();
+    }
+
+    public void Kill(bool ignoreInvincibility = true)
+    {
+        if (isDead)
+            return;
+        if (!ignoreInvincibility && isInvincible)
+            return;
+
+        currentHealth = 0;
+        if (healthUI != null)
+            healthUI.UpdateHearts(currentHealth);
+
+        Die();
+    }
+
+    private void Die()
+    {
+        if (isDead)
+            return;
+        isDead = true;
+        OnPlayerDied?.Invoke();
+    }
+
+    public void ResetToFull()
+    {
+        currentHealth = maxHealth;
+        if (healthUI != null)
+            healthUI.UpdateHearts(currentHealth);
+        invincibilitySources = 0;
+        isInvincible = false;
+        isDead = false;
+        if (spriteRenderer != null)
+            spriteRenderer.color = Color.white;
     }
 
     // ───────── HEAL ─────────
