@@ -74,6 +74,22 @@ public class PauseMenu : MonoBehaviour
         controls.UI.Pause.Enable();
     }
 
+    public void RestartLevel()
+    {
+        Debug.Log("[PauseMenu] RestartLevel called");
+        isPaused = false;
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+
+        // Reset Pause Input to avoid missed triggers
+        controls.UI.Pause.Disable();
+        controls.UI.Pause.Enable();
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(sceneName);
+    }
+
     // -------------------------
     // BUTTON FUNCTIONS
     // -------------------------

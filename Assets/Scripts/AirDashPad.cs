@@ -16,6 +16,7 @@ public class AirDashPad : MonoBehaviour
 
         PlayerScript player = other.GetComponent<PlayerScript>();
         if (player == null) return;
+        if (player.currentState != PlayerScript.PlayerState.Gliding) return;
 
         float dir = Mathf.Sign(player.transform.localScale.x);
         Vector2 boost = new Vector2(dir * forwardBoost, upwardBoost);
@@ -23,4 +24,3 @@ public class AirDashPad : MonoBehaviour
         player.AirBoost(boost, liftRestore, gravityLockTime);
     }
 }
-

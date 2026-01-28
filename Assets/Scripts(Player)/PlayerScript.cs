@@ -106,6 +106,8 @@ IEnumerator AirBoostGravityLock(float time)
     public float groundPoundSpeed = 30f;
     public float groundPoundFallCap = 35f;
     public float anticipationTime = 0.06f;
+    public Vector2 groundPoundHitboxSize = new Vector2(0.9f, 0.9f);
+    public Vector2 groundPoundHitboxOffset = new Vector2(0f, -0.2f);
     bool isGroundPounding;
     bool isAnticipating;
     bool groundPoundInvincibilityActive;
@@ -462,10 +464,26 @@ IEnumerator AirBoostGravityLock(float time)
         if (!isGroundPounding) return;
 
         float yVel = linearVelocity.y;
+        if (yVel > 0f)
+            yVel = -groundPoundSpeed;
         if (yVel < -groundPoundFallCap)
             yVel = -groundPoundFallCap;
 
         linearVelocity = new Vector2(linearVelocity.x, yVel);
+
+        // Damage stompable enemies while ground pounding
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            (Vector2)transform.position + groundPoundHitboxOffset,
+            groundPoundHitboxSize,
+            0f,
+            enemyLayer
+        );
+        foreach (Collider2D hit in hits)
+        {
+            IStompable stompable = hit.GetComponentInParent<IStompable>();
+            if (stompable != null)
+                stompable.OnStomp();
+        }
 
         if (IsGrounded())
         {

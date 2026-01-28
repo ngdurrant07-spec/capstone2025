@@ -4,10 +4,12 @@ public class StompHitbox : MonoBehaviour
 {
     public float bounceForce = 10f;
     private Rigidbody2D playerRb;
+    private PlayerScript playerScript;
 
     private void Start()
     {
         playerRb = GetComponentInParent<Rigidbody2D>();
+        playerScript = GetComponentInParent<PlayerScript>();
         if (playerRb == null)
             Debug.LogWarning("Player Rigidbody2D not found on parent!");
     }
@@ -22,12 +24,11 @@ public class StompHitbox : MonoBehaviour
             stompable.OnStomp();
 
             // Bounce player up
-            if (playerRb != null)
+            if (playerRb != null && (playerScript == null || playerScript.currentState != PlayerScript.PlayerState.GroundPounding))
             {
                 playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, bounceForce);
             }
         }
     }
 }
-
 

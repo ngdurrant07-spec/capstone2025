@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyType3 : MonoBehaviour
+public class EnemyType3 : MonoBehaviour, IStompable
 {
     [Header("Behavior")]
     public float detectionRadius = 2.5f;
@@ -22,6 +22,7 @@ public class EnemyType3 : MonoBehaviour
     float stateTimer;
     enum State { Hidden, Rising, Up, Hiding, Cooldown }
     State state = State.Hidden;
+    bool isDead;
 
     void Start()
     {
@@ -102,5 +103,25 @@ public class EnemyType3 : MonoBehaviour
             return;
 
         health.TakeDamage(damage);
+    }
+
+    // -------------------------
+    // DEFEATED BY THROWABLE
+    // -------------------------
+    public void OnStomp()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        SoundEffectManager.Play("Hit_Stomp");
+
+        // Disable behavior and collisions
+        enabled = false;
+        if (damageTrigger != null)
+            damageTrigger.enabled = false;
+        foreach (Collider2D col in GetComponents<Collider2D>())
+            col.enabled = false;
+
+        Destroy(gameObject, 0.1f);
     }
 }
