@@ -16,8 +16,8 @@ public class HealthItem : MonoBehaviour
         // ✅ Only consume item if healing actually occurs
         if (health.TryHeal(healAmount))
         {
+            SoundEffectManager.Play("Collect Health Item");
             Destroy(gameObject);
         }
     }
 }
-

@@ -295,6 +295,7 @@ IEnumerator AirBoostGravityLock(float time)
             Vector2 dir = new Vector2(facingDirection, 0f);
             if (throwable != null)
                 throwable.Launch(dir, throwSpeed);
+            SoundEffectManager.Play("Fruit Throw");
             hasThrowable = false;
             if (heldThrowableVisual != null)
                 heldThrowableVisual.SetActive(false);

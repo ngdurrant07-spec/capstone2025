@@ -8,6 +8,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
     [Header("References")]
     public Transform target; // Player transform
     private Rigidbody2D rb;
+    public Animator animator;
 
     [Header("Movement")]
     public float chaseSpeed = 2f;
@@ -39,6 +40,15 @@ public class EnemyType1 : MonoBehaviour, IStompable
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        if (target == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+                target = playerObj.transform;
+        }
 
         // Rigidbody setup
         rb.bodyType = RigidbodyType2D.Dynamic;
@@ -52,6 +62,12 @@ public class EnemyType1 : MonoBehaviour, IStompable
 
     void Update()
     {
+        if (target == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+                target = playerObj.transform;
+        }
         if (target == null) return;
 
         // Reduce attack cooldown
@@ -59,6 +75,8 @@ public class EnemyType1 : MonoBehaviour, IStompable
 
         // Move toward player
         FollowPlayer();
+
+        UpdateAnimation();
     }
 
     // -------------------------
@@ -80,6 +98,14 @@ public class EnemyType1 : MonoBehaviour, IStompable
             moveDir = -moveDir;
 
         rb.linearVelocity = new Vector2(moveDir * chaseSpeed, rb.linearVelocity.y);
+    }
+
+    void UpdateAnimation()
+    {
+        if (animator == null) return;
+        float speed = Mathf.Abs(rb.linearVelocity.x);
+        animator.SetFloat("Speed", speed);
+        animator.SetBool("IsMoving", speed > 0.01f);
     }
 
     bool IsGroundAhead(float direction)
