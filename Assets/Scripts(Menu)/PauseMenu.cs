@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("UI")]
     public GameObject pauseMenuUI;   // Assign your Pause Panel here
+    public GameObject settingsMenuUI; // Assign your Settings Panel here
 
     private bool isPaused;
 
@@ -21,6 +22,8 @@ public class PauseMenu : MonoBehaviour
 
     void OnEnable()
     {
+        if (controls == null)
+            controls = new FlightSchooledPlayerControls();
         controls.Enable();
         if (EventSystem.current != null)
         {
@@ -40,6 +43,8 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -59,6 +64,8 @@ public class PauseMenu : MonoBehaviour
         isPaused = true;
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(true);
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
         Time.timeScale = 0f;
     }
 
@@ -67,6 +74,8 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
         Time.timeScale = 1f;
 
         // Reset Pause Input to avoid missed triggers
@@ -80,6 +89,8 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
         Time.timeScale = 1f;
 
         // Reset Pause Input to avoid missed triggers
@@ -100,4 +111,23 @@ public class PauseMenu : MonoBehaviour
     }
 
     public GameObject firstSelectedButton;
+
+    // -------------------------
+    // SETTINGS (SAME SCENE)
+    // -------------------------
+    public void OpenSettings()
+    {
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(true);
+    }
+
+    public void CloseSettings()
+    {
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(true);
+    }
 }

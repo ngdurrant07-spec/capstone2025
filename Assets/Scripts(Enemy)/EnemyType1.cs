@@ -8,6 +8,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
     [Header("References")]
     public Transform target; // Player transform
     private Rigidbody2D rb;
+    private SpriteRenderer sprite;
     public Animator animator;
 
     [Header("Movement")]
@@ -40,6 +41,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
         if (animator == null)
             animator = GetComponent<Animator>();
 
@@ -96,6 +98,9 @@ public class EnemyType1 : MonoBehaviour, IStompable
 
         if (preventLedgeFall && edgeCheck != null && !IsGroundAhead(moveDir))
             moveDir = -moveDir;
+
+        if (sprite != null)
+            sprite.flipX = moveDir > 0f;
 
         rb.linearVelocity = new Vector2(moveDir * chaseSpeed, rb.linearVelocity.y);
     }
