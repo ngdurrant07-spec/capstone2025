@@ -24,8 +24,14 @@ public class SoundEffectManager : MonoBehaviour
         }
     }
 
-        public static void Play(string soundName)
+    public static void Play(string soundName)
     {
+        if (Instance == null || audioSource == null || soundEffectLibrary == null)
+        {
+            Debug.LogWarning("[SoundEffectManager] Missing instance/audioSource/soundEffectLibrary.");
+            return;
+        }
+
         AudioClip audioClip = soundEffectLibrary.GetRandomClip(soundName);
         if (audioClip != null)
         {
@@ -35,11 +41,14 @@ public class SoundEffectManager : MonoBehaviour
 
     void Start()
     {
-        sfxSlider.onValueChanged.AddListener(delegate { OnValueChanged(); });
+        if (sfxSlider != null)
+            sfxSlider.onValueChanged.AddListener(delegate { OnValueChanged(); });
     }
 
     public static void SetVolume (float volume)
     {
+        if (audioSource == null)
+            return;
         audioSource.volume = volume;
     }
 
