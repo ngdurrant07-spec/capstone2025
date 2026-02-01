@@ -5,6 +5,7 @@ public class Checkpoint : MonoBehaviour
     public Color inactiveColor = new Color(0.6f, 0.6f, 0.6f);
     public Color activeColor = new Color(0f, 1f, 0f);
     public bool startAsActive;
+    public string checkpointSfx = "Enter Checkpoint";
 
     SpriteRenderer sr;
     static Checkpoint activeCheckpoint;
@@ -30,12 +31,17 @@ public class Checkpoint : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
+        if (activeCheckpoint == this)
+            return;
+
         if (activeCheckpoint != null && activeCheckpoint != this)
             activeCheckpoint.SetActiveVisual(false);
 
         activeCheckpoint = this;
         SetActiveVisual(true);
         CheckpointManager.Instance?.SetCheckpoint(transform.position);
+        if (!string.IsNullOrEmpty("Enter Checkpoint"))
+            SoundEffectManager.Play("Enter Checkpoint");
     }
 
     void SetActiveVisual(bool active)

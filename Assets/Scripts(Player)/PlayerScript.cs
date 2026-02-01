@@ -496,6 +496,37 @@ IEnumerator AirBoostGravityLock(float time)
         }
     }
 
+    // ───────── WALL COLLISION ─────────
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        TryCancelGlideOnWall(collision);
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        TryCancelGlideOnWall(collision);
+    }
+
+    void TryCancelGlideOnWall(Collision2D collision)
+    {
+        if (currentState != PlayerState.Gliding || !isGliding)
+            return;
+        if (((1 << collision.gameObject.layer) & groundLayer) == 0)
+            return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            if (Mathf.Abs(contact.normal.x) > 0.5f && contact.normal.y < 0.5f)
+            {
+                isGliding = false;
+                isStalled = false;
+                rb.gravityScale = 1f;
+                currentState = PlayerState.Normal;
+                return;
+            }
+        }
+    }
+
     public void CancelGroundPound()
     {
         if (isGroundPounding || isAnticipating)
