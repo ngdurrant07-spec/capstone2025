@@ -15,6 +15,9 @@ public class GoalArea : MonoBehaviour
     public string sceneName;
     public float loadDelay = 0.5f;
 
+    [Header("UI")]
+    public LevelClearUI levelClearUI;
+
     [Header("Events")]
     public UnityEvent onGoalReached;
 
@@ -29,6 +32,8 @@ public class GoalArea : MonoBehaviour
 
         triggered = true;
         onGoalReached?.Invoke();
+        if (levelClearUI != null)
+            levelClearUI.Play();
 
         if (loadScene)
             StartCoroutine(LoadSceneAfterDelay());
