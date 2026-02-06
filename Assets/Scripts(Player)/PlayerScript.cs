@@ -49,6 +49,10 @@ public class PlayerScript : MonoBehaviour
     public float maxGlideSpeed = 14f;
     public float maxGlideAscendSpeed = 6f;
     public float maxGlideDescendSpeed = 6f;
+    public float glideAscendSpeedThreshold = 8f;
+    public float glideLiftMinSpeed = 4f;
+    public float glideLiftMaxSpeed = 14f;
+    public AnimationCurve glideLiftCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     public float stallFallSpeed = 12f;
     public float maxLiftEnergy = 3f;
     public float liftDrainRate = 1f;
@@ -384,14 +388,20 @@ IEnumerator AirBoostGravityLock(float time)
 
         if (liftEnergy <= 0f) isStalled = true;
 
+        float liftT = Mathf.InverseLerp(glideLiftMinSpeed, glideLiftMaxSpeed, speed);
+        float liftScale = glideLiftCurve.Evaluate(liftT);
+        float targetLift = baseLift * liftScale;
+        bool canAscend = speed >= glideAscendSpeedThreshold && liftScale > 0f;
+
         if (isStalled)
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -stallFallSpeed, 40f * Time.deltaTime);
-        else if (relativeInput < 0)
-            verticalVelocity = Mathf.Lerp(verticalVelocity, baseLift - linearVelocity.y * momentumMultiplier, 5f * Time.deltaTime);
+        else if (relativeInput < 0 && canAscend)
+            verticalVelocity = Mathf.Lerp(verticalVelocity, targetLift - linearVelocity.y * momentumMultiplier, 5f * Time.deltaTime);
         else
             verticalVelocity = Mathf.MoveTowards(verticalVelocity, -maxGlideDescendSpeed, 25f * Time.deltaTime);
 
-        verticalVelocity = Mathf.Clamp(verticalVelocity, -stallFallSpeed, maxGlideAscendSpeed);
+        float maxAscend = canAscend ? maxGlideAscendSpeed * liftScale : 0f;
+        verticalVelocity = Mathf.Clamp(verticalVelocity, -stallFallSpeed, maxAscend);
         linearVelocity = new Vector2(linearVelocity.x, verticalVelocity);
     }
 
