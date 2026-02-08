@@ -306,6 +306,28 @@ public partial class @FlightSchooledPlayerControls: IInputActionCollection2, IDi
                 },
                 {
                     ""name"": """",
+                    ""id"": ""4e7a5ac8-e1cc-48c7-9b8f-fa0ca46419ab"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GroundPound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2744b235-7bc3-4901-84fa-3dd942ab4767"",
+                    ""path"": ""<Joystick>/stick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GroundPound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""35a393c0-6f90-4b47-b8d7-f896daaaf90d"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
