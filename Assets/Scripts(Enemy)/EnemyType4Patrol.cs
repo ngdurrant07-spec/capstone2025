@@ -16,6 +16,11 @@ public class EnemyType4Patrol : MonoBehaviour
     public float edgeCheckDistance = 0.6f;
     public LayerMask groundLayer;
 
+    [Header("Rush")]
+    public Transform player;
+    public float rushDistance = 2f;
+    public float rushSpeed = 6f;
+
     Rigidbody2D rb;
     SpriteRenderer sprite;
     float waitTimer;
@@ -31,6 +36,13 @@ public class EnemyType4Patrol : MonoBehaviour
     {
         if (leftPoint == null || rightPoint == null)
             return;
+
+        if (ShouldRush())
+        {
+            waitTimer = 0f;
+            RushTowardPlayer();
+            return;
+        }
 
         if (waitTimer > 0f)
         {
@@ -63,6 +75,43 @@ public class EnemyType4Patrol : MonoBehaviour
             direction *= -1;
             waitTimer = waitTime;
         }
+    }
+
+    bool ShouldRush()
+    {
+        if (player == null)
+            return false;
+
+        float distance = Vector2.Distance(transform.position, player.position);
+        return distance <= rushDistance;
+    }
+
+    void RushTowardPlayer()
+    {
+        Vector2 current = transform.position;
+        float playerX = player.position.x;
+        direction = playerX >= current.x ? 1 : -1;
+
+        if (preventLedgeFall && edgeCheck != null)
+        {
+            if (!IsGroundAhead(direction))
+            {
+                if (rb != null)
+                    rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                return;
+            }
+        }
+
+        Vector2 rushTarget = new Vector2(playerX, current.y);
+        Vector2 next = Vector2.MoveTowards(current, rushTarget, rushSpeed * Time.fixedDeltaTime);
+
+        if (rb != null)
+            rb.MovePosition(next);
+        else
+            transform.position = next;
+
+        if (sprite != null)
+            sprite.flipX = direction < 0;
     }
 
     bool IsGroundAhead(float moveDir)
