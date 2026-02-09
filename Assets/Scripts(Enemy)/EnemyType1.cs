@@ -16,11 +16,18 @@ public class EnemyType1 : MonoBehaviour, IStompable
     public float stopDistance = 1f;
     public float gravityScale = 1f;
 
+    [Header("Patrol")]
+    public Transform leftPoint;
+    public Transform rightPoint;
+    public float patrolSpeed = 2f;
+    public float arriveThreshold = 0.05f;
+    public float waitTime = 0f;
+
     [Header("Ledge Check")]
     public bool preventLedgeFall = true;
     public Transform edgeCheck;
     public float edgeCheckForwardOffset = 0.3f;
-    public float edgeCheckDistance = 0.6f;
+    public float edgeCheckDistance = 1.0f;
     public LayerMask groundLayer;
 
     [Header("Combat")]
@@ -37,6 +44,8 @@ public class EnemyType1 : MonoBehaviour, IStompable
     public float deathLifetime = 2f;
 
     bool isDead;
+    float waitTimer;
+    int direction = 1;
 
     void Awake()
     {
@@ -76,7 +85,10 @@ public class EnemyType1 : MonoBehaviour, IStompable
         attackTimer -= Time.deltaTime;
 
         // Move toward player
-        FollowPlayer();
+        if (HasPatrolPoints())
+            Patrol();
+        else
+            FollowPlayer();
 
         UpdateAnimation();
     }
@@ -103,6 +115,42 @@ public class EnemyType1 : MonoBehaviour, IStompable
             sprite.flipX = moveDir > 0f;
 
         rb.linearVelocity = new Vector2(moveDir * chaseSpeed, rb.linearVelocity.y);
+    }
+
+    void Patrol()
+    {
+        if (waitTimer > 0f)
+        {
+            waitTimer -= Time.deltaTime;
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            return;
+        }
+
+        if (preventLedgeFall && edgeCheck != null)
+        {
+            if (!IsGroundAhead(direction))
+                direction *= -1;
+        }
+
+        Vector3 target = direction > 0 ? rightPoint.position : leftPoint.position;
+        float dx = target.x - transform.position.x;
+        float moveDir = Mathf.Sign(dx);
+        rb.linearVelocity = new Vector2(moveDir * patrolSpeed, rb.linearVelocity.y);
+
+        if (sprite != null)
+            sprite.flipX = moveDir > 0f;
+
+        if (Mathf.Abs(dx) <= arriveThreshold)
+        {
+            direction *= -1;
+            waitTimer = waitTime;
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        }
+    }
+
+    bool HasPatrolPoints()
+    {
+        return leftPoint != null && rightPoint != null;
     }
 
     void UpdateAnimation()
