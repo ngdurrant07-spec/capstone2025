@@ -22,7 +22,7 @@ public class PlayerScript : MonoBehaviour
 
     // ───────── JUMP ─────────
     [Header("Jump")]
-    public float jumpForce = 12f;
+    public float jumpForce = 14f;
     public int maxJumps = 1;
     int jumpsRemaining;
     bool jumpHeld;
