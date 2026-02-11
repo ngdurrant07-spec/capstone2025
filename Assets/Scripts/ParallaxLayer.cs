@@ -7,9 +7,10 @@ public class ParallaxLayer : MonoBehaviour
     [SerializeField] private bool infiniteX = true;
     [SerializeField] private bool infiniteY = false;
 
-    private Vector3 lastCamPos;
+    private UnityEngine.Vector3 lastCamPos;
     private float textureUnitSizeX;
     private float textureUnitSizeY;
+    private const int MAX_WRAP_STEPS_PER_FRAME = 8;
 
     private void Start()
     {
@@ -39,29 +40,59 @@ public class ParallaxLayer : MonoBehaviour
             return;
         }
 
-        Vector3 delta = cam.position - lastCamPos;
-        Vector3 move = new Vector3(delta.x * parallaxEffect.x, delta.y * parallaxEffect.y, 0f);
+        UnityEngine.Vector3 delta = cam.position - lastCamPos;
+        UnityEngine.Vector3 move = new UnityEngine.Vector3(delta.x * parallaxEffect.x, delta.y * parallaxEffect.y, 0f);
         transform.position += move;
         lastCamPos = cam.position;
 
         if (infiniteX && textureUnitSizeX > 0f)
         {
-            float diff = cam.position.x - transform.position.x;
-            if (Mathf.Abs(diff) >= textureUnitSizeX)
-            {
-                float offset = diff % textureUnitSizeX;
-                transform.position = new Vector3(cam.position.x - offset, transform.position.y, transform.position.z);
-            }
+            WrapX();
         }
 
         if (infiniteY && textureUnitSizeY > 0f)
         {
-            float diff = cam.position.y - transform.position.y;
-            if (Mathf.Abs(diff) >= textureUnitSizeY)
-            {
-                float offset = diff % textureUnitSizeY;
-                transform.position = new Vector3(transform.position.x, cam.position.y - offset, transform.position.z);
-            }
+            WrapY();
+        }
+    }
+
+    private void WrapX()
+    {
+        int steps = 0;
+        float diff = cam.position.x - transform.position.x;
+
+        while (diff >= textureUnitSizeX && steps < MAX_WRAP_STEPS_PER_FRAME)
+        {
+            transform.position += new UnityEngine.Vector3(textureUnitSizeX, 0f, 0f);
+            diff -= textureUnitSizeX;
+            steps++;
+        }
+
+        while (diff <= -textureUnitSizeX && steps < MAX_WRAP_STEPS_PER_FRAME)
+        {
+            transform.position -= new UnityEngine.Vector3(textureUnitSizeX, 0f, 0f);
+            diff += textureUnitSizeX;
+            steps++;
+        }
+    }
+
+    private void WrapY()
+    {
+        int steps = 0;
+        float diff = cam.position.y - transform.position.y;
+
+        while (diff >= textureUnitSizeY && steps < MAX_WRAP_STEPS_PER_FRAME)
+        {
+            transform.position += new UnityEngine.Vector3(0f, textureUnitSizeY, 0f);
+            diff -= textureUnitSizeY;
+            steps++;
+        }
+
+        while (diff <= -textureUnitSizeY && steps < MAX_WRAP_STEPS_PER_FRAME)
+        {
+            transform.position -= new UnityEngine.Vector3(0f, textureUnitSizeY, 0f);
+            diff += textureUnitSizeY;
+            steps++;
         }
     }
 }

@@ -12,7 +12,7 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Settings")]
     public float typingSpeed = 0.02f;
-    public Vector3 panelOffset = new Vector3(0, 1f, 0); // offset above NPC
+    public UnityEngine.Vector3 panelOffset = new UnityEngine.Vector3(0, 1f, 0); // offset above NPC
 
     private string[] sentences;
     private int index;
@@ -32,8 +32,8 @@ public class DialogueManager : MonoBehaviour
         // Panel follows the NPC currently talking
         if (currentNPC != null && dialoguePanel != null && dialoguePanel.activeSelf)
         {
-            Vector3 worldPos = currentNPC.position + panelOffset;
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+            UnityEngine.Vector3 worldPos = currentNPC.position + panelOffset;
+            UnityEngine.Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
             dialoguePanel.transform.position = screenPos;
         }
 
