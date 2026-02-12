@@ -65,5 +65,8 @@ TagManager:
   - name: Obstacle
     uniqueID: 2518029685
     locked: 0
+  - name: SpritesForeground
+    uniqueID: 728147081
+    locked: 0
   m_RenderingLayers:
   - Default
