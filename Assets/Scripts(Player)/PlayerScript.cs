@@ -20,9 +20,19 @@ public class PlayerScript : MonoBehaviour
     float horizontalInput;
     float facingDirection = 1f;
 
+    [Header("Momentum")]
+    public float groundAcceleration = 55f;
+    public float groundDeceleration = 40f;
+    public float groundTurnAcceleration = 90f;
+    public float airAcceleration = 28f;
+    public float airDeceleration = 12f;
+    public float maxHorizontalSpeed = 18f;
+    public float airTurnAcceleration = 70f;
+    public float airTurnGravityBoost = 24f;
+
     // ───────── JUMP ─────────
     [Header("Jump")]
-    public float jumpForce = 14f;
+    public float jumpForce = 12.5f;
     public int maxJumps = 1;
     int jumpsRemaining;
     bool jumpHeld;
@@ -40,8 +50,8 @@ public class PlayerScript : MonoBehaviour
 
     // ───────── GRAVITY & GLIDE ─────────
     [Header("Gravity & Glide")]
-    public float baseGravity = 30f;
-    public float maxFallSpeed = 22f;
+    public float baseGravity = 42f;
+    public float maxFallSpeed = 30f;
     public float glideGravityScale = 0.4f;
     public float glideAcceleration = 12f;
     public float glideDrag = 3f;
@@ -313,18 +323,40 @@ IEnumerator AirBoostGravityLock(float time)
         if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || isRolling)
             return;
 
-        float speed = horizontalInput * moveSpeed;
+        bool grounded = IsGrounded();
+        float targetSpeed = horizontalInput * moveSpeed;
+        float currentSpeed = linearVelocity.x;
+        float accelRate;
+        bool reversingInAir = !grounded &&
+                              Mathf.Abs(horizontalInput) > 0.01f &&
+                              Mathf.Sign(horizontalInput) != Mathf.Sign(currentSpeed) &&
+                              Mathf.Abs(currentSpeed) > 0.01f;
 
-        if (speedBoostTimer > 0f && IsGrounded())
-            speed += rollSpeedBoost * facingDirection;
+        if (Mathf.Abs(horizontalInput) < 0.01f)
+            accelRate = grounded ? groundDeceleration : airDeceleration;
+        else if (grounded && Mathf.Sign(horizontalInput) != Mathf.Sign(currentSpeed) && Mathf.Abs(currentSpeed) > 0.01f)
+            accelRate = groundTurnAcceleration;
+        else if (reversingInAir)
+            accelRate = airTurnAcceleration;
+        else
+            accelRate = grounded ? groundAcceleration : airAcceleration;
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelRate * Time.deltaTime);
+
+        if (speedBoostTimer > 0f && grounded)
+            currentSpeed += rollSpeedBoost * facingDirection;
 
         if (hitSpeedBoostTimer > 0f)
         {
-            speed += hitSpeedBoostTimer / hitSpeedBoostDuration * hitSpeedBoost * facingDirection;
+            currentSpeed += hitSpeedBoostTimer / hitSpeedBoostDuration * hitSpeedBoost * facingDirection;
             hitSpeedBoostTimer -= Time.deltaTime;
         }
 
-        linearVelocity = new Vector2(speed, linearVelocity.y);
+        currentSpeed = Mathf.Clamp(currentSpeed, -maxHorizontalSpeed, maxHorizontalSpeed);
+        float ySpeed = linearVelocity.y;
+        if (reversingInAir && ySpeed > -maxFallSpeed)
+            ySpeed = Mathf.Max(ySpeed - airTurnGravityBoost * Time.deltaTime, -maxFallSpeed);
+        linearVelocity = new Vector2(currentSpeed, ySpeed);
     }
 
     void ApplyGravity()

@@ -41,11 +41,11 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Background
-    uniqueID: 586202055
-    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 586202055
     locked: 0
   - name: TIlemap
     uniqueID: 1085596087
@@ -58,6 +58,12 @@ TagManager:
     locked: 0
   - name: Front
     uniqueID: 2793972981
+    locked: 0
+  - name: Item
+    uniqueID: 1493112911
+    locked: 0
+  - name: Obstacle
+    uniqueID: 2518029685
     locked: 0
   m_RenderingLayers:
   - Default

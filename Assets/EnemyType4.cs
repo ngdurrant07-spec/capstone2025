@@ -9,13 +9,13 @@ public class EnemyType4 : MonoBehaviour, IStompable
     public bool disableCollidersOnDeath = true;
 
     Rigidbody2D rb;
-    Collider2D[] colliders;
     bool isDead;
+    SpriteRenderer sprite;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        colliders = GetComponents<Collider2D>();
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     // Called by player stomp/roll or by ThrowableItem via IStompable.
@@ -45,9 +45,13 @@ public class EnemyType4 : MonoBehaviour, IStompable
         isDead = true;
         SoundEffectManager.Play("Hit_Stomp");
 
+        // Visual feedback: defeated enemy falls upside down.
+        if (sprite != null)
+            sprite.flipY = true;
+
         if (disableCollidersOnDeath)
         {
-            foreach (Collider2D col in colliders)
+            foreach (Collider2D col in GetComponentsInChildren<Collider2D>(true))
                 col.enabled = false;
         }
 

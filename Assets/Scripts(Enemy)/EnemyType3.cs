@@ -119,8 +119,8 @@ public class EnemyType3 : MonoBehaviour, IStompable
         enabled = false;
         if (damageTrigger != null)
             damageTrigger.enabled = false;
-        foreach (Collider2D col in GetComponents<Collider2D>())
-            col.enabled = false;
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>(true))
+        col.enabled = false;
 
         Destroy(gameObject, 0.1f);
     }

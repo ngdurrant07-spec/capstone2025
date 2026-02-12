@@ -197,6 +197,10 @@ public class EnemyType1 : MonoBehaviour, IStompable
     isDead = true;
     SoundEffectManager.Play("Hit_Stomp");
 
+    // Visual feedback: defeated enemy falls upside down.
+    if (sprite != null)
+        sprite.flipY = true;
+
     // Disable AI logic
     enabled = false;
 
@@ -211,7 +215,7 @@ public class EnemyType1 : MonoBehaviour, IStompable
     rb.AddForce(Vector2.up * deathPopForce, ForceMode2D.Impulse);
 
     // Disable colliders so it can't hurt or block player
-    foreach (Collider2D col in GetComponents<Collider2D>())
+    foreach (Collider2D col in GetComponentsInChildren<Collider2D>(true))
         col.enabled = false;
 
     Destroy(gameObject, deathLifetime);
