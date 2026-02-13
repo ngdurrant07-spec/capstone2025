@@ -40,6 +40,7 @@ public class ThrowableItem : MonoBehaviour
     {
         if (other == null) return;
         if (other.CompareTag("Player")) return;
+        if (other.GetComponentInParent<PlayerScript>() != null) return;
 
         IStompable stompable = other.GetComponentInParent<IStompable>();
         if (stompable != null)

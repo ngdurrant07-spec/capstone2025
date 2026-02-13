@@ -489,7 +489,8 @@ IEnumerator AirBoostGravityLock(float time)
             groundPoundInvincibilityActive = true;
         }
 
-        linearVelocity = Vector2.zero;
+        // Keep horizontal momentum from glide/jump so ground pound does not dead-stop movement.
+        linearVelocity = new Vector2(linearVelocity.x, 0f);
         rb.gravityScale = 0f;
 
         yield return new WaitForSeconds(anticipationTime);
@@ -498,7 +499,7 @@ IEnumerator AirBoostGravityLock(float time)
         isGroundPounding = true;
         currentState = PlayerState.GroundPounding;
 
-        linearVelocity = Vector2.down * groundPoundSpeed;
+        linearVelocity = new Vector2(linearVelocity.x, -groundPoundSpeed);
         particleFX.Play();
     }
 
