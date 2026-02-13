@@ -18,6 +18,11 @@ public class GoalArea : MonoBehaviour
     [Header("UI")]
     public LevelClearUI levelClearUI;
 
+    [Header("Player Stop")]
+    public bool stopPlayerOnGoal = true;
+    public bool disablePlayerController = true;
+    public bool freezePlayerRigidbody = true;
+
     [Header("Events")]
     public UnityEvent onGoalReached;
 
@@ -31,6 +36,8 @@ public class GoalArea : MonoBehaviour
             return;
 
         triggered = true;
+        if (stopPlayerOnGoal)
+            StopPlayer(other);
         onGoalReached?.Invoke();
         if (levelClearUI != null)
             levelClearUI.Play();
@@ -53,5 +60,27 @@ public class GoalArea : MonoBehaviour
 
         if (!string.IsNullOrEmpty(sceneName))
             SceneManager.LoadScene(sceneName);
+    }
+
+    void StopPlayer(Collider2D playerCollider)
+    {
+        Rigidbody2D playerRb = playerCollider.attachedRigidbody;
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector2.zero;
+            playerRb.angularVelocity = 0f;
+            if (freezePlayerRigidbody)
+                playerRb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+
+        if (!disablePlayerController)
+            return;
+
+        PlayerScript playerController = playerCollider.GetComponent<PlayerScript>();
+        if (playerController == null)
+            playerController = playerCollider.GetComponentInParent<PlayerScript>();
+
+        if (playerController != null)
+            playerController.enabled = false;
     }
 }
