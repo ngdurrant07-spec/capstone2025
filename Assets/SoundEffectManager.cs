@@ -26,17 +26,26 @@ public class SoundEffectManager : MonoBehaviour
 
     public static void Play(string soundName)
     {
+        TryPlay(soundName);
+    }
+
+    public static bool TryPlay(string soundName)
+    {
         if (Instance == null || audioSource == null || soundEffectLibrary == null)
         {
             Debug.LogWarning("[SoundEffectManager] Missing instance/audioSource/soundEffectLibrary.");
-            return;
+            return false;
         }
 
         AudioClip audioClip = soundEffectLibrary.GetRandomClip(soundName);
         if (audioClip != null)
         {
             audioSource.PlayOneShot(audioClip);
+            return true;
         }
+
+        Debug.LogWarning($"[SoundEffectManager] Sound not found or has no clips: {soundName}");
+        return false;
     }
 
     void Start()

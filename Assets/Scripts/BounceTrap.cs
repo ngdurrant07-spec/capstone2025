@@ -24,6 +24,8 @@ public class BounceTrap : MonoBehaviour
 
         // Apply bounce
         rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
+         SoundEffectManager.Play("MushroomBounce");
+
     }
 }
 
