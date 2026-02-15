@@ -8,6 +8,7 @@ public class GoalTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            MusicAudioManager.PlayLevelClearMusic();
             levelClearUI.Play();
         }
     }

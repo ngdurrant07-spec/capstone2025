@@ -38,6 +38,9 @@ public class GoalArea : MonoBehaviour
         triggered = true;
         if (stopPlayerOnGoal)
             StopPlayer(other);
+
+        MusicAudioManager.PlayLevelClearMusic();
+
         onGoalReached?.Invoke();
         if (levelClearUI != null)
             levelClearUI.Play();

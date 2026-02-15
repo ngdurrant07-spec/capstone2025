@@ -115,6 +115,10 @@ IEnumerator AirBoostGravityLock(float time)
     float liftEnergy;
     bool isStalled;
 
+    public float CurrentLiftEnergy => liftEnergy;
+    public float MaxLiftEnergy => maxLiftEnergy;
+    public float GlideEnergyNormalized => maxLiftEnergy > 0f ? Mathf.Clamp01(liftEnergy / maxLiftEnergy) : 0f;
+
     // ───────── GROUND POUND ─────────
     [Header("Ground Pound")]
     public float groundPoundSpeed = 30f;
@@ -397,6 +401,9 @@ IEnumerator AirBoostGravityLock(float time)
 
         float speed = Mathf.Abs(linearVelocity.x);
         float relativeInput = horizontalInput * glideDirection;
+
+        // Always consume lift while gliding so the gauge depletes over time.
+        liftEnergy -= liftDrainRate * Time.deltaTime;
 
         speed -= glideDrag * Time.deltaTime;
 
