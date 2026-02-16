@@ -8,6 +8,8 @@ public class PlayerScript : MonoBehaviour
     public enum PlayerState { Normal, Jumping, Rolling, Gliding, GroundPounding }
     [HideInInspector] public PlayerState currentState = PlayerState.Normal;
 
+    [SerializeField] private Animator animator;
+
     // ───────── COMPONENTS ─────────
     [Header("Components")]
     public Rigidbody2D rb;
@@ -212,6 +214,9 @@ IEnumerator AirBoostGravityLock(float time)
         HandleGroundPound();
         HandleHeldThrowableInput();
         CheckFallDeath();
+
+        if (animator != null)
+            animator.SetBool("IsJumping", !IsGrounded());
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -361,6 +366,15 @@ IEnumerator AirBoostGravityLock(float time)
         if (reversingInAir && ySpeed > -maxFallSpeed)
             ySpeed = Mathf.Max(ySpeed - airTurnGravityBoost * Time.deltaTime, -maxFallSpeed);
         linearVelocity = new Vector2(currentSpeed, ySpeed);
+
+        if(horizontalInput != 0)
+        {
+            animator.SetBool("isRunning", true);
+        }
+        else
+        {
+            animator.SetBool("isRunning", false);
+        }
     }
 
     void ApplyGravity()

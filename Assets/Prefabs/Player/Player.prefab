@@ -628,6 +628,14 @@ MonoBehaviour:
   particleFX: {fileID: 2921025643415936413}
   stompHitbox: {fileID: 0}
   moveSpeed: 10
+  groundAcceleration: 55
+  groundDeceleration: 40
+  groundTurnAcceleration: 90
+  airAcceleration: 28
+  airDeceleration: 12
+  maxHorizontalSpeed: 18
+  airTurnAcceleration: 45
+  airTurnGravityBoost: 14
   jumpForce: 12
   maxJumps: 1
   stompBounceForce: 10
