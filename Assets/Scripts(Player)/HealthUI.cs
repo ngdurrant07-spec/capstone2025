@@ -1,26 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // <-- ensure this, remove Microsoft.Unity.VisualStudio.Editor
+using UnityEngine.UI;
 
-// ...existing code...
 public class HealthUI : MonoBehaviour
 {
     public Image heartPrefab;
     public Sprite fullHeartSprite;
     public Sprite emptyHeartSprite;
     private List<Image> hearts = new List<Image>();
+
     public void SetMaxHearts(int maxHearts)
     {
         foreach (Image heart in hearts)
         {
-            Destroy(heart.gameObject);
+            if (heart != null)
+                Destroy(heart.gameObject);
         }
         hearts.Clear();
 
+        if (heartPrefab == null)
+        {
+            Debug.LogWarning("[HealthUI] heartPrefab is not assigned.");
+            return;
+        }
+
         for (int i = 0; i < maxHearts; i++)
         {
-            Image newHeart = Instantiate(heartPrefab, transform);
-            newHeart.sprite = fullHeartSprite; 
+            Image newHeart;
+            try
+            {
+                newHeart = Instantiate(heartPrefab, transform);
+            }
+            catch (UnityException ex)
+            {
+                Debug.LogWarning($"[HealthUI] Could not instantiate heartPrefab: {ex.Message}");
+                break;
+            }
+
+            if (newHeart == null)
+                break;
+
+            newHeart.sprite = fullHeartSprite;
             newHeart.color = Color.red;
             hearts.Add(newHeart);
         }
@@ -32,15 +52,20 @@ public class HealthUI : MonoBehaviour
         {
             if (i < currentHearts)
             {
-                hearts[i].sprite = fullHeartSprite;
-                hearts[i].color = Color.red;
+                if (hearts[i] != null)
+                {
+                    hearts[i].sprite = fullHeartSprite;
+                    hearts[i].color = Color.red;
+                }
             }
             else
             {
-                hearts[i].sprite = emptyHeartSprite;
-                hearts[i].color = Color.white;
+                if (hearts[i] != null)
+                {
+                    hearts[i].sprite = emptyHeartSprite;
+                    hearts[i].color = Color.white;
+                }
             }
         }
     }
-
 }

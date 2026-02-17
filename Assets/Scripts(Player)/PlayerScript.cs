@@ -192,10 +192,32 @@ IEnumerator AirBoostGravityLock(float time)
         set => rb.linearVelocity = value;
     }
 
+    bool EnsureAnimator()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+        return animator != null;
+    }
+
+    void SafeSetAnimatorBool(string parameter, bool value)
+    {
+        if (EnsureAnimator())
+            animator.SetBool(parameter, value);
+    }
+
+    void SafeSetAnimatorFloat(string parameter, float value)
+    {
+        if (EnsureAnimator())
+            animator.SetFloat(parameter, value);
+    }
+
     void Start()
     {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
+        EnsureAnimator();
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
         currentHearts = maxHearts;
@@ -215,8 +237,12 @@ IEnumerator AirBoostGravityLock(float time)
         HandleHeldThrowableInput();
         CheckFallDeath();
 
-        if (animator != null)
-            animator.SetBool("IsJumping", !IsGrounded());
+        SafeSetAnimatorBool("isJumping", !IsGrounded());
+    }
+
+    public void OnLanding()
+    {
+        animator.SetBool("IsJumping", false);
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -259,6 +285,8 @@ IEnumerator AirBoostGravityLock(float time)
                 coyoteTimer = 0f;
                 currentState = PlayerState.Jumping;
             }
+
+            animator.SetBool("isJumping", true);
         }
 
         if (context.canceled)
@@ -367,14 +395,7 @@ IEnumerator AirBoostGravityLock(float time)
             ySpeed = Mathf.Max(ySpeed - airTurnGravityBoost * Time.deltaTime, -maxFallSpeed);
         linearVelocity = new Vector2(currentSpeed, ySpeed);
 
-        if(horizontalInput != 0)
-        {
-            animator.SetBool("isRunning", true);
-        }
-        else
-        {
-            animator.SetBool("isRunning", false);
-        }
+        SafeSetAnimatorFloat("Speed", Mathf.Abs(currentSpeed));
     }
 
     void ApplyGravity()
