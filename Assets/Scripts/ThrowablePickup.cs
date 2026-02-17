@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ThrowablePickup : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class ThrowablePickup : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        if (!Input.GetKey(KeyCode.E))
+        if (Keyboard.current == null || !Keyboard.current.eKey.isPressed)
             return;
 
         PlayerScript player = other.GetComponentInParent<PlayerScript>();

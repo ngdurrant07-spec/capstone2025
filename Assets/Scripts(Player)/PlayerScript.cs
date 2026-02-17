@@ -336,7 +336,7 @@ IEnumerator AirBoostGravityLock(float time)
         if (!hasThrowable)
             return;
 
-        if (Input.GetKeyUp(KeyCode.E))
+        if (Keyboard.current != null && Keyboard.current.eKey.wasReleasedThisFrame)
         {
             Debug.Log($"[PlayerScript] E released. hasThrowable={hasThrowable} prefab={(throwablePrefab != null)} throwPoint={(throwPoint != null)}");
             if (throwablePrefab == null || throwPoint == null)

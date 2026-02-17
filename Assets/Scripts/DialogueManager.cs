@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -38,7 +39,11 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Advance dialogue
-        if (dialoguePanel.activeSelf && (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)))
+        bool advancePressed = Keyboard.current != null &&
+                              (Keyboard.current.upArrowKey.wasPressedThisFrame ||
+                               Keyboard.current.wKey.wasPressedThisFrame);
+
+        if (dialoguePanel.activeSelf && advancePressed)
         {
             ShowNextSentence();
         }

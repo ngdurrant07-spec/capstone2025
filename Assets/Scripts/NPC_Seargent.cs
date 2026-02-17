@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class NPC_Seargent : MonoBehaviour
 {
@@ -14,11 +15,14 @@ public class NPC_Seargent : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        bool interactPressed = Keyboard.current != null &&
+                               (Keyboard.current.upArrowKey.wasPressedThisFrame ||
+                                Keyboard.current.wKey.wasPressedThisFrame);
+
+        if (interactPressed)
             Debug.Log($"[NPC_Seargent] Input detected. playerInRange={playerInRange}, dialogueActive={(DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive())}");
 
-        if (playerInRange && !DialogueManager.Instance.IsDialogueActive() &&
-            (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)))
+        if (playerInRange && !DialogueManager.Instance.IsDialogueActive() && interactPressed)
         {
             Debug.Log("[NPC_Seargent] Starting dialogue.");
             DialogueManager.Instance.StartDialogue(player, sentences);
