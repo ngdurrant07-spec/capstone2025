@@ -1,11 +1,16 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MusicAudioManager : MonoBehaviour
 {
+    private const string MusicVolumeKey = "MusicVolume";
     private static MusicAudioManager instance;
+    private static float currentVolume = 1f;
 
     [Header("------------ AudioSource ----------")]
     [SerializeField] private AudioSource musicSource;
+    [SerializeField] private Slider musicSlider;
 
     [Header("------------ AudioClip ----------")]
 
@@ -23,10 +28,56 @@ public class MusicAudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
         if (musicSource == null)
             musicSource = GetComponent<AudioSource>();
+
+        currentVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
+        SetVolume(currentVolume);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        TryBindSliderInScene();
+        ApplyVolumeToSlider();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        TryBindSliderInScene();
+        ApplyVolumeToSlider();
+    }
+
+    public static void SetVolume(float volume)
+    {
+        currentVolume = Mathf.Clamp01(volume);
+        if (instance == null || instance.musicSource == null)
+            return;
+
+        instance.musicSource.volume = currentVolume;
+    }
+
+    public void OnMusicSliderChanged()
+    {
+        if (musicSlider == null)
+            return;
+
+        currentVolume = musicSlider.value;
+        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
+        PlayerPrefs.Save();
+        SetVolume(currentVolume);
     }
 
     public static void PlayLevelClearMusic()
@@ -45,4 +96,52 @@ public class MusicAudioManager : MonoBehaviour
         instance.musicSource.clip = instance.LevelClearMusic;
         instance.musicSource.Play();
     }
+
+    private void TryBindSliderInScene()
+    {
+        if (musicSlider != null && !musicSlider.gameObject.scene.IsValid())
+            musicSlider = null;
+
+        if (musicSlider == null)
+        {
+            foreach (Slider slider in FindObjectsByType<Slider>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                if (slider != null && slider.name.Contains("MusicVolumeSlider"))
+                {
+                    musicSlider = slider;
+                    break;
+                }
+            }
+        }
+
+        if (musicSlider != null)
+        {
+            musicSlider.onValueChanged.RemoveListener(OnSliderValueChanged);
+            musicSlider.onValueChanged.AddListener(OnSliderValueChanged);
+        }
+    }
+
+    private void ApplyVolumeToSlider()
+    {
+        SetVolume(currentVolume);
+        if (musicSlider != null)
+            musicSlider.SetValueWithoutNotify(currentVolume);
+    }
+
+    private void OnSliderValueChanged(float value)
+    {
+        currentVolume = value;
+        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
+        PlayerPrefs.Save();
+        SetVolume(currentVolume);
+    }
+
+    public static void StopMusic()
+    {
+        if (instance == null || instance.musicSource == null)
+            return;
+
+        instance.musicSource.Stop();
+    }
+
 }

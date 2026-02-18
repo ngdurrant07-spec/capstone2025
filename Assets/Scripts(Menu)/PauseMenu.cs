@@ -7,6 +7,7 @@ public class PauseMenu : MonoBehaviour
     [Header("UI")]
     public GameObject pauseMenuUI;   // Assign your Pause Panel here
     public GameObject settingsMenuUI; // Assign your Settings Panel here
+    public GameObject controlConfigUI; // Assign PauseButtonConfiguration here
 
     private bool isPaused;
 
@@ -15,6 +16,7 @@ public class PauseMenu : MonoBehaviour
     void Awake()
     {
         controls = new FlightSchooledPlayerControls();
+        InputBindingOverrides.ApplySavedOverrides(controls.asset);
 
         // Toggle pause with the Pause action
         controls.UI.Pause.performed += _ => TogglePause();
@@ -23,7 +25,10 @@ public class PauseMenu : MonoBehaviour
     void OnEnable()
     {
         if (controls == null)
+        {
             controls = new FlightSchooledPlayerControls();
+            InputBindingOverrides.ApplySavedOverrides(controls.asset);
+        }
         controls.Enable();
         if (EventSystem.current != null)
         {
@@ -45,6 +50,8 @@ public class PauseMenu : MonoBehaviour
             pauseMenuUI.SetActive(false);
         if (settingsMenuUI != null)
             settingsMenuUI.SetActive(false);
+        if (controlConfigUI != null)
+            controlConfigUI.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -76,6 +83,8 @@ public class PauseMenu : MonoBehaviour
             pauseMenuUI.SetActive(false);
         if (settingsMenuUI != null)
             settingsMenuUI.SetActive(false);
+        if (controlConfigUI != null)
+            controlConfigUI.SetActive(false);
         Time.timeScale = 1f;
 
         // Reset Pause Input to avoid missed triggers
@@ -91,6 +100,8 @@ public class PauseMenu : MonoBehaviour
             pauseMenuUI.SetActive(false);
         if (settingsMenuUI != null)
             settingsMenuUI.SetActive(false);
+        if (controlConfigUI != null)
+            controlConfigUI.SetActive(false);
         Time.timeScale = 1f;
 
         // Reset Pause Input to avoid missed triggers
@@ -107,6 +118,7 @@ public class PauseMenu : MonoBehaviour
     public void ExitToSelectGame()
     {
         Time.timeScale = 1f; // unfreeze time
+        MusicAudioManager.StopMusic();
         SceneManager.LoadScene("SelectgameScene"); // exact scene name
     }
 
@@ -119,6 +131,8 @@ public class PauseMenu : MonoBehaviour
     {
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
+        if (controlConfigUI != null)
+            controlConfigUI.SetActive(false);
         if (settingsMenuUI != null)
             settingsMenuUI.SetActive(true);
     }
@@ -130,4 +144,72 @@ public class PauseMenu : MonoBehaviour
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(true);
     }
+
+    public void OpenControlConfig()
+    {
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(false);
+
+        if (controlConfigUI != null)
+        {
+            EnsureControlConfigVisible();
+            controlConfigUI.SetActive(true);
+            controlConfigUI.transform.SetAsLastSibling();
+        }
+    }
+
+    public void CloseControlConfig()
+    {
+        if (controlConfigUI != null)
+            controlConfigUI.SetActive(false);
+
+        if (settingsMenuUI != null)
+            settingsMenuUI.SetActive(true);
+    }
+
+    private void EnsureControlConfigVisible()
+    {
+        RectTransform configRect = controlConfigUI.GetComponent<RectTransform>();
+        if (configRect != null)
+            NormalizeRect(configRect, true);
+
+        Transform panelTransform = controlConfigUI.transform.Find("Panel");
+        if (panelTransform is RectTransform panelRect)
+            NormalizeRect(panelRect, false);
+    }
+
+    private static void NormalizeRect(RectTransform rect, bool stretchFullParent)
+    {
+        if (rect == null)
+            return;
+
+        // Recover from accidentally zeroed scale.
+        if (Mathf.Abs(rect.localScale.x) < 0.01f ||
+            Mathf.Abs(rect.localScale.y) < 0.01f ||
+            Mathf.Abs(rect.localScale.z) < 0.01f)
+        {
+            rect.localScale = Vector3.one;
+        }
+
+        if (stretchFullParent)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            rect.anchoredPosition = Vector2.zero;
+        }
+    }
+
+    public void QuitGame()
+    {
+        MusicAudioManager.StopMusic();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
 }
