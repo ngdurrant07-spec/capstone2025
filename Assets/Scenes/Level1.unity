@@ -595,7 +595,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8099668978899664577, guid: f41646a18177b4b5d80c5b5862aecd13, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.622108
+      value: 6.86
       objectReference: {fileID: 0}
     - target: {fileID: 8099668978899664577, guid: f41646a18177b4b5d80c5b5862aecd13, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13032,6 +13032,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1642793547223734943, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.5166
+      objectReference: {fileID: 0}
     - target: {fileID: 1710031001385746782, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: healthUI
       value: 
@@ -13087,6 +13091,14 @@ PrefabInstance:
     - target: {fileID: 3399048728093313104, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3689127952846585523, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
+      propertyPath: rollCooldown
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3689127952846585523, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
+      propertyPath: rollDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3753833121430259808, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_Camera
@@ -15803,7 +15815,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8099668978899664577, guid: f41646a18177b4b5d80c5b5862aecd13, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.8793907
+      value: 3.23
       objectReference: {fileID: 0}
     - target: {fileID: 8099668978899664577, guid: f41646a18177b4b5d80c5b5862aecd13, type: 3}
       propertyPath: m_LocalPosition.y
