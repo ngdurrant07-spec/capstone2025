@@ -7,6 +7,7 @@ public class GameOverScreen : MonoBehaviour
     [Header("Animation")]
     public Animator gameOverAnimator;
     public string gameOverTrigger = "GameOverAnimation";
+    public string gameOverStateName = "GameOverAnimation";
 
     void Start()
     {
@@ -26,11 +27,37 @@ public class GameOverScreen : MonoBehaviour
         // Show the game over screen
         gameObject.SetActive(true);
 
-        if (gameOverAnimator != null && !string.IsNullOrEmpty(gameOverTrigger))
-            gameOverAnimator.SetTrigger(gameOverTrigger);
+        PlayGameOverAnimation();
 
         // Pause the game
         Time.timeScale = 0f;
+    }
+
+    private void PlayGameOverAnimation()
+    {
+        if (gameOverAnimator == null)
+            return;
+
+        // Trigger path: use when Animator Controller defines a trigger parameter.
+        if (!string.IsNullOrEmpty(gameOverTrigger) && HasTriggerParameter(gameOverAnimator, gameOverTrigger))
+        {
+            gameOverAnimator.SetTrigger(gameOverTrigger);
+            return;
+        }
+
+        // Fallback path: directly play a state for controllers without parameters.
+        if (!string.IsNullOrEmpty(gameOverStateName))
+            gameOverAnimator.Play(gameOverStateName, 0, 0f);
+    }
+
+    private static bool HasTriggerParameter(Animator animator, string parameterName)
+    {
+        foreach (var parameter in animator.parameters)
+        {
+            if (parameter.name == parameterName && parameter.type == AnimatorControllerParameterType.Trigger)
+                return true;
+        }
+        return false;
     }
 
     private void RestartGame()

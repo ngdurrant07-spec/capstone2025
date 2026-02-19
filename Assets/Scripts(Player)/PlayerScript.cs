@@ -9,6 +9,7 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector] public PlayerState currentState = PlayerState.Normal;
 
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     // ───────── COMPONENTS ─────────
     [Header("Components")]
@@ -218,12 +219,15 @@ IEnumerator AirBoostGravityLock(float time)
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
         EnsureAnimator();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
         currentHearts = maxHearts;
         if (playerHealth == null)
             playerHealth = GetComponent<PlayerHealth>();
 
+        ApplyFacingVisual();
     }
 
     void Update()
@@ -236,6 +240,7 @@ IEnumerator AirBoostGravityLock(float time)
         HandleGroundPound();
         HandleHeldThrowableInput();
         CheckFallDeath();
+        ApplyFacingVisual();
 
         SafeSetAnimatorBool("isJumping", !IsGrounded());
     }
@@ -250,7 +255,16 @@ IEnumerator AirBoostGravityLock(float time)
     {
         horizontalInput = context.ReadValue<Vector2>().x;
         if (horizontalInput != 0 && currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding)
+        {
             facingDirection = Mathf.Sign(horizontalInput);
+            ApplyFacingVisual();
+        }
+    }
+
+    void ApplyFacingVisual()
+    {
+        if (spriteRenderer != null)
+            spriteRenderer.flipX = facingDirection < 0f;
     }
 
     public void Jump(InputAction.CallbackContext context)

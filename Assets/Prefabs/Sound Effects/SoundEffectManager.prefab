@@ -167,6 +167,9 @@ MonoBehaviour:
   - name: Enter Checkpoint
     audioclips:
     - {fileID: 8300000, guid: 35fbad8cdde724f11ba6481f1e64af71, type: 3}
+  - name: MushroomBounce
+    audioclips:
+    - {fileID: 8300000, guid: 4b4dd7245f6104c8c8eb07ccf6b386ed, type: 3}
 --- !u!114 &3563280673177463721
 MonoBehaviour:
   m_ObjectHideFlags: 0
