@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class EnemyType4 : MonoBehaviour, IStompable
 {
+    [Header("Aggro")]
+    public Color chaseColor = Color.red;
+
     [Header("Throwable Hit")]
     public float deathPopForce = 6f;
     public float deathFallGravity = 2f;
@@ -10,19 +13,46 @@ public class EnemyType4 : MonoBehaviour, IStompable
 
     Rigidbody2D rb;
     bool isDead;
+    bool isAggro;
     SpriteRenderer sprite;
+    EnemyType4Patrol patrol;
+    Color normalColor;
+    Transform cachedPlayer;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
+        patrol = GetComponent<EnemyType4Patrol>();
+        if (sprite != null)
+            normalColor = sprite.color;
     }
 
-    // Called by player stomp/roll or by ThrowableItem via IStompable.
-    // Player bounce is handled in the player scripts, so we only react to throwable hits.
+    // Called by player stomp/roll and throwable hits via IStompable.
     public void OnStomp()
     {
-        // Intentionally empty so the player bounces off without damaging this enemy.
+        if (isDead || isAggro)
+            return;
+
+        isAggro = true;
+
+        if (sprite != null)
+            sprite.color = chaseColor;
+
+        if (patrol != null)
+            patrol.ActivateChase(FindPlayerTransform());
+    }
+
+    Transform FindPlayerTransform()
+    {
+        if (cachedPlayer != null)
+            return cachedPlayer;
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+            cachedPlayer = playerObject.transform;
+
+        return cachedPlayer;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -47,7 +77,10 @@ public class EnemyType4 : MonoBehaviour, IStompable
 
         // Visual feedback: defeated enemy falls upside down.
         if (sprite != null)
+        {
             sprite.flipY = true;
+            sprite.color = normalColor;
+        }
 
         if (disableCollidersOnDeath)
         {

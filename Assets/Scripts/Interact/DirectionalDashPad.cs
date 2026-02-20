@@ -19,8 +19,10 @@ public class DirectionalDashPad : MonoBehaviour
     [SerializeField] private float reenterCooldown = 0.15f;
     [SerializeField] private float launchExitOffset = 0.2f;
     [SerializeField] private float collisionRestoreDelay = 0.12f;
+    [SerializeField] private float collisionClearTimeout = 0.5f;
     [SerializeField] private float horizontalGravityDelay = 0.16f;
     [SerializeField] private float horizontalAimThreshold = 0.35f;
+    [SerializeField] private float launchVelocityHoldTime = 0.1f;
 
     [Header("Audio")]
     [SerializeField] private bool playEnterSound = true;
@@ -249,9 +251,12 @@ public class DirectionalDashPad : MonoBehaviour
         Vector3 launchPosition = seatPoint != null ? seatPoint.position : transform.position;
         launchPosition += (Vector3)(currentAimDirection * launchExitOffset);
         loadedPlayer.transform.position = launchPosition;
-        loadedRb.linearVelocity = currentAimDirection * launchForce;
+        Vector2 launchVelocity = currentAimDirection.normalized * launchForce;
+        loadedRb.linearVelocity = launchVelocity;
         Collider2D[] playerCollidersAtLaunch = loadedPlayerColliders;
         StartCoroutine(RestoreBarrelCollisionsAfterDelay(playerCollidersAtLaunch));
+        if (!mostlyHorizontal && launchVelocityHoldTime > 0f)
+            StartCoroutine(HoldLaunchVelocity(loadedRb, launchVelocity, launchVelocityHoldTime));
         if (mostlyHorizontal && horizontalGravityDelay > 0f)
             StartCoroutine(KeepHorizontalShotFlat(loadedRb, loadedOriginalGravity, horizontalGravityDelay));
 
@@ -305,7 +310,29 @@ public class DirectionalDashPad : MonoBehaviour
     {
         if (collisionRestoreDelay > 0f)
             yield return new WaitForSeconds(collisionRestoreDelay);
+
+        float timer = 0f;
+        while (AreCollidersTouchingBarrel(playerColliders) && timer < collisionClearTimeout)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
         SetIgnoreBarrelCollisions(false, playerColliders);
+    }
+
+    private System.Collections.IEnumerator HoldLaunchVelocity(Rigidbody2D rb, Vector2 velocity, float duration)
+    {
+        if (rb == null)
+            yield break;
+
+        float timer = 0f;
+        while (rb != null && timer < duration)
+        {
+            rb.linearVelocity = velocity;
+            timer += Time.deltaTime;
+            yield return null;
+        }
     }
 
     private void SetIgnoreBarrelCollisions(bool ignore)
@@ -331,6 +358,29 @@ public class DirectionalDashPad : MonoBehaviour
                 Physics2D.IgnoreCollision(barrel, playerCollider, ignore);
             }
         }
+    }
+
+    private bool AreCollidersTouchingBarrel(Collider2D[] playerColliders)
+    {
+        if (barrelColliders == null || playerColliders == null)
+            return false;
+
+        foreach (Collider2D barrel in barrelColliders)
+        {
+            if (barrel == null || !barrel.enabled || !barrel.gameObject.activeInHierarchy)
+                continue;
+
+            foreach (Collider2D playerCollider in playerColliders)
+            {
+                if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy)
+                    continue;
+
+                if (barrel.bounds.Intersects(playerCollider.bounds))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     private System.Collections.IEnumerator ReEnablePlayerController(PlayerScript player)
