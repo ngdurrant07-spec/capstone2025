@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class LevelClearUI : MonoBehaviour
@@ -5,6 +6,13 @@ public class LevelClearUI : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private bool disableInteractionOnStart = true;
+
+    [Header("Medals")]
+    [SerializeField] private TMP_Text medalText;
+    [SerializeField] private string medalLabel = "Medals: ";
+    [SerializeField] private int medalTarget = 1;
+    [SerializeField] private bool hideMedalTextUntilThreshold = false;
+    [SerializeField] private int medalsNeededToShow = 1;
 
     void Awake()
     {
@@ -20,6 +28,8 @@ public class LevelClearUI : MonoBehaviour
 
     public void Play()
     {
+        RefreshMedalText();
+
         if (canvasGroup != null)
         {
             canvasGroup.interactable = true;
@@ -30,5 +40,26 @@ public class LevelClearUI : MonoBehaviour
         {
             animator.SetTrigger("Show");
         }
+    }
+
+    public void SetMedalTarget(int target)
+    {
+        medalTarget = Mathf.Max(0, target);
+        RefreshMedalText();
+    }
+
+    private void RefreshMedalText()
+    {
+        if (medalText == null)
+            return;
+
+        int current = MedalCounterUI.GetCurrentMedals();
+        bool shouldShow = !hideMedalTextUntilThreshold || current >= Mathf.Max(0, medalsNeededToShow);
+        medalText.gameObject.SetActive(shouldShow);
+
+        if (!shouldShow)
+            return;
+
+        medalText.SetText($"{medalLabel}{current} / {Mathf.Max(0, medalTarget)}");
     }
 }
