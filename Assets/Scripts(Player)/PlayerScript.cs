@@ -247,7 +247,7 @@ IEnumerator AirBoostGravityLock(float time)
 
     public void OnLanding()
     {
-        animator.SetBool("IsJumping", false);
+        SafeSetAnimatorBool("IsJumping", false);
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -300,7 +300,7 @@ IEnumerator AirBoostGravityLock(float time)
                 currentState = PlayerState.Jumping;
             }
 
-            animator.SetBool("isJumping", true);
+            SafeSetAnimatorBool("isJumping", true);
         }
 
         if (context.canceled)

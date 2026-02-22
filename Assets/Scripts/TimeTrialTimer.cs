@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TimeTrialTimer : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class TimeTrialTimer : MonoBehaviour
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private bool startOnce = true;
     [SerializeField] private bool hideTriggerOnStart = true;
+
+    [Header("Events")]
+    [SerializeField] private UnityEvent onTrialStarted;
+    [SerializeField] private UnityEvent onTrialStopped;
 
     private float elapsedSeconds;
     private bool running;
@@ -35,9 +40,13 @@ public class TimeTrialTimer : MonoBehaviour
     {
         if (!other.CompareTag(playerTag)) return;
 
+        bool wasRunning = running;
         running = true;
         if (timerText != null)
             timerText.gameObject.SetActive(true);
+
+        if (!wasRunning)
+            onTrialStarted?.Invoke();
 
         if (startOnce)
         {
@@ -60,7 +69,11 @@ public class TimeTrialTimer : MonoBehaviour
 
     public void StopTimer()
     {
+        bool wasRunning = running;
         running = false;
+
+        if (wasRunning)
+            onTrialStopped?.Invoke();
     }
 
     private void UpdateText()
