@@ -19,6 +19,9 @@ public class BonusRoomCoin : MonoBehaviour
     void Awake()
     {
         cachedCollider = GetComponent<Collider2D>();
+
+        if (entryDoor == null)
+            entryDoor = GetComponentInParent<BonusRoomDoor>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -29,10 +32,8 @@ public class BonusRoomCoin : MonoBehaviour
         if (collectOnce && collected)
             return;
 
-        if (entryDoor == null)
-            return;
-
-        if (!entryDoor.BonusActive || !entryDoor.IsActivePlayer(other))
+        BonusRoomDoor door = ResolveDoorForPlayer(other);
+        if (door == null)
             return;
 
         collected = true;
@@ -47,7 +48,21 @@ public class BonusRoomCoin : MonoBehaviour
         if (cachedCollider != null)
             cachedCollider.enabled = false;
 
-        entryDoor.CompleteFromGoal(other);
+        door.CompleteFromGoal(other);
+    }
+
+    private BonusRoomDoor ResolveDoorForPlayer(Collider2D player)
+    {
+        if (entryDoor != null && entryDoor.BonusActive && entryDoor.IsActivePlayer(player))
+            return entryDoor;
+
+        foreach (BonusRoomDoor door in FindObjectsByType<BonusRoomDoor>(FindObjectsSortMode.None))
+        {
+            if (door != null && door.BonusActive && door.IsActivePlayer(player))
+                return door;
+        }
+
+        return null;
     }
 
     private void HideVisuals()

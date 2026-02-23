@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TimeTrialAreaLock : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class TimeTrialAreaLock : MonoBehaviour
     [Header("Startup")]
     [SerializeField] private bool startLocked = false;
 
+    [Header("Progress Unlock")]
+    [SerializeField] private bool persistUnlockByScene = false;
+    [SerializeField] private string saveKeyOverride = "";
+
     void Awake()
     {
         if (spriteRenderers == null || spriteRenderers.Length == 0)
@@ -22,7 +27,11 @@ public class TimeTrialAreaLock : MonoBehaviour
         if (collidersToDisable == null || collidersToDisable.Length == 0)
             collidersToDisable = GetComponentsInChildren<Collider2D>(true);
 
-        SetLocked(startLocked);
+        bool locked = startLocked;
+        if (persistUnlockByScene && IsSavedUnlocked())
+            locked = false;
+
+        SetLocked(locked);
     }
 
     public void LockArea()
@@ -33,6 +42,36 @@ public class TimeTrialAreaLock : MonoBehaviour
     public void UnlockArea()
     {
         SetLocked(false);
+    }
+
+    public void UnlockAreaAndSave()
+    {
+        UnlockArea();
+
+        if (!persistUnlockByScene)
+            return;
+
+        string key = GetSaveKey();
+        if (string.IsNullOrEmpty(key))
+            return;
+
+        PlayerPrefs.SetInt(key, 1);
+        PlayerPrefs.Save();
+    }
+
+    public void LockAreaAndClearSave()
+    {
+        LockArea();
+
+        if (!persistUnlockByScene)
+            return;
+
+        string key = GetSaveKey();
+        if (string.IsNullOrEmpty(key))
+            return;
+
+        PlayerPrefs.DeleteKey(key);
+        PlayerPrefs.Save();
     }
 
     public void SetLocked(bool locked)
@@ -64,5 +103,26 @@ public class TimeTrialAreaLock : MonoBehaviour
                     behaviour.enabled = !locked;
             }
         }
+    }
+
+    private bool IsSavedUnlocked()
+    {
+        string key = GetSaveKey();
+        if (string.IsNullOrEmpty(key))
+            return false;
+
+        return PlayerPrefs.GetInt(key, 0) == 1;
+    }
+
+    private string GetSaveKey()
+    {
+        if (!string.IsNullOrWhiteSpace(saveKeyOverride))
+            return saveKeyOverride.Trim();
+
+        Scene scene = gameObject.scene;
+        if (!scene.IsValid() || string.IsNullOrEmpty(scene.name))
+            return string.Empty;
+
+        return $"TimeTrialUnlocked_{scene.name}";
     }
 }

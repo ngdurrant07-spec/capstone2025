@@ -24,6 +24,13 @@ public class GameOverScreen : MonoBehaviour
 
     private void ShowGameOver()
     {
+        // Bonus-room deaths should return through the bonus door flow instead of normal checkpoint/game over.
+        foreach (BonusRoomDoor bonusDoor in FindObjectsByType<BonusRoomDoor>(FindObjectsSortMode.None))
+        {
+            if (bonusDoor != null && bonusDoor.TryHandleActivePlayerDeath())
+                return;
+        }
+
         // Show the game over screen
         gameObject.SetActive(true);
 

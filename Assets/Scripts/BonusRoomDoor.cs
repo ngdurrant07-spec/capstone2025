@@ -68,6 +68,43 @@ public class BonusRoomDoor : MonoBehaviour
         FinishBonus(success: true, player, teleportTargetOverride: returnPoint);
     }
 
+    public void FailActiveBonus(Collider2D player)
+    {
+        if (!bonusActive || !IsActivePlayer(player))
+            return;
+
+        FinishBonus(success: false, player, timeoutReturnPoint);
+    }
+
+    public bool TryHandleActivePlayerDeath()
+    {
+        if (!bonusActive || activePlayer == null)
+            return false;
+
+        Collider2D player = activePlayer;
+        Transform returnPoint = timeoutReturnPoint;
+
+        FinishBonus(success: false, player, returnPoint);
+
+        PlayerScript playerScript = player.GetComponent<PlayerScript>();
+        if (playerScript == null)
+            playerScript = player.GetComponentInParent<PlayerScript>();
+
+        if (playerScript != null && returnPoint != null)
+            playerScript.RespawnAt(returnPoint.position);
+        else
+        {
+            PlayerHealth health = player.GetComponent<PlayerHealth>();
+            if (health == null)
+                health = player.GetComponentInParent<PlayerHealth>();
+
+            if (health != null)
+                health.ResetToFull();
+        }
+
+        return true;
+    }
+
     public bool IsActivePlayer(Collider2D player)
     {
         if (activePlayer == null || player == null)

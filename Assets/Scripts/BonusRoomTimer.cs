@@ -11,6 +11,7 @@ public class BonusRoomTimer : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private bool hideTextWhenIdle = true;
+    [SerializeField] private bool showTextWhileRunning = true;
     [SerializeField] private string textPrefix = "";
 
     [Header("Events")]
@@ -65,7 +66,7 @@ public class BonusRoomTimer : MonoBehaviour
         expired = false;
 
         if (timerText != null)
-            timerText.gameObject.SetActive(true);
+            timerText.gameObject.SetActive(showTextWhileRunning);
 
         UpdateText();
         onStarted?.Invoke();
