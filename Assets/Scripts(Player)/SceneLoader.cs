@@ -6,6 +6,9 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private string settingsSceneName = "SettingsScene";
     [SerializeField] private string startSceneName = "StartScene";
     [SerializeField] private string buttonConfigSceneName = "ButtonConfigScene";
+    [SerializeField] private string creditsMainMenuSceneName = "CreditsMainMenu";
+
+
 
     // Call this to go to the Settings Scene
     public void LoadSettingsScene()
@@ -22,6 +25,11 @@ public class SceneLoader : MonoBehaviour
     public void LoadButtonConfigScene()
     {
         TryLoadScene(buttonConfigSceneName);
+    }
+
+    public void LoadCreditsMainMenuScene()
+    {
+        TryLoadScene(creditsMainMenuSceneName);
     }
 
     private void TryLoadScene(string sceneName)
