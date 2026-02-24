@@ -30,6 +30,7 @@ public class BonusRoomCoin : MonoBehaviour
             return;
 
         if (collectOnce && collected)
+
             return;
 
         BonusRoomDoor door = ResolveDoorForPlayer(other);
@@ -40,6 +41,7 @@ public class BonusRoomCoin : MonoBehaviour
 
         BonusCoinCounter.AddCoin(coinAmount);
         MedalCounterUI.AddMedals(coinAmount);
+        SoundEffectManager.Play("CollectMedal");
         onCollected?.Invoke();
 
         if (hideOnCollect)

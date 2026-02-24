@@ -254,11 +254,21 @@ public class DirectionalDashPad : MonoBehaviour
         Vector2 launchVelocity = currentAimDirection.normalized * launchForce;
         loadedRb.linearVelocity = launchVelocity;
         Collider2D[] playerCollidersAtLaunch = loadedPlayerColliders;
+        LayerMask playerGroundLayer = loadedPlayer.groundLayer;
         StartCoroutine(RestoreBarrelCollisionsAfterDelay(playerCollidersAtLaunch));
+        float additionalControlLock = 0f;
+
         if (!mostlyHorizontal && launchVelocityHoldTime > 0f)
-            StartCoroutine(HoldLaunchVelocity(loadedRb, launchVelocity, launchVelocityHoldTime));
+        {
+            StartCoroutine(HoldLaunchVelocity(loadedRb, launchVelocity, launchVelocityHoldTime, playerCollidersAtLaunch, playerGroundLayer));
+            additionalControlLock = Mathf.Max(additionalControlLock, launchVelocityHoldTime);
+        }
+
         if (mostlyHorizontal && horizontalGravityDelay > 0f)
-            StartCoroutine(KeepHorizontalShotFlat(loadedRb, loadedOriginalGravity, horizontalGravityDelay));
+        {
+            StartCoroutine(KeepHorizontalShotFlat(loadedRb, loadedOriginalGravity, horizontalGravityDelay, playerCollidersAtLaunch, playerGroundLayer));
+            additionalControlLock = Mathf.Max(additionalControlLock, horizontalGravityDelay);
+        }
 
         PlayerScript playerToRelease = loadedPlayer;
         loadedPlayer = null;
@@ -268,7 +278,12 @@ public class DirectionalDashPad : MonoBehaviour
         loadedMoveAction = null;
         loadedJumpAction = null;
         cooldownTimer = reenterCooldown;
-        StartCoroutine(ReEnablePlayerController(playerToRelease));
+        StartCoroutine(ReEnablePlayerController(
+            playerToRelease,
+            Mathf.Max(postLaunchControlLockTime, additionalControlLock),
+            playerCollidersAtLaunch,
+            playerGroundLayer
+        ));
     }
 
     private void PlayReleaseSound()
@@ -286,16 +301,28 @@ public class DirectionalDashPad : MonoBehaviour
             releaseSoundName = "DDashPadRelease";
     }
 
-    private System.Collections.IEnumerator KeepHorizontalShotFlat(Rigidbody2D rb, float gravity, float duration)
+    private System.Collections.IEnumerator KeepHorizontalShotFlat(Rigidbody2D rb, float gravity, float duration, Collider2D[] playerColliders, LayerMask stopOnLayers)
     {
         if (rb == null)
             yield break;
 
         float xSpeed = rb.linearVelocity.x;
+        float expectedAbsX = Mathf.Abs(xSpeed);
         float timer = 0f;
 
         while (rb != null && timer < duration)
         {
+            if (timer > 0f && IsTouchingAnyLayer(playerColliders, stopOnLayers))
+                break;
+
+            // If a wall has effectively killed the horizontal launch, stop forcing a flat shot.
+            if (timer > 0f && expectedAbsX > 0.01f)
+            {
+                float actualAbsX = Mathf.Abs(rb.linearVelocity.x);
+                if (actualAbsX < expectedAbsX * 0.15f)
+                    break;
+            }
+
             rb.gravityScale = 0f;
             rb.linearVelocity = new Vector2(xSpeed, 0f);
             timer += Time.deltaTime;
@@ -321,18 +348,48 @@ public class DirectionalDashPad : MonoBehaviour
         SetIgnoreBarrelCollisions(false, playerColliders);
     }
 
-    private System.Collections.IEnumerator HoldLaunchVelocity(Rigidbody2D rb, Vector2 velocity, float duration)
+    private System.Collections.IEnumerator HoldLaunchVelocity(Rigidbody2D rb, Vector2 velocity, float duration, Collider2D[] playerColliders, LayerMask stopOnLayers)
     {
         if (rb == null)
             yield break;
 
+        float targetSpeed = velocity.magnitude;
+        Vector2 targetDir = targetSpeed > 0.0001f ? velocity / targetSpeed : Vector2.zero;
         float timer = 0f;
         while (rb != null && timer < duration)
         {
+            if (timer > 0f && IsTouchingAnyLayer(playerColliders, stopOnLayers))
+                break;
+
+            // Stop forcing launch velocity if collision impact has already canceled the shot.
+            if (timer > 0f && targetSpeed > 0.01f)
+            {
+                float speedAlongLaunch = Vector2.Dot(rb.linearVelocity, targetDir);
+                if (speedAlongLaunch < targetSpeed * 0.15f)
+                    break;
+            }
+
             rb.linearVelocity = velocity;
             timer += Time.deltaTime;
             yield return null;
         }
+    }
+
+    private bool IsTouchingAnyLayer(Collider2D[] colliders, LayerMask layers)
+    {
+        if (colliders == null || layers == 0)
+            return false;
+
+        foreach (Collider2D col in colliders)
+        {
+            if (col == null || !col.enabled || !col.gameObject.activeInHierarchy)
+                continue;
+
+            if (col.IsTouchingLayers(layers))
+                return true;
+        }
+
+        return false;
     }
 
     private void SetIgnoreBarrelCollisions(bool ignore)
@@ -383,12 +440,20 @@ public class DirectionalDashPad : MonoBehaviour
         return false;
     }
 
-    private System.Collections.IEnumerator ReEnablePlayerController(PlayerScript player)
+    private System.Collections.IEnumerator ReEnablePlayerController(PlayerScript player, float delay, Collider2D[] playerColliders, LayerMask earlyReleaseLayers)
     {
         if (player == null)
             yield break;
 
-        yield return new WaitForSeconds(postLaunchControlLockTime);
+        float timer = 0f;
+        while (timer < delay)
+        {
+            if (timer > 0f && IsTouchingAnyLayer(playerColliders, earlyReleaseLayers))
+                break;
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
         if (player != null)
             player.enabled = true;
     }

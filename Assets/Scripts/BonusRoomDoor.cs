@@ -57,6 +57,7 @@ public class BonusRoomDoor : MonoBehaviour
             return;
 
         UseEnterDoor(other);
+        SoundEffectManager.Play("EnterDoor");
     }
 
     public void CompleteFromGoal(Collider2D player)
