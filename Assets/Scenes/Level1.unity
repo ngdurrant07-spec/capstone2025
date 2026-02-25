@@ -97006,6 +97006,10 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 2124009781}
+    - target: {fileID: 5121657942082076159, guid: babbbb173f30446a5adaa71ef63447d1, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2124009781}
     - target: {fileID: 7648438208132726138, guid: babbbb173f30446a5adaa71ef63447d1, type: 3}
       propertyPath: m_LocalScale.x
       value: 10
