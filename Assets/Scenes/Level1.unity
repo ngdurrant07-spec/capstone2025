@@ -98405,10 +98405,6 @@ PrefabInstance:
       value: EnterDoor
       objectReference: {fileID: 0}
     - target: {fileID: 8632635478670032773, guid: 0500589a33cc04e11bbc7668f01a4707, type: 3}
-      propertyPath: soundEffectGroups.Array.data[3].audioclips.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8632635478670032773, guid: 0500589a33cc04e11bbc7668f01a4707, type: 3}
       propertyPath: soundEffectGroups.Array.data[4].audioclips.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -98424,10 +98420,6 @@ PrefabInstance:
       propertyPath: soundEffectGroups.Array.data[11].audioclips.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8632635478670032773, guid: 0500589a33cc04e11bbc7668f01a4707, type: 3}
-      propertyPath: 'soundEffectGroups.Array.data[3].audioclips.Array.data[0]'
-      value: 
-      objectReference: {fileID: 8300000, guid: 5039414d94a6e4e70a5ab9e8833e992a, type: 3}
     - target: {fileID: 8632635478670032773, guid: 0500589a33cc04e11bbc7668f01a4707, type: 3}
       propertyPath: 'soundEffectGroups.Array.data[4].audioclips.Array.data[0]'
       value: 
