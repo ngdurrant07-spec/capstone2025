@@ -6,6 +6,6 @@ public class Level1Btn : MonoBehaviour
 
     public void Level1BtnClick()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        SceneController.LoadScene(sceneName);
     }
 }

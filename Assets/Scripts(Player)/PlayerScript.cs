@@ -16,6 +16,8 @@ public class PlayerScript : MonoBehaviour
     public Rigidbody2D rb;
     public ParticleSystem particleFX;
     public StompHitbox stompHitbox;
+    public ParticleSystem glideBurstFX;
+    public TrailRenderer glideTrail;
 
     // ───────── MOVEMENT ─────────
     [Header("Movement")]
@@ -37,8 +39,10 @@ public class PlayerScript : MonoBehaviour
     [Header("Jump")]
     public float jumpForce = 12.5f;
     public int maxJumps = 1;
+    public float jumpBufferTime = 0.12f;
     int jumpsRemaining;
     bool jumpHeld;
+    float jumpBufferTimer;
 
     [Header("Stomp")]
     public float stompBounceForce = 10f;
@@ -50,6 +54,8 @@ public class PlayerScript : MonoBehaviour
     public LayerMask groundLayer;
     public float coyoteTime = 0.1f;
     float coyoteTimer;
+    bool isGrounded;
+    bool canUseCoyoteJump;
 
     // ───────── GRAVITY & GLIDE ─────────
     [Header("Gravity & Glide")]
@@ -93,6 +99,8 @@ public void AirBoost(Vector2 boostVelocity, float liftRestore = 1f, float gravit
     liftEnergy = Mathf.Clamp(liftEnergy + liftRestore, 0f, maxLiftEnergy);
     isStalled = false;
     currentState = PlayerState.Gliding;
+    PlayGlideStartFeedback();
+    SetGlideTrailActive(true);
 
     // Brief gravity lock so player doesn't instantly drop
     StartCoroutine(AirBoostGravityLock(gravityLockTime));
@@ -227,12 +235,14 @@ IEnumerator AirBoostGravityLock(float time)
         if (playerHealth == null)
             playerHealth = GetComponent<PlayerHealth>();
 
+        GroundCheck();
         ApplyFacingVisual();
     }
 
     void Update()
     {
         GroundCheck();
+        HandleBufferedJump();
         ApplyGravity();
         HandleMovement();
         HandleGlide();
@@ -242,7 +252,7 @@ IEnumerator AirBoostGravityLock(float time)
         CheckFallDeath();
         ApplyFacingVisual();
 
-        SafeSetAnimatorBool("isJumping", !IsGrounded());
+        SafeSetAnimatorBool("isJumping", !isGrounded);
     }
 
     public void OnLanding()
@@ -272,32 +282,20 @@ IEnumerator AirBoostGravityLock(float time)
         if (context.performed)
         {
             jumpHeld = true;
+            jumpBufferTimer = jumpBufferTime;
 
-            if (IsGrounded())
+            if (TryConsumeJump())
             {
-                linearVelocity = new Vector2(linearVelocity.x, jumpForce);
-                jumpsRemaining = maxJumps - 1;
-                coyoteTimer = 0f;
-                currentState = PlayerState.Jumping;
-
-                //jump sound effect plays
-
-                SoundEffectManager.Play("Jump");
+                jumpBufferTimer = 0f;
             }
-            else if (!IsGrounded() && !glideUsed && !isGroundPounding)
+            else if (!hasThrowable && !glideUsed && !isGroundPounding && linearVelocity.y > 0.05f)
             {
-                if (!hasThrowable)
-                    StartGlide();
+                jumpBufferTimer = 0f;
+                StartGlide();
 
                 //jump sound effect plays
 
                 SoundEffectManager.Play("Glide");
-            }
-            else if (coyoteTimer > 0f)
-            {
-                linearVelocity = new Vector2(linearVelocity.x, jumpForce);
-                coyoteTimer = 0f;
-                currentState = PlayerState.Jumping;
             }
 
             SafeSetAnimatorBool("isJumping", true);
@@ -307,6 +305,7 @@ IEnumerator AirBoostGravityLock(float time)
         {
             jumpHeld = false;
             isGliding = false;
+            SetGlideTrailActive(false);
         }
     }
 
@@ -342,6 +341,7 @@ IEnumerator AirBoostGravityLock(float time)
         if (heldThrowableVisual != null)
             heldThrowableVisual.SetActive(true);
         isGliding = false;
+        SetGlideTrailActive(false);
         return true;
     }
 
@@ -374,7 +374,7 @@ IEnumerator AirBoostGravityLock(float time)
         if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || isRolling)
             return;
 
-        bool grounded = IsGrounded();
+        bool grounded = isGrounded;
         float targetSpeed = horizontalInput * moveSpeed;
         float currentSpeed = linearVelocity.x;
         float accelRate;
@@ -433,6 +433,8 @@ IEnumerator AirBoostGravityLock(float time)
         liftEnergy = maxLiftEnergy;
         isStalled = false;
         currentState = PlayerState.Gliding;
+        PlayGlideStartFeedback();
+        SetGlideTrailActive(true);
 
         if (linearVelocity.y > 0f)
             linearVelocity = new Vector2(linearVelocity.x, 0f);
@@ -443,6 +445,7 @@ IEnumerator AirBoostGravityLock(float time)
         if (!isGliding || !jumpHeld || currentState == PlayerState.GroundPounding)
         {
             rb.gravityScale = 1f;
+            SetGlideTrailActive(false);
             return;
         }
 
@@ -493,6 +496,29 @@ IEnumerator AirBoostGravityLock(float time)
         linearVelocity = new Vector2(linearVelocity.x, verticalVelocity);
     }
 
+    void PlayGlideStartFeedback()
+    {
+        if (glideBurstFX != null)
+            glideBurstFX.Play();
+    }
+
+    void SetGlideTrailActive(bool active)
+    {
+        if (glideTrail == null)
+            return;
+
+        if (active)
+        {
+            if (!glideTrail.emitting)
+                glideTrail.Clear();
+            glideTrail.emitting = true;
+        }
+        else
+        {
+            glideTrail.emitting = false;
+        }
+    }
+
     // ───────── ROLL ─────────
     void HandleRoll()
     {
@@ -536,6 +562,7 @@ IEnumerator AirBoostGravityLock(float time)
     {
         isAnticipating = true;
         isGliding = false;
+        SetGlideTrailActive(false);
         isStalled = false;
         liftEnergy = 0f;
 
@@ -618,6 +645,7 @@ IEnumerator AirBoostGravityLock(float time)
             if (Mathf.Abs(contact.normal.x) > 0.5f && contact.normal.y < 0.5f)
             {
                 isGliding = false;
+                SetGlideTrailActive(false);
                 isStalled = false;
                 rb.gravityScale = 1f;
                 currentState = PlayerState.Normal;
@@ -647,15 +675,18 @@ IEnumerator AirBoostGravityLock(float time)
     {
         if (groundCheck == null)
             return;
-        if (IsGrounded())
+        isGrounded = CheckGrounded();
+        if (isGrounded)
         {
             jumpsRemaining = maxJumps;
             isGliding = false;
+            SetGlideTrailActive(false);
             glideUsed = false;
             isStalled = false;
             liftEnergy = maxLiftEnergy;
             rb.gravityScale = 1f;
             coyoteTimer = coyoteTime;
+            canUseCoyoteJump = true;
             if (currentState != PlayerState.Rolling)
                 currentState = PlayerState.Normal;
         }
@@ -666,6 +697,11 @@ IEnumerator AirBoostGravityLock(float time)
     }
 
     bool IsGrounded()
+    {
+        return isGrounded;
+    }
+
+    bool CheckGrounded()
     {
         if (groundCheck == null)
             return false;
@@ -690,6 +726,36 @@ IEnumerator AirBoostGravityLock(float time)
         }
 
         return false;
+    }
+
+    void HandleBufferedJump()
+    {
+        if (jumpBufferTimer <= 0f)
+            return;
+
+        jumpBufferTimer -= Time.deltaTime;
+        if (TryConsumeJump())
+            jumpBufferTimer = 0f;
+    }
+
+    bool TryConsumeJump()
+    {
+        if (isGroundPounding || isAnticipating)
+            return false;
+
+        bool usingCoyoteJump = !isGrounded;
+        if (usingCoyoteJump && (!canUseCoyoteJump || coyoteTimer <= 0f))
+            return false;
+
+        linearVelocity = new Vector2(linearVelocity.x, jumpForce);
+        jumpsRemaining = Mathf.Max(0, maxJumps - 1);
+        coyoteTimer = 0f;
+        canUseCoyoteJump = false;
+        currentState = PlayerState.Jumping;
+
+        //jump sound effect plays
+        SoundEffectManager.Play("Jump");
+        return true;
     }
 
     public bool CanTakeDamage()
@@ -728,13 +794,18 @@ IEnumerator AirBoostGravityLock(float time)
         rb.gravityScale = 1f;
         currentState = PlayerState.Normal;
         isGliding = false;
+        SetGlideTrailActive(false);
         glideUsed = false;
         isStalled = false;
         isRolling = false;
         isGroundPounding = false;
         isAnticipating = false;
         jumpsRemaining = maxJumps;
+        jumpBufferTimer = 0f;
+        jumpHeld = false;
         coyoteTimer = 0f;
+        isGrounded = false;
+        canUseCoyoteJump = false;
         liftEnergy = maxLiftEnergy;
         hasFallenToDeath = false;
         if (particleFX != null && particleFX.isPlaying)

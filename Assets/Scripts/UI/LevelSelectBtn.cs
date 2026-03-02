@@ -6,6 +6,6 @@ public class LevelSelectBtn : MonoBehaviour
 
     public void LevelSelectButtonClick()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        SceneController.LoadScene(sceneName);
     }
 }

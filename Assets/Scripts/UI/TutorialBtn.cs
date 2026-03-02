@@ -6,6 +6,6 @@ public class TutorialBtn : MonoBehaviour
 
     public void TutorialBtnClick()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        SceneController.LoadScene(sceneName);
     }
 }

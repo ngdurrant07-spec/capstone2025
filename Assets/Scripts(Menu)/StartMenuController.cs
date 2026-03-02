@@ -1,11 +1,9 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 public class StartMenuController : MonoBehaviour
 {
     public void OnStartClick()
     {
-       SceneManager.LoadScene("SelectGameScene");
+       SceneController.LoadScene("SelectGameScene");
     }
 
     public void OnExitClick()
