@@ -69,6 +69,15 @@ public class BonusRoomDoor : MonoBehaviour
         FinishBonus(success: true, player, teleportTargetOverride: returnPoint);
     }
 
+    public void CompleteActiveBonusSuccess()
+    {
+        if (!bonusActive || activePlayer == null)
+            return;
+
+        Transform returnPoint = successReturnPoint != null ? successReturnPoint : timeoutReturnPoint;
+        FinishBonus(success: true, activePlayer, teleportTargetOverride: returnPoint);
+    }
+
     public void FailActiveBonus(Collider2D player)
     {
         if (!bonusActive || !IsActivePlayer(player))
@@ -225,6 +234,13 @@ public class BonusRoomDoor : MonoBehaviour
     {
         if (player == null || target == null)
             return;
+
+        PlayerScript playerScript = player.GetComponent<PlayerScript>();
+        if (playerScript == null)
+            playerScript = player.GetComponentInParent<PlayerScript>();
+
+        if (playerScript != null)
+            playerScript.ResetMovementStateAfterTeleport();
 
         Rigidbody2D rb = player.attachedRigidbody;
         if (rb != null)

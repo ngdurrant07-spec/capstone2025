@@ -43,10 +43,12 @@ public class MedalCounterUI : MonoBehaviour
         UpdateText();
     }
 
-    public void ResetMedals()
+    public static void ResetMedals()
     {
         currentMedals = 0;
-        UpdateText();
+
+        if (instance != null)
+            instance.UpdateText();
     }
 
     private void UpdateText()

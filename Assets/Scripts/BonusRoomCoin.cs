@@ -50,7 +50,9 @@ public class BonusRoomCoin : MonoBehaviour
         if (cachedCollider != null)
             cachedCollider.enabled = false;
 
-        door.CompleteFromGoal(other);
+        door.CompleteActiveBonusSuccess();
+
+        StopAllBonusTimers();
     }
 
     private BonusRoomDoor ResolveDoorForPlayer(Collider2D player)
@@ -65,6 +67,18 @@ public class BonusRoomCoin : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void StopAllBonusTimers()
+    {
+        foreach (BonusRoomTimer timer in FindObjectsByType<BonusRoomTimer>(FindObjectsSortMode.None))
+        {
+            if (timer == null || !timer.IsRunning)
+                continue;
+
+            timer.StopTimer();
+            timer.HideTimerUI();
+        }
     }
 
     private void HideVisuals()

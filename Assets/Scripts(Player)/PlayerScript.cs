@@ -24,6 +24,9 @@ public class PlayerScript : MonoBehaviour
     public float moveSpeed = 6f;
     float horizontalInput;
     float facingDirection = 1f;
+    public float hurtLockDuration = 0.15f;
+    bool isHurtLocked;
+    Coroutine hurtLockCoroutine;
 
     [Header("Momentum")]
     public float groundAcceleration = 55f;
@@ -126,6 +129,8 @@ IEnumerator AirBoostGravityLock(float time)
     float liftEnergy;
     bool isStalled;
 
+    public bool IsGlidingActive => currentState == PlayerState.Gliding && isGliding;
+    public float FacingDirection => facingDirection;
     public float CurrentLiftEnergy => liftEnergy;
     public float MaxLiftEnergy => maxLiftEnergy;
     public float GlideEnergyNormalized => maxLiftEnergy > 0f ? Mathf.Clamp01(liftEnergy / maxLiftEnergy) : 0f;
@@ -263,6 +268,12 @@ IEnumerator AirBoostGravityLock(float time)
     // ───────── INPUT SYSTEM ─────────
     public void Move(InputAction.CallbackContext context)
     {
+        if (isHurtLocked)
+        {
+            horizontalInput = 0f;
+            return;
+        }
+
         horizontalInput = context.ReadValue<Vector2>().x;
         if (horizontalInput != 0 && currentState != PlayerState.Gliding && currentState != PlayerState.GroundPounding)
         {
@@ -279,6 +290,13 @@ IEnumerator AirBoostGravityLock(float time)
 
     public void Jump(InputAction.CallbackContext context)
     {
+        if (isHurtLocked)
+        {
+            if (context.canceled)
+                jumpHeld = false;
+            return;
+        }
+
         if (context.performed)
         {
             jumpHeld = true;
@@ -311,12 +329,18 @@ IEnumerator AirBoostGravityLock(float time)
 
     public void GroundPound(InputAction.CallbackContext context)
     {
+        if (isHurtLocked)
+            return;
+
         if (!context.performed || IsGrounded() || isGroundPounding || isAnticipating) return;
         StartCoroutine(GroundPoundAnticipation());
     }
 
     public void RollAttack(InputAction.CallbackContext context)
     {
+        if (isHurtLocked)
+            return;
+
         if (!context.performed || !IsGrounded() || isRolling || rollCooldownTimer > 0f || hasThrowable) return;
         isRolling = true;
         rollTimer = rollDuration;
@@ -373,6 +397,14 @@ IEnumerator AirBoostGravityLock(float time)
     {
         if (currentState == PlayerState.Gliding || currentState == PlayerState.GroundPounding || isRolling)
             return;
+
+        if (isHurtLocked)
+        {
+            float slowedX = Mathf.MoveTowards(linearVelocity.x, 0f, groundDeceleration * Time.deltaTime);
+            linearVelocity = new Vector2(slowedX, linearVelocity.y);
+            SafeSetAnimatorFloat("Speed", Mathf.Abs(slowedX));
+            return;
+        }
 
         bool grounded = isGrounded;
         float targetSpeed = horizontalInput * moveSpeed;
@@ -857,5 +889,55 @@ IEnumerator AirBoostGravityLock(float time)
         if (playerHealth != null)
             playerHealth.Kill();
         hasFallenToDeath = true;
+    }
+
+    public void ResetMovementStateAfterTeleport()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.gravityScale = 1f;
+        }
+
+        currentState = PlayerState.Normal;
+        isGliding = false;
+        glideUsed = false;
+        isStalled = false;
+        isRolling = false;
+        isGroundPounding = false;
+        isAnticipating = false;
+        jumpHeld = false;
+        jumpBufferTimer = 0f;
+        horizontalInput = 0f;
+        liftEnergy = maxLiftEnergy;
+        SetGlideTrailActive(false);
+    }
+
+    public void BeginHurtLock()
+    {
+        if (hurtLockCoroutine != null)
+            StopCoroutine(hurtLockCoroutine);
+
+        hurtLockCoroutine = StartCoroutine(HurtLockRoutine());
+    }
+
+    IEnumerator HurtLockRoutine()
+    {
+        isHurtLocked = true;
+        horizontalInput = 0f;
+        jumpBufferTimer = 0f;
+        jumpHeld = false;
+        isGliding = false;
+        SetGlideTrailActive(false);
+        isStalled = false;
+
+        if (!isGroundPounding && !isAnticipating && !isRolling)
+            currentState = isGrounded ? PlayerState.Normal : PlayerState.Jumping;
+
+        yield return new WaitForSeconds(hurtLockDuration);
+
+        isHurtLocked = false;
+        hurtLockCoroutine = null;
     }
 }

@@ -15,10 +15,17 @@ public class AirDashPad : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         PlayerScript player = other.GetComponent<PlayerScript>();
+        if (player == null)
+            player = other.GetComponentInParent<PlayerScript>();
         if (player == null) return;
-        if (player.currentState != PlayerScript.PlayerState.Gliding) return;
+        if (!player.IsGlidingActive) return;
 
-        float dir = Mathf.Sign(player.transform.localScale.x);
+        float dir = Mathf.Sign(player.linearVelocity.x);
+        if (Mathf.Approximately(dir, 0f))
+            dir = Mathf.Sign(player.FacingDirection);
+        if (Mathf.Approximately(dir, 0f))
+            dir = 1f;
+
         Vector2 boost = new Vector2(dir * forwardBoost, upwardBoost);
 
         player.AirBoost(boost, liftRestore, gravityLockTime);

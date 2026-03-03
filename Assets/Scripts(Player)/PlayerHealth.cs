@@ -11,6 +11,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public HealthUI healthUI;
 
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
+    private PlayerScript playerScript;
 
     public static event Action OnPlayerDied;
     private bool isDead;
@@ -32,7 +34,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             healthUI.UpdateHearts(currentHealth);
         }
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponentInParent<SpriteRenderer>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        animator = GetComponentInParent<Animator>();
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
+        playerScript = GetComponentInParent<PlayerScript>();
+        if (playerScript == null)
+            playerScript = GetComponentInChildren<PlayerScript>();
     }
 
     // ───────── DAMAGE ─────────
@@ -50,6 +62,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             healthUI.UpdateHearts(currentHealth);
 
         SoundEffectManager.Play("Hurt");
+        if (animator != null)
+            animator.SetTrigger("Hurt");
+        if (playerScript != null)
+            playerScript.BeginHurtLock();
 
         StartCoroutine(FlashRed());
 
