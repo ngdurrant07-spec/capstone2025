@@ -1,11 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 public class StartMenuController : MonoBehaviour
-{
-    public void OnStartClick()
-    {
-       SceneController.LoadScene("SelectGameScene");
-    }
 
+{    public void OnStartClick()
+    {
+        SceneManager.LoadScene("SelectGameScene");
+    }
     public void OnExitClick()
     {
         #if UNITY_EDITOR
@@ -13,4 +13,5 @@ public class StartMenuController : MonoBehaviour
         #endif
         Application.Quit();
     }
+    
 }

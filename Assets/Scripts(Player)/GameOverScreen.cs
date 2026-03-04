@@ -31,6 +31,12 @@ public class GameOverScreen : MonoBehaviour
                 return;
         }
 
+        if (CheckpointManager.Instance != null)
+        {
+            CheckpointManager.Instance.RespawnPlayer();
+            return;
+        }
+
         // Show the game over screen
         gameObject.SetActive(true);
 
