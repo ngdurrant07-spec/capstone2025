@@ -577,7 +577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5961978375371133946, guid: 80e5aace0ec574d038ad92049c7309a4, type: 3}
       propertyPath: hideMedalTextUntilThreshold
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6364763573814056291, guid: 80e5aace0ec574d038ad92049c7309a4, type: 3}
       propertyPath: m_Pivot.x

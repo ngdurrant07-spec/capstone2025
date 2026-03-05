@@ -46,7 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   musicSource: {fileID: 791855333147171360}
-  tutorialMusic: {fileID: 8300000, guid: 5023dbb070d7847a094bb12d22478bbb, type: 3}
+  musicSlider: {fileID: 0}
+  tutorialMusic: {fileID: 0}
   LevelClearMusic: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
 --- !u!1 &8802262321736100236
 GameObject:

@@ -12022,7 +12022,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7546859456980776326, guid: 51f37dbc7d6ea4e43b40d168569c1ace, type: 3}
       propertyPath: hideMedalTextUntilThreshold
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -31906,6 +31906,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 426134624378062727, guid: a6d693b6113584cfe97b7ebb2af98f78, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4673677301201251229, guid: a6d693b6113584cfe97b7ebb2af98f78, type: 3}
+      propertyPath: resetCountOnAwake
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5990256333024394278, guid: a6d693b6113584cfe97b7ebb2af98f78, type: 3}

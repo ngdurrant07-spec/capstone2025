@@ -140,6 +140,7 @@ MonoBehaviour:
   settingsSceneName: SettingsScene
   startSceneName: StartScene
   buttonConfigSceneName: ButtonConfigScene
+  creditsMainMenuSceneName: CreditsMainMenuScene
 --- !u!1 &3363417544994102059
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,19 +959,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3208980233844912758}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1671063738779192361}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: OpenControlConfig
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &8510058441464804550
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,7 +1385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5953596349663977193, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
       propertyPath: m_Name
-      value: Canvas 1
+      value: Canvas Final
       objectReference: {fileID: 0}
     - target: {fileID: 5953596349663977193, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
       propertyPath: m_IsActive
