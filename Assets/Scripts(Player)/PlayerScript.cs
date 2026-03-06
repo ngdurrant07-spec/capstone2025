@@ -327,6 +327,12 @@ IEnumerator AirBoostGravityLock(float time)
             jumpHeld = false;
             isGliding = false;
             SetGlideTrailActive(false);
+
+            if (currentState == PlayerState.Gliding)
+            {
+                rb.gravityScale = 1f;
+                currentState = isGrounded ? PlayerState.Normal : PlayerState.Jumping;
+            }
         }
     }
 
@@ -481,6 +487,10 @@ IEnumerator AirBoostGravityLock(float time)
         {
             rb.gravityScale = 1f;
             SetGlideTrailActive(false);
+
+            if (currentState == PlayerState.Gliding)
+                currentState = isGrounded ? PlayerState.Normal : PlayerState.Jumping;
+
             return;
         }
 
@@ -488,7 +498,6 @@ IEnumerator AirBoostGravityLock(float time)
 
         float speed = Mathf.Abs(linearVelocity.x);
         float relativeInput = horizontalInput * glideDirection;
-
         // Always consume lift while gliding so the gauge depletes over time.
         liftEnergy -= liftDrainRate * Time.deltaTime;
 
@@ -964,13 +973,22 @@ IEnumerator AirBoostGravityLock(float time)
 
     void ApplyWindForces()
     {
-        if (windSources.Count == 0)
+        Vector2 totalAcceleration = GetTotalWindAcceleration();
+        if (totalAcceleration == Vector2.zero)
             return;
+
+        linearVelocity += totalAcceleration * Time.deltaTime;
+    }
+
+    Vector2 GetTotalWindAcceleration()
+    {
+        if (windSources.Count == 0)
+            return Vector2.zero;
 
         Vector2 totalAcceleration = Vector2.zero;
         foreach (Vector2 acceleration in windSources.Values)
             totalAcceleration += acceleration;
 
-        linearVelocity += totalAcceleration * Time.deltaTime;
+        return totalAcceleration;
     }
 }
