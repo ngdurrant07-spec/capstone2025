@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -134,6 +135,7 @@ IEnumerator AirBoostGravityLock(float time)
     public float CurrentLiftEnergy => liftEnergy;
     public float MaxLiftEnergy => maxLiftEnergy;
     public float GlideEnergyNormalized => maxLiftEnergy > 0f ? Mathf.Clamp01(liftEnergy / maxLiftEnergy) : 0f;
+    readonly Dictionary<int, Vector2> windSources = new Dictionary<int, Vector2>();
 
     // ───────── GROUND POUND ─────────
     [Header("Ground Pound")]
@@ -254,6 +256,7 @@ IEnumerator AirBoostGravityLock(float time)
         HandleRoll();
         HandleGroundPound();
         HandleHeldThrowableInput();
+        ApplyWindForces();
         CheckFallDeath();
         ApplyFacingVisual();
 
@@ -823,6 +826,7 @@ IEnumerator AirBoostGravityLock(float time)
         transform.position = position;
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
+        windSources.Clear();
         rb.gravityScale = 1f;
         currentState = PlayerState.Normal;
         isGliding = false;
@@ -900,6 +904,7 @@ IEnumerator AirBoostGravityLock(float time)
             rb.gravityScale = 1f;
         }
 
+        windSources.Clear();
         currentState = PlayerState.Normal;
         isGliding = false;
         glideUsed = false;
@@ -939,5 +944,33 @@ IEnumerator AirBoostGravityLock(float time)
 
         isHurtLocked = false;
         hurtLockCoroutine = null;
+    }
+
+    public void SetWindSource(Object source, Vector2 acceleration)
+    {
+        if (source == null)
+            return;
+
+        windSources[source.GetInstanceID()] = acceleration;
+    }
+
+    public void ClearWindSource(Object source)
+    {
+        if (source == null)
+            return;
+
+        windSources.Remove(source.GetInstanceID());
+    }
+
+    void ApplyWindForces()
+    {
+        if (windSources.Count == 0)
+            return;
+
+        Vector2 totalAcceleration = Vector2.zero;
+        foreach (Vector2 acceleration in windSources.Values)
+            totalAcceleration += acceleration;
+
+        linearVelocity += totalAcceleration * Time.deltaTime;
     }
 }
