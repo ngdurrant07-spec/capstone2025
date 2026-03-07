@@ -38,6 +38,8 @@ public class PlayerScript : MonoBehaviour
     public float maxHorizontalSpeed = 18f;
     public float airTurnAcceleration = 70f;
     public float airTurnGravityBoost = 24f;
+    public float postGlideMomentumDuration = 0.45f;
+    public float postGlideDeceleration = 3.5f;
 
     // ───────── JUMP ─────────
     [Header("Jump")]
@@ -129,6 +131,7 @@ IEnumerator AirBoostGravityLock(float time)
     float glideDirection;
     float liftEnergy;
     bool isStalled;
+    float postGlideMomentumTimer;
 
     public bool IsGlidingActive => currentState == PlayerState.Gliding && isGliding;
     public float FacingDirection => facingDirection;
@@ -330,6 +333,7 @@ IEnumerator AirBoostGravityLock(float time)
 
             if (currentState == PlayerState.Gliding)
             {
+                BeginPostGlideMomentum();
                 rb.gravityScale = 1f;
                 currentState = isGrounded ? PlayerState.Normal : PlayerState.Jumping;
             }
@@ -418,6 +422,13 @@ IEnumerator AirBoostGravityLock(float time)
         bool grounded = isGrounded;
         float targetSpeed = horizontalInput * moveSpeed;
         float currentSpeed = linearVelocity.x;
+        bool hasPostGlideMomentum = !grounded && postGlideMomentumTimer > 0f;
+
+        if (grounded)
+            postGlideMomentumTimer = 0f;
+        else if (postGlideMomentumTimer > 0f)
+            postGlideMomentumTimer -= Time.deltaTime;
+
         float accelRate;
         bool reversingInAir = !grounded &&
                               Mathf.Abs(horizontalInput) > 0.01f &&
@@ -425,13 +436,22 @@ IEnumerator AirBoostGravityLock(float time)
                               Mathf.Abs(currentSpeed) > 0.01f;
 
         if (Mathf.Abs(horizontalInput) < 0.01f)
-            accelRate = grounded ? groundDeceleration : airDeceleration;
+            accelRate = grounded ? groundDeceleration : (hasPostGlideMomentum ? postGlideDeceleration : airDeceleration);
         else if (grounded && Mathf.Sign(horizontalInput) != Mathf.Sign(currentSpeed) && Mathf.Abs(currentSpeed) > 0.01f)
             accelRate = groundTurnAcceleration;
         else if (reversingInAir)
             accelRate = airTurnAcceleration;
         else
             accelRate = grounded ? groundAcceleration : airAcceleration;
+
+        // While momentum carry is active, keep high glide speed if input stays in the same direction.
+        if (hasPostGlideMomentum &&
+            Mathf.Abs(currentSpeed) > moveSpeed &&
+            Mathf.Abs(horizontalInput) > 0.01f &&
+            Mathf.Sign(horizontalInput) == Mathf.Sign(currentSpeed))
+        {
+            targetSpeed = Mathf.Sign(currentSpeed) * Mathf.Abs(currentSpeed);
+        }
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelRate * Time.deltaTime);
 
@@ -470,6 +490,7 @@ IEnumerator AirBoostGravityLock(float time)
     {
         isGliding = true;
         glideUsed = true;
+        postGlideMomentumTimer = 0f;
         glideDirection = facingDirection;
         liftEnergy = maxLiftEnergy;
         isStalled = false;
@@ -485,6 +506,9 @@ IEnumerator AirBoostGravityLock(float time)
     {
         if (!isGliding || !jumpHeld || currentState == PlayerState.GroundPounding)
         {
+            if (currentState == PlayerState.Gliding && !isGrounded)
+                BeginPostGlideMomentum();
+
             rb.gravityScale = 1f;
             SetGlideTrailActive(false);
 
@@ -538,6 +562,11 @@ IEnumerator AirBoostGravityLock(float time)
         float maxAscend = canAscend ? maxGlideAscendSpeed * liftScale : 0f;
         verticalVelocity = Mathf.Clamp(verticalVelocity, -stallFallSpeed, maxAscend);
         linearVelocity = new Vector2(linearVelocity.x, verticalVelocity);
+    }
+
+    void BeginPostGlideMomentum()
+    {
+        postGlideMomentumTimer = postGlideMomentumDuration;
     }
 
     void PlayGlideStartFeedback()
