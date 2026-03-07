@@ -214667,7 +214667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -214676,14 +214676,14 @@ PrefabInstance:
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 102900000, guid: e7a1269bd95b64e75b53e1e4538bd9be, type: 3}
+      objectReference: {fileID: 1762751693}
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: set_name
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7158497280922810721, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -219963,6 +219963,11 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 22.225136, y: 36.39225}
   m_EdgeRadius: 0
+--- !u!1 &1762751693 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8395588638656521885, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
+  m_PrefabInstance: {fileID: 1659059432}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1781232560
 GameObject:
   m_ObjectHideFlags: 0
