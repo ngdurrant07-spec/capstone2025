@@ -47,8 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   musicSource: {fileID: 791855333147171360}
   musicSlider: {fileID: 0}
-  tutorialMusic: {fileID: 0}
+  tutorialMusic: {fileID: 8300000, guid: febd717b4f2c14917a51a43ce8c866c2, type: 3}
   LevelClearMusic: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
+  Level1Music: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
 --- !u!1 &8802262321736100236
 GameObject:
   m_ObjectHideFlags: 0
@@ -92,10 +93,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 5023dbb070d7847a094bb12d22478bbb, type: 3}
+  m_Resource: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
-  m_Pitch: 1
+  m_Pitch: 0
   Loop: 1
   Mute: 0
   Spatialize: 0

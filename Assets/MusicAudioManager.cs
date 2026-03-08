@@ -18,6 +18,8 @@ public class MusicAudioManager : MonoBehaviour
 
     public AudioClip LevelClearMusic;
 
+    public AudioClip Level1Music;
+
     private void Awake()
     {
         if (instance == null)
@@ -27,6 +29,7 @@ public class MusicAudioManager : MonoBehaviour
         }
         else
         {
+            instance.CopyMissingReferencesFrom(this);
             Destroy(gameObject);
             return;
         }
@@ -52,12 +55,14 @@ public class MusicAudioManager : MonoBehaviour
     {
         TryBindSliderInScene();
         ApplyVolumeToSlider();
+        HandleSceneMusic(SceneManager.GetActiveScene());
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         TryBindSliderInScene();
         ApplyVolumeToSlider();
+        HandleSceneMusic(scene);
     }
 
     public static void SetVolume(float volume)
@@ -94,6 +99,34 @@ public class MusicAudioManager : MonoBehaviour
         instance.musicSource.Stop();
         instance.musicSource.loop = false;
         instance.musicSource.clip = instance.LevelClearMusic;
+        instance.musicSource.Play();
+    }
+
+    public static void PlayLevel1Music()
+    {
+        if (instance == null || instance.musicSource == null || instance.Level1Music == null)
+            return;
+
+        if (instance.musicSource.clip == instance.Level1Music && instance.musicSource.isPlaying)
+            return;
+
+        instance.musicSource.Stop();
+        instance.musicSource.loop = true;
+        instance.musicSource.clip = instance.Level1Music;
+        instance.musicSource.Play();
+    }
+
+    public static void PlayTutorialMusic()
+    {
+        if (instance == null || instance.musicSource == null || instance.tutorialMusic == null)
+            return;
+
+        if (instance.musicSource.clip == instance.tutorialMusic && instance.musicSource.isPlaying)
+            return;
+
+        instance.musicSource.Stop();
+        instance.musicSource.loop = true;
+        instance.musicSource.clip = instance.tutorialMusic;
         instance.musicSource.Play();
     }
 
@@ -142,6 +175,29 @@ public class MusicAudioManager : MonoBehaviour
             return;
 
         instance.musicSource.Stop();
+    }
+
+    private static void HandleSceneMusic(Scene scene)
+    {
+        if (scene.name == "Level1")
+            PlayLevel1Music();
+        else if (scene.name == "Tutorial")
+            PlayTutorialMusic();
+    }
+
+    private void CopyMissingReferencesFrom(MusicAudioManager other)
+    {
+        if (other == null)
+            return;
+
+        if (Level1Music == null && other.Level1Music != null)
+            Level1Music = other.Level1Music;
+
+        if (LevelClearMusic == null && other.LevelClearMusic != null)
+            LevelClearMusic = other.LevelClearMusic;
+
+        if (tutorialMusic == null && other.tutorialMusic != null)
+            tutorialMusic = other.tutorialMusic;
     }
 
 }
