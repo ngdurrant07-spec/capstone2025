@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GoalTrigger : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GoalTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            MedalProgress.SaveLevelResult(SceneManager.GetActiveScene().name, MedalCounterUI.GetCurrentMedals());
             MusicAudioManager.PlayLevelClearMusic();
             levelClearUI.Play();
         }

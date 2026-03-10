@@ -10,7 +10,8 @@ public class LevelClearUI : MonoBehaviour
     [Header("Medals")]
     [SerializeField] private TMP_Text medalText;
     [SerializeField] private string medalLabel = "Medals: ";
-    [SerializeField] private int medalTarget = 1;
+    [SerializeField] private TMP_FontAsset medalFontOverride;
+    [SerializeField] private int medalTarget = 8;
     [SerializeField] private bool hideMedalTextUntilThreshold = false;
     [SerializeField] private int medalsNeededToShow = 1;
 
@@ -24,6 +25,8 @@ public class LevelClearUI : MonoBehaviour
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
+
+        ApplyFontOverride();
     }
 
     public void Play()
@@ -60,6 +63,14 @@ public class LevelClearUI : MonoBehaviour
         if (!shouldShow)
             return;
 
-        medalText.SetText($"{medalLabel}{current} / {Mathf.Max(0, medalTarget)}");
+        medalText.SetText($"{medalLabel}{current}/{Mathf.Max(0, medalTarget)}");
+    }
+
+    private void ApplyFontOverride()
+    {
+        if (medalText == null || medalFontOverride == null)
+            return;
+
+        medalText.font = medalFontOverride;
     }
 }

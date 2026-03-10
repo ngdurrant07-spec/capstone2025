@@ -125,4 +125,18 @@ public class TimeTrialAreaLock : MonoBehaviour
 
         return $"TimeTrialUnlocked_{scene.name}";
     }
+
+    public static void ClearSavedUnlocks(params string[] sceneNames)
+    {
+        if (sceneNames == null)
+            return;
+
+        foreach (string sceneName in sceneNames)
+        {
+            if (string.IsNullOrWhiteSpace(sceneName))
+                continue;
+
+            PlayerPrefs.DeleteKey($"TimeTrialUnlocked_{sceneName.Trim()}");
+        }
+    }
 }

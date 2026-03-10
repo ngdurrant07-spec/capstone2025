@@ -39,6 +39,7 @@ public class GoalArea : MonoBehaviour
         if (stopPlayerOnGoal)
             StopPlayer(other);
 
+        MedalProgress.SaveLevelResult(SceneManager.GetActiveScene().name, MedalCounterUI.GetCurrentMedals());
         MusicAudioManager.PlayLevelClearMusic();
 
         onGoalReached?.Invoke();

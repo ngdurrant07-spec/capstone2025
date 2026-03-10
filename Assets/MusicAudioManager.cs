@@ -5,40 +5,46 @@ using UnityEngine.UI;
 public class MusicAudioManager : MonoBehaviour
 {
     private const string MusicVolumeKey = "MusicVolume";
-    private static MusicAudioManager instance;
-    private static float currentVolume = 1f;
 
-    [Header("------------ AudioSource ----------")]
+    private static MusicAudioManager instance;
+
+    [Header("Audio Source")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private Slider musicSlider;
 
-    [Header("------------ AudioClip ----------")]
+    [Header("Music Clips")]
+    [SerializeField] private AudioClip tutorialMusic;
+    [SerializeField] private AudioClip Level1Music;
+    [SerializeField] private AudioClip LevelClearMusic;
 
-    public AudioClip tutorialMusic;
-
-    public AudioClip LevelClearMusic;
-
-    public AudioClip Level1Music;
+    private float currentVolume = 1f;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (instance != null && instance != this)
         {
             instance.CopyMissingReferencesFrom(this);
             Destroy(gameObject);
             return;
         }
 
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
         if (musicSource == null)
             musicSource = GetComponent<AudioSource>();
 
-        currentVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
-        SetVolume(currentVolume);
+        if (musicSource == null)
+            musicSource = GetComponentInChildren<AudioSource>(true);
+
+        currentVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(MusicVolumeKey, 1f));
+
+        if (musicSource != null)
+        {
+            musicSource.playOnAwake = false;
+            musicSource.spatialBlend = 0f;
+            musicSource.volume = currentVolume;
+        }
     }
 
     private void OnEnable()
@@ -53,25 +59,16 @@ public class MusicAudioManager : MonoBehaviour
 
     private void Start()
     {
-        TryBindSliderInScene();
+        BindSliderIfPresent();
         ApplyVolumeToSlider();
-        HandleSceneMusic(SceneManager.GetActiveScene());
+        PlayMusicForScene(SceneManager.GetActiveScene());
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        TryBindSliderInScene();
+        BindSliderIfPresent();
         ApplyVolumeToSlider();
-        HandleSceneMusic(scene);
-    }
-
-    public static void SetVolume(float volume)
-    {
-        currentVolume = Mathf.Clamp01(volume);
-        if (instance == null || instance.musicSource == null)
-            return;
-
-        instance.musicSource.volume = currentVolume;
+        PlayMusicForScene(scene);
     }
 
     public void OnMusicSliderChanged()
@@ -79,71 +76,103 @@ public class MusicAudioManager : MonoBehaviour
         if (musicSlider == null)
             return;
 
-        currentVolume = musicSlider.value;
-        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
-        PlayerPrefs.Save();
-        SetVolume(currentVolume);
-    }
-
-    public static void PlayLevelClearMusic()
-    {
-        if (instance == null || instance.musicSource == null || instance.LevelClearMusic == null)
-        {
-            Debug.LogWarning("[MusicAudioManager] Missing instance/audio source/level clear clip.");
-            return;
-        }
-
-        if (instance.musicSource.clip == instance.LevelClearMusic && instance.musicSource.isPlaying)
-            return;
-
-        instance.musicSource.Stop();
-        instance.musicSource.loop = false;
-        instance.musicSource.clip = instance.LevelClearMusic;
-        instance.musicSource.Play();
-    }
-
-    public static void PlayLevel1Music()
-    {
-        if (instance == null || instance.musicSource == null || instance.Level1Music == null)
-            return;
-
-        if (instance.musicSource.clip == instance.Level1Music && instance.musicSource.isPlaying)
-            return;
-
-        instance.musicSource.Stop();
-        instance.musicSource.loop = true;
-        instance.musicSource.clip = instance.Level1Music;
-        instance.musicSource.Play();
+        SetMusicVolume(musicSlider.value);
     }
 
     public static void PlayTutorialMusic()
     {
-        if (instance == null || instance.musicSource == null || instance.tutorialMusic == null)
+        if (instance == null)
             return;
 
-        if (instance.musicSource.clip == instance.tutorialMusic && instance.musicSource.isPlaying)
+        instance.PlayClip(instance.tutorialMusic, true);
+    }
+
+    public static void PlayLevel1Music()
+    {
+        if (instance == null)
+            return;
+
+        instance.PlayClip(instance.Level1Music, true);
+    }
+
+    public static void PlayLevelClearMusic()
+    {
+        if (instance == null)
+            return;
+
+        instance.PlayClip(instance.LevelClearMusic, false);
+    }
+
+    public static void StopMusic()
+    {
+        if (instance == null || instance.musicSource == null)
             return;
 
         instance.musicSource.Stop();
-        instance.musicSource.loop = true;
-        instance.musicSource.clip = instance.tutorialMusic;
-        instance.musicSource.Play();
     }
 
-    private void TryBindSliderInScene()
+    public static void SetVolume(float volume)
     {
-        if (musicSlider != null && !musicSlider.gameObject.scene.IsValid())
-            musicSlider = null;
+        if (instance == null)
+            return;
 
-        if (musicSlider == null)
+        instance.SetMusicVolume(volume);
+    }
+
+    private void SetMusicVolume(float volume)
+    {
+        currentVolume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
+        PlayerPrefs.Save();
+
+        if (musicSource != null)
+            musicSource.volume = currentVolume;
+
+        ApplyVolumeToSlider();
+    }
+
+    private void PlayMusicForScene(Scene scene)
+    {
+        if (scene.name == "Tutorial")
         {
-            foreach (Slider slider in FindObjectsByType<Slider>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            PlayClip(tutorialMusic, true);
+            return;
+        }
+
+        if (scene.name == "Level1")
+        {
+            PlayClip(Level1Music, true);
+        }
+    }
+
+    private void PlayClip(AudioClip clip, bool loop)
+    {
+        if (musicSource == null || clip == null)
+            return;
+
+        if (musicSource.clip == clip && musicSource.isPlaying && musicSource.loop == loop)
+            return;
+
+        musicSource.Stop();
+        musicSource.clip = clip;
+        musicSource.loop = loop;
+        musicSource.volume = currentVolume;
+        musicSource.Play();
+    }
+
+    private void BindSliderIfPresent()
+    {
+        if (musicSlider != null && musicSlider.gameObject.scene.IsValid())
+            return;
+
+        musicSlider = null;
+
+        foreach (Slider slider in FindObjectsByType<Slider>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (slider != null && slider.name.Contains("MusicVolumeSlider"))
             {
-                if (slider != null && slider.name.Contains("MusicVolumeSlider"))
-                {
-                    musicSlider = slider;
-                    break;
-                }
+                musicSlider = slider;
+                break;
             }
         }
 
@@ -156,33 +185,13 @@ public class MusicAudioManager : MonoBehaviour
 
     private void ApplyVolumeToSlider()
     {
-        SetVolume(currentVolume);
         if (musicSlider != null)
             musicSlider.SetValueWithoutNotify(currentVolume);
     }
 
     private void OnSliderValueChanged(float value)
     {
-        currentVolume = value;
-        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
-        PlayerPrefs.Save();
-        SetVolume(currentVolume);
-    }
-
-    public static void StopMusic()
-    {
-        if (instance == null || instance.musicSource == null)
-            return;
-
-        instance.musicSource.Stop();
-    }
-
-    private static void HandleSceneMusic(Scene scene)
-    {
-        if (scene.name == "Level1")
-            PlayLevel1Music();
-        else if (scene.name == "Tutorial")
-            PlayTutorialMusic();
+        SetMusicVolume(value);
     }
 
     private void CopyMissingReferencesFrom(MusicAudioManager other)
@@ -190,14 +199,16 @@ public class MusicAudioManager : MonoBehaviour
         if (other == null)
             return;
 
+        if (musicSource == null && other.musicSource != null)
+            musicSource = other.musicSource;
+
+        if (tutorialMusic == null && other.tutorialMusic != null)
+            tutorialMusic = other.tutorialMusic;
+
         if (Level1Music == null && other.Level1Music != null)
             Level1Music = other.Level1Music;
 
         if (LevelClearMusic == null && other.LevelClearMusic != null)
             LevelClearMusic = other.LevelClearMusic;
-
-        if (tutorialMusic == null && other.tutorialMusic != null)
-            tutorialMusic = other.tutorialMusic;
     }
-
 }

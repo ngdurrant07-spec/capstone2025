@@ -26,16 +26,23 @@ public class BonusRoomCoin : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        TryCollect(other);
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        TryCollect(other);
+    }
+
+    private void TryCollect(Collider2D other)
+    {
         if (!other.CompareTag(playerTag))
             return;
 
         if (collectOnce && collected)
-
             return;
 
         BonusRoomDoor door = ResolveDoorForPlayer(other);
-        if (door == null)
-            return;
 
         collected = true;
 
@@ -50,23 +57,32 @@ public class BonusRoomCoin : MonoBehaviour
         if (cachedCollider != null)
             cachedCollider.enabled = false;
 
-        door.CompleteActiveBonusSuccess();
+        if (door != null)
+            door.CompleteActiveBonusSuccess();
 
         StopAllBonusTimers();
     }
 
     private BonusRoomDoor ResolveDoorForPlayer(Collider2D player)
     {
-        if (entryDoor != null && entryDoor.BonusActive && entryDoor.IsActivePlayer(player))
+        if (entryDoor != null && entryDoor.BonusActive)
             return entryDoor;
+
+        BonusRoomDoor fallbackActiveDoor = null;
 
         foreach (BonusRoomDoor door in FindObjectsByType<BonusRoomDoor>(FindObjectsSortMode.None))
         {
-            if (door != null && door.BonusActive && door.IsActivePlayer(player))
+            if (door == null || !door.BonusActive)
+                continue;
+
+            if (door.IsActivePlayer(player))
                 return door;
+
+            if (fallbackActiveDoor == null)
+                fallbackActiveDoor = door;
         }
 
-        return null;
+        return fallbackActiveDoor;
     }
 
     private void StopAllBonusTimers()

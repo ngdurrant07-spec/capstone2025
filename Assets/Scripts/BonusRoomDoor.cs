@@ -65,7 +65,7 @@ public class BonusRoomDoor : MonoBehaviour
         if (!bonusActive || !IsActivePlayer(player))
             return;
 
-        Transform returnPoint = successReturnPoint != null ? successReturnPoint : timeoutReturnPoint;
+        Transform returnPoint = GetSuccessReturnPoint();
         FinishBonus(success: true, player, teleportTargetOverride: returnPoint);
     }
 
@@ -74,7 +74,7 @@ public class BonusRoomDoor : MonoBehaviour
         if (!bonusActive || activePlayer == null)
             return;
 
-        Transform returnPoint = successReturnPoint != null ? successReturnPoint : timeoutReturnPoint;
+        Transform returnPoint = GetSuccessReturnPoint();
         FinishBonus(success: true, activePlayer, teleportTargetOverride: returnPoint);
     }
 
@@ -162,6 +162,17 @@ public class BonusRoomDoor : MonoBehaviour
             return;
 
         FinishBonus(success: false, activePlayer, timeoutReturnPoint);
+    }
+
+    private Transform GetSuccessReturnPoint()
+    {
+        if (successReturnPoint != null)
+            return successReturnPoint;
+
+        if (timeoutReturnPoint != null)
+            return timeoutReturnPoint;
+
+        return transform;
     }
 
     private void FinishBonus(bool success, Collider2D player, Transform teleportTargetOverride)

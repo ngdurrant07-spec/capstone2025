@@ -6,9 +6,10 @@ public class MedalCounterUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text counterText;
     [SerializeField] private string label = "Medals: ";
+    [SerializeField] private TMP_FontAsset fontOverride;
 
     [Header("Level Target")]
-    [SerializeField] private int targetMedals = 1;
+    [SerializeField] private int targetMedals = 8;
     [SerializeField] private bool resetCountOnAwake = true;
 
     private static MedalCounterUI instance;
@@ -21,6 +22,7 @@ public class MedalCounterUI : MonoBehaviour
         if (resetCountOnAwake)
             currentMedals = 0;
 
+        ApplyFontOverride();
         UpdateText();
     }
 
@@ -56,6 +58,14 @@ public class MedalCounterUI : MonoBehaviour
         if (counterText == null)
             return;
 
-        counterText.SetText($"{label}{currentMedals} / {Mathf.Max(0, targetMedals)}");
+        counterText.SetText($"{label}{currentMedals}/{Mathf.Max(0, targetMedals)}");
+    }
+
+    private void ApplyFontOverride()
+    {
+        if (counterText == null || fontOverride == null)
+            return;
+
+        counterText.font = fontOverride;
     }
 }
