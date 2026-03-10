@@ -9,6 +9,7 @@ public class NewGameButton : MonoBehaviour
         "Level1",
         "Level2",
         "Level3",
+        "Boss",
         "GametestScene"
     };
 

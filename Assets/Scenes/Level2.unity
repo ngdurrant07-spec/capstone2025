@@ -120350,7 +120350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: loadScene
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: sceneName
@@ -120360,6 +120360,18 @@ PrefabInstance:
       propertyPath: levelClearUI
       value: 
       objectReference: {fileID: 128063756}
+    - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
+      propertyPath: loadNextSceneByIndex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
+      propertyPath: onGoalReached.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
+      propertyPath: onGoalReached.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8377780395642275307, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: m_Name
       value: Goal

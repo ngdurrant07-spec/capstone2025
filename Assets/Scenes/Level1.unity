@@ -45594,7 +45594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: loadScene
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: sceneName
@@ -45606,7 +45606,7 @@ PrefabInstance:
       objectReference: {fileID: 815932282}
     - target: {fileID: 7603151229276400295, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: loadNextSceneByIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8377780395642275307, guid: 9a2780f27aa9a4a99a9b435a77978425, type: 3}
       propertyPath: m_Name
