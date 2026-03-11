@@ -65,6 +65,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Ground Check")]
     public Transform groundCheck;
     public Vector2 groundCheckSize = new Vector2(0.2f, 0.2f);
+    public float groundCheckDistance = 0.08f;
     public LayerMask groundLayer;
     public float coyoteTime = 0.1f;
     float coyoteTimer;
@@ -280,7 +281,7 @@ IEnumerator AirBoostGravityLock(float time)
 
     public void OnLanding()
     {
-        SafeSetAnimatorBool("IsJumping", false);
+        SafeSetAnimatorBool("isJumping", false);
     }
 
     // ───────── INPUT SYSTEM ─────────
@@ -861,13 +862,14 @@ IEnumerator AirBoostGravityLock(float time)
     {
         if (groundCheck == null)
             return false;
+
         // BoxCast down so walls (side hits) don't count as grounded
         RaycastHit2D[] hits = Physics2D.BoxCastAll(
             groundCheck.position,
             groundCheckSize,
             0f,
             Vector2.down,
-            0.02f,
+            groundCheckDistance,
             groundLayer
         );
 

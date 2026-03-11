@@ -643,11 +643,12 @@ MonoBehaviour:
   maxJumps: 1
   stompBounceForce: 10
   groundCheck: {fileID: 1135246744466057371}
-  groundCheckSize: {x: 0.2, y: 0.2}
+  groundCheckSize: {x: 0.35, y: 0.2}
+  groundCheckDistance: 0.08
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  coyoteTime: 0
+  coyoteTime: 0.1
   baseGravity: 10
   maxFallSpeed: 10
   glideGravityScale: 0.5
