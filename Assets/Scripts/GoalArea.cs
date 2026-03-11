@@ -28,12 +28,19 @@ public class GoalArea : MonoBehaviour
 
     bool triggered;
 
+    public bool IsTriggered => triggered;
+
     void OnTriggerEnter2D(Collider2D other)
     {
+        TryCompleteGoal(other);
+    }
+
+    public bool TryCompleteGoal(Collider2D other)
+    {
         if (triggerOnce && triggered)
-            return;
+            return false;
         if (!other.CompareTag(playerTag))
-            return;
+            return false;
 
         triggered = true;
         if (stopPlayerOnGoal)
@@ -50,6 +57,8 @@ public class GoalArea : MonoBehaviour
 
         if (loadScene)
             StartCoroutine(LoadSceneAfterDelay());
+
+        return true;
     }
 
     IEnumerator LoadSceneAfterDelay()
