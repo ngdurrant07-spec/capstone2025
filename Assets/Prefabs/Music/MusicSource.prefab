@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2303983779142212000}
-  - component: {fileID: 5762500496613055258}
+  - component: {fileID: 5005553915684776254}
   m_Layer: 0
-  m_Name: MusicAudioManager
+  m_Name: MusicSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   - {fileID: 8182064847279109952}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5762500496613055258
+--- !u!114 &5005553915684776254
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,12 +44,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50ea83f894aab47319a41fa6c2b900b7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
+  m_EditorClassIdentifier: ProjectScripts::MusicAudioManager
+  musicLibrary: {fileID: 0}
   musicSource: {fileID: 791855333147171360}
-  musicSlider: {fileID: 0}
-  tutorialMusic: {fileID: 8300000, guid: 5023dbb070d7847a094bb12d22478bbb, type: 3}
-  LevelClearMusic: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
-  Level1Music: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
+  tutorialTrackName: Tutorial
+  level1TrackName: Level1
+  levelClearTrackName: LevelClear
 --- !u!1 &8802262321736100236
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 8182064847279109952}
   - component: {fileID: 791855333147171360}
   m_Layer: 0
-  m_Name: Music
+  m_Name: MusicSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,8 +93,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_Resource: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 0
   Loop: 1

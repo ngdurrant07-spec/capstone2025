@@ -1,49 +1,45 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MusicAudioManager : MonoBehaviour
 {
-    private const string MusicVolumeKey = "MusicVolume";
+    public static MusicAudioManager Instance;
 
-    private static MusicAudioManager instance;
-
-    [Header("Audio Source")]
+    [SerializeField] private MusicLibrary musicLibrary;
     [SerializeField] private AudioSource musicSource;
-    [SerializeField] private Slider musicSlider;
+    [SerializeField] private string tutorialTrackName = "Tutorial";
+    [SerializeField] private string level1TrackName = "Level1";
+    [SerializeField] private string level2TrackName = "Level2";
+    [SerializeField] private string level3TrackName = "Level3";
+    [SerializeField] private string levelClearTrackName = "LevelClear";
 
-    [Header("Music Clips")]
-    [SerializeField] private AudioClip tutorialMusic;
-    [SerializeField] private AudioClip Level1Music;
-    [SerializeField] private AudioClip LevelClearMusic;
-
-    private float currentVolume = 1f;
+    private Coroutine crossfadeRoutine;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
-            instance.CopyMissingReferencesFrom(this);
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         if (musicSource == null)
+        {
             musicSource = GetComponent<AudioSource>();
+        }
 
         if (musicSource == null)
-            musicSource = GetComponentInChildren<AudioSource>(true);
-
-        currentVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(MusicVolumeKey, 1f));
-
-        if (musicSource != null)
         {
-            musicSource.playOnAwake = false;
-            musicSource.spatialBlend = 0f;
-            musicSource.volume = currentVolume;
+            musicSource = GetComponentInChildren<AudioSource>(true);
+        }
+
+        if (musicLibrary == null)
+        {
+            musicLibrary = GetComponent<MusicLibrary>();
         }
     }
 
@@ -59,156 +55,136 @@ public class MusicAudioManager : MonoBehaviour
 
     private void Start()
     {
-        BindSliderIfPresent();
-        ApplyVolumeToSlider();
-        PlayMusicForScene(SceneManager.GetActiveScene());
+        PlayMusicForScene(SceneManager.GetActiveScene().name);
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void PlayMusic(string trackName, float fadeDuration = 0.5f, bool loop = true)
     {
-        BindSliderIfPresent();
-        ApplyVolumeToSlider();
-        PlayMusicForScene(scene);
-    }
-
-    public void OnMusicSliderChanged()
-    {
-        if (musicSlider == null)
+        if (musicLibrary == null || musicSource == null)
+        {
             return;
+        }
 
-        SetMusicVolume(musicSlider.value);
+        AudioClip nextTrack = musicLibrary.GetClipFromName(trackName);
+        if (nextTrack == null)
+        {
+            return;
+        }
+
+        if (crossfadeRoutine != null)
+        {
+            StopCoroutine(crossfadeRoutine);
+        }
+
+        crossfadeRoutine = StartCoroutine(AnimateMusicCrossfade(nextTrack, fadeDuration, loop));
     }
 
-    public static void PlayTutorialMusic()
+    public static void PlayTutorialMusic(float fadeDuration = 0.5f)
     {
-        if (instance == null)
+        if (Instance == null)
+        {
             return;
+        }
 
-        instance.PlayClip(instance.tutorialMusic, true);
+        Instance.PlayMusic(Instance.tutorialTrackName, fadeDuration, true);
     }
 
-    public static void PlayLevel1Music()
+    public static void PlayLevel1Music(float fadeDuration = 0.5f)
     {
-        if (instance == null)
+        if (Instance == null)
+        {
             return;
+        }
 
-        instance.PlayClip(instance.Level1Music, true);
+        Instance.PlayMusic(Instance.level1TrackName, fadeDuration, true);
     }
 
-    public static void PlayLevelClearMusic()
+    public static void PlayLevelClearMusic(float fadeDuration = 0.5f)
     {
-        if (instance == null)
+        if (Instance == null)
+        {
             return;
+        }
 
-        instance.PlayClip(instance.LevelClearMusic, false);
+        Instance.PlayMusic(Instance.levelClearTrackName, fadeDuration, false);
     }
 
     public static void StopMusic()
     {
-        if (instance == null || instance.musicSource == null)
-            return;
-
-        instance.musicSource.Stop();
-    }
-
-    public static void SetVolume(float volume)
-    {
-        if (instance == null)
-            return;
-
-        instance.SetMusicVolume(volume);
-    }
-
-    private void SetMusicVolume(float volume)
-    {
-        currentVolume = Mathf.Clamp01(volume);
-        PlayerPrefs.SetFloat(MusicVolumeKey, currentVolume);
-        PlayerPrefs.Save();
-
-        if (musicSource != null)
-            musicSource.volume = currentVolume;
-
-        ApplyVolumeToSlider();
-    }
-
-    private void PlayMusicForScene(Scene scene)
-    {
-        if (scene.name == "Tutorial")
+        if (Instance == null || Instance.musicSource == null)
         {
-            PlayClip(tutorialMusic, true);
             return;
         }
 
-        if (scene.name == "Level1")
+        if (Instance.crossfadeRoutine != null)
         {
-            PlayClip(Level1Music, true);
+            Instance.StopCoroutine(Instance.crossfadeRoutine);
+            Instance.crossfadeRoutine = null;
         }
+
+        Instance.musicSource.Stop();
     }
 
-    private void PlayClip(AudioClip clip, bool loop)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (musicSource == null || clip == null)
-            return;
-
-        if (musicSource.clip == clip && musicSource.isPlaying && musicSource.loop == loop)
-            return;
-
-        musicSource.Stop();
-        musicSource.clip = clip;
-        musicSource.loop = loop;
-        musicSource.volume = currentVolume;
-        musicSource.Play();
+        PlayMusicForScene(scene.name);
     }
 
-    private void BindSliderIfPresent()
+    private void PlayMusicForScene(string sceneName)
     {
-        if (musicSlider != null && musicSlider.gameObject.scene.IsValid())
-            return;
-
-        musicSlider = null;
-
-        foreach (Slider slider in FindObjectsByType<Slider>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        switch (sceneName)
         {
-            if (slider != null && slider.name.Contains("MusicVolumeSlider"))
-            {
-                musicSlider = slider;
+            case "Tutorial":
+                PlayMusic(tutorialTrackName);
                 break;
+            case "Level1":
+                PlayMusic(level1TrackName);
+                break;
+            case "Level2":
+                PlayMusic(level2TrackName);
+                break;
+            case "Level3":
+            case "Level3_recovered":
+                PlayMusic(level3TrackName);
+                break;
+        }
+    }
+
+    private IEnumerator AnimateMusicCrossfade(AudioClip nextTrack, float fadeDuration = 0.5f, bool loop = true)
+    {
+        float startVolume = musicSource.volume;
+
+        if (musicSource.isPlaying && fadeDuration > 0f)
+        {
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                percent += Time.deltaTime / fadeDuration;
+                musicSource.volume = Mathf.Lerp(startVolume, 0f, percent);
+                yield return null;
             }
         }
 
-        if (musicSlider != null)
+        musicSource.clip = nextTrack;
+        musicSource.loop = loop;
+        musicSource.Play();
+
+        if (fadeDuration <= 0f)
         {
-            musicSlider.onValueChanged.RemoveListener(OnSliderValueChanged);
-            musicSlider.onValueChanged.AddListener(OnSliderValueChanged);
+            musicSource.volume = startVolume;
+            crossfadeRoutine = null;
+            yield break;
         }
-    }
 
-    private void ApplyVolumeToSlider()
-    {
-        if (musicSlider != null)
-            musicSlider.SetValueWithoutNotify(currentVolume);
-    }
+        float fadeInPercent = 0f;
+        while (fadeInPercent < 1f)
+        {
+            fadeInPercent += Time.deltaTime / fadeDuration;
+            musicSource.volume = Mathf.Lerp(0f, startVolume, fadeInPercent);
+            yield return null;
+        }
 
-    private void OnSliderValueChanged(float value)
-    {
-        SetMusicVolume(value);
-    }
-
-    private void CopyMissingReferencesFrom(MusicAudioManager other)
-    {
-        if (other == null)
-            return;
-
-        if (musicSource == null && other.musicSource != null)
-            musicSource = other.musicSource;
-
-        if (tutorialMusic == null && other.tutorialMusic != null)
-            tutorialMusic = other.tutorialMusic;
-
-        if (Level1Music == null && other.Level1Music != null)
-            Level1Music = other.Level1Music;
-
-        if (LevelClearMusic == null && other.LevelClearMusic != null)
-            LevelClearMusic = other.LevelClearMusic;
+        musicSource.volume = startVolume;
+        crossfadeRoutine = null;
     }
 }

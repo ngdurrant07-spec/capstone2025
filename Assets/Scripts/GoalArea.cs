@@ -42,6 +42,8 @@ public class GoalArea : MonoBehaviour
         MedalProgress.SaveLevelResult(SceneManager.GetActiveScene().name, MedalCounterUI.GetCurrentMedals());
         MusicAudioManager.PlayLevelClearMusic();
 
+
+
         onGoalReached?.Invoke();
         if (levelClearUI != null)
             levelClearUI.Play();

@@ -5115,6 +5115,10 @@ PrefabInstance:
       value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: fallDeathY
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: glideTrail
       value: 
       objectReference: {fileID: 1661528901285030669}
@@ -5188,11 +5192,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.7
+      value: -9.23
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 48.7
+      value: -0.12
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5364,7 +5368,7 @@ Animator:
   m_GameObject: {fileID: 8185892712208835974}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6d0ba7aac2f684dc9a8b4250ce3359b3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1f4c1c7e8c9a4d8ba2f1357913579abc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

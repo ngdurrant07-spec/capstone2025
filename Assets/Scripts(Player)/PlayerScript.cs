@@ -20,6 +20,14 @@ public class PlayerScript : MonoBehaviour
     public ParticleSystem glideBurstFX;
     public TrailRenderer glideTrail;
 
+    [Header("Trail FX")]
+    public bool enableRollTrail = true;
+    public bool autoCreateMovementTrail = true;
+    public float movementTrailTime = 0.12f;
+    public float movementTrailWidth = 0.45f;
+    public Color movementTrailStartColor = new Color(1f, 0.82f, 0.4f, 0.9f);
+    public Color movementTrailEndColor = new Color(1f, 1f, 1f, 0f);
+
     // ───────── MOVEMENT ─────────
     [Header("Movement")]
     public float moveSpeed = 6f;
@@ -91,6 +99,7 @@ public void AirBoost(Vector2 boostVelocity, float liftRestore = 1f, float gravit
     // Cancel conflicting states
     CancelGroundPound();
     isRolling = false;
+    SetRollTrailActive(false);
 
     // Reset vertical fall so boost feels clean
     linearVelocity = new Vector2(linearVelocity.x, Mathf.Max(linearVelocity.y, 0f));
@@ -132,6 +141,8 @@ IEnumerator AirBoostGravityLock(float time)
     float liftEnergy;
     bool isStalled;
     float postGlideMomentumTimer;
+    bool glideTrailActive;
+    bool rollTrailActive;
 
     public bool IsGlidingActive => currentState == PlayerState.Gliding && isGliding;
     public float FacingDirection => facingDirection;
@@ -239,6 +250,7 @@ IEnumerator AirBoostGravityLock(float time)
         EnsureAnimator();
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        EnsureMovementTrail();
         jumpsRemaining = maxJumps;
         liftEnergy = maxLiftEnergy;
         currentHearts = maxHearts;
@@ -358,6 +370,7 @@ IEnumerator AirBoostGravityLock(float time)
         isRolling = true;
         rollTimer = rollDuration;
         currentState = PlayerState.Rolling;
+        SetRollTrailActive(enableRollTrail);
         if (playerHealth == null)
             playerHealth = GetComponent<PlayerHealth>();
 
@@ -577,9 +590,22 @@ IEnumerator AirBoostGravityLock(float time)
 
     void SetGlideTrailActive(bool active)
     {
+        glideTrailActive = active;
+        RefreshMovementTrail();
+    }
+
+    void SetRollTrailActive(bool active)
+    {
+        rollTrailActive = enableRollTrail && active;
+        RefreshMovementTrail();
+    }
+
+    void RefreshMovementTrail()
+    {
         if (glideTrail == null)
             return;
 
+        bool active = glideTrailActive || rollTrailActive;
         if (active)
         {
             if (!glideTrail.emitting)
@@ -590,6 +616,60 @@ IEnumerator AirBoostGravityLock(float time)
         {
             glideTrail.emitting = false;
         }
+    }
+
+    void EnsureMovementTrail()
+    {
+        if (glideTrail != null)
+        {
+            glideTrail.emitting = false;
+            return;
+        }
+
+        glideTrail = GetComponentInChildren<TrailRenderer>(true);
+        if (glideTrail == null && autoCreateMovementTrail)
+            glideTrail = CreateMovementTrail();
+
+        if (glideTrail != null)
+            glideTrail.emitting = false;
+    }
+
+    TrailRenderer CreateMovementTrail()
+    {
+        GameObject trailObject = new GameObject("MovementTrail");
+        trailObject.transform.SetParent(transform, false);
+
+        TrailRenderer trail = trailObject.AddComponent<TrailRenderer>();
+        Shader spriteShader = Shader.Find("Sprites/Default");
+        if (spriteShader != null)
+            trail.material = new Material(spriteShader);
+
+        trail.time = movementTrailTime;
+        trail.widthMultiplier = movementTrailWidth;
+        trail.minVertexDistance = 0.05f;
+        trail.sortingLayerID = spriteRenderer != null ? spriteRenderer.sortingLayerID : 0;
+        trail.sortingOrder = spriteRenderer != null ? spriteRenderer.sortingOrder - 1 : 0;
+
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new[]
+            {
+                new GradientColorKey(movementTrailStartColor, 0f),
+                new GradientColorKey(movementTrailEndColor, 1f)
+            },
+            new[]
+            {
+                new GradientAlphaKey(movementTrailStartColor.a, 0f),
+                new GradientAlphaKey(movementTrailEndColor.a, 1f)
+            });
+        trail.colorGradient = gradient;
+
+        AnimationCurve widthCurve = new AnimationCurve();
+        widthCurve.AddKey(0f, 1f);
+        widthCurve.AddKey(1f, 0f);
+        trail.widthCurve = widthCurve;
+        trail.emitting = false;
+        return trail;
     }
 
     // ───────── ROLL ─────────
@@ -619,6 +699,7 @@ IEnumerator AirBoostGravityLock(float time)
         if (rollTimer <= 0f)
         {
             isRolling = false;
+            SetRollTrailActive(false);
             currentState = PlayerState.Normal;
             rollCooldownTimer = rollCooldown;
             if (playerHealth != null && rollInvincibilityActive)
@@ -754,6 +835,8 @@ IEnumerator AirBoostGravityLock(float time)
             jumpsRemaining = maxJumps;
             isGliding = false;
             SetGlideTrailActive(false);
+            if (!isRolling)
+                SetRollTrailActive(false);
             glideUsed = false;
             isStalled = false;
             liftEnergy = maxLiftEnergy;
@@ -869,6 +952,7 @@ IEnumerator AirBoostGravityLock(float time)
         currentState = PlayerState.Normal;
         isGliding = false;
         SetGlideTrailActive(false);
+        SetRollTrailActive(false);
         glideUsed = false;
         isStalled = false;
         isRolling = false;
@@ -955,6 +1039,7 @@ IEnumerator AirBoostGravityLock(float time)
         horizontalInput = 0f;
         liftEnergy = maxLiftEnergy;
         SetGlideTrailActive(false);
+        SetRollTrailActive(false);
     }
 
     public void BeginHurtLock()
@@ -973,6 +1058,7 @@ IEnumerator AirBoostGravityLock(float time)
         jumpHeld = false;
         isGliding = false;
         SetGlideTrailActive(false);
+        SetRollTrailActive(false);
         isStalled = false;
 
         if (!isGroundPounding && !isAnticipating && !isRolling)
