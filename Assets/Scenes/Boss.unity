@@ -575,11 +575,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 465925870}
   m_SourcePrefab: {fileID: 100100000, guid: ddb82eeb9f17247f99736be81e6fcd32, type: 3}
---- !u!198 &96992192 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3579003478662646226, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
-  m_PrefabInstance: {fileID: 935324660}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &117609861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37840,10 +37835,6 @@ PrefabInstance:
       propertyPath: healthUI
       value: 
       objectReference: {fileID: 1132779095}
-    - target: {fileID: 2507807745130688083, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3399048728093313104, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.7
@@ -37885,10 +37876,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3689127952846585523, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
-      propertyPath: particleFX
-      value: 
-      objectReference: {fileID: 96992192}
-    - target: {fileID: 3689127952846585523, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: groundCheckSize.x
       value: 1
       objectReference: {fileID: 0}
@@ -37900,17 +37887,9 @@ PrefabInstance:
       propertyPath: m_UIInputModule
       value: 
       objectReference: {fileID: 1997095936}
-    - target: {fileID: 5874731096048760901, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 6200000, guid: b937e60660dda47ec80d646b41d5f70a, type: 2}
     - target: {fileID: 8185892712208835974, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_Name
       value: Player Variant
-      objectReference: {fileID: 0}
-    - target: {fileID: 8253163023153796056, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

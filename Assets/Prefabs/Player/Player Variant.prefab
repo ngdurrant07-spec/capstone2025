@@ -5063,8 +5063,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0171
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.19
+      value: -0.152
       objectReference: {fileID: 0}
     - target: {fileID: 1929180932821110725, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5154,6 +5158,10 @@ PrefabInstance:
       propertyPath: rollHitboxSize.y
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: groundCheckSize.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3259188580169047087, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -5192,11 +5200,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.23
+      value: -3.7
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.12
+      value: -20.889
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.z

@@ -106,7 +106,7 @@ MonoBehaviour:
   - trackName: Level1
     clip: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
   - trackName: Level2
-    clip: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
+    clip: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
   - trackName: Level3
     clip: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
   - trackName: LevelClear
