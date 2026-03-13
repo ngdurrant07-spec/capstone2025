@@ -395,6 +395,7 @@ public class BossRivalRacer : MonoBehaviour
 
         return isGliding;
     }
+    
 
     private bool ShouldAttackPlayer()
     {
