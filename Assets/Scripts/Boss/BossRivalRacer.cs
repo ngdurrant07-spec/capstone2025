@@ -21,6 +21,7 @@ public class BossRivalRacer : MonoBehaviour
     [SerializeField] private BossBehaviorMode behaviorMode = BossBehaviorMode.MetalSonic;
     [SerializeField] private PlayerScript playerTarget;
     [SerializeField] private bool autoStartOnPlay = true;
+    [SerializeField] private Camera targetCamera;
 
     [Header("Race Path")]
     [SerializeField] private Transform[] waypoints;
@@ -30,6 +31,7 @@ public class BossRivalRacer : MonoBehaviour
     [SerializeField] private float runSpeed = 7.5f;
     [SerializeField] private float jumpForce = 11f;
     [SerializeField] private float jumpHeightThreshold = 0.8f;
+    [SerializeField] private float maxJumpTriggerFallSpeed = 0.1f;
     [SerializeField] private float horizontalAcceleration = 30f;
 
     [Header("Race Glide")]
@@ -42,6 +44,8 @@ public class BossRivalRacer : MonoBehaviour
     [Header("Metal Sonic Flight")]
     [SerializeField] private float flySpeed = 9f;
     [SerializeField] private float hoverLerpSpeed = 10f;
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color telegraphColor = Color.red;
     [SerializeField] private Vector2 hoverOffset = new Vector2(4f, 2.5f);
     [SerializeField] private float hoverBobAmplitude = 0.5f;
     [SerializeField] private float hoverBobFrequency = 3f;
@@ -66,11 +70,30 @@ public class BossRivalRacer : MonoBehaviour
     [SerializeField] private float downwardSlamSpeed = 16f;
     [SerializeField] private float horizontalSlamSpeed = 5f;
 
+    [Header("Offscreen Indicator")]
+    [SerializeField] private bool showOffscreenIndicator = true;
+    [SerializeField] private Sprite offscreenIndicatorSprite;
+    [SerializeField] private Color offscreenIndicatorColor = Color.white;
+    [SerializeField] private Vector2 offscreenViewportPadding = new Vector2(0.08f, 0.12f);
+    [SerializeField] private Vector3 offscreenIndicatorScale = new Vector3(0.6f, 0.6f, 1f);
+    [SerializeField] private bool showOffscreenDistance = true;
+
+    [Header("Defeat Pose")]
+    [SerializeField] private Sprite defeatedSprite;
+    [SerializeField] private Vector3 defeatedSpriteEulerAngles = new Vector3(0f, 0f, -25f);
+    [SerializeField] private Color defeatedColor = new Color(1f, 1f, 1f, 0.8f);
+
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private SpriteRenderer offscreenIndicatorRenderer;
+    private TextMesh offscreenIndicatorText;
+    private Transform visualTransform;
+    private Sprite defaultSprite;
     private Vector3 startPosition;
     private Quaternion startRotation;
+    private Quaternion visualStartLocalRotation;
     private float defaultGravityScale;
+    private RigidbodyConstraints2D defaultConstraints;
     private float lastHitTime = float.NegativeInfinity;
     private float stateTimer;
     private float hoverSide = 1f;
@@ -87,8 +110,13 @@ public class BossRivalRacer : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         defaultGravityScale = rb.gravityScale;
+        defaultConstraints = rb.constraints;
         startPosition = transform.position;
         startRotation = transform.rotation;
+        visualTransform = spriteRenderer != null ? spriteRenderer.transform : transform;
+        visualStartLocalRotation = visualTransform.localRotation;
+        defaultSprite = spriteRenderer != null ? spriteRenderer.sprite : null;
+        EnsureOffscreenIndicator();
     }
 
     private void Start()
@@ -111,6 +139,11 @@ public class BossRivalRacer : MonoBehaviour
         }
 
         RunRaceBehavior();
+    }
+
+    private void LateUpdate()
+    {
+        UpdateOffscreenIndicator();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -142,8 +175,12 @@ public class BossRivalRacer : MonoBehaviour
         metalAttackState = MetalAttackState.Hover;
         raceActive = true;
         isGliding = false;
+        rb.constraints = defaultConstraints;
         rb.gravityScale = behaviorMode == BossBehaviorMode.MetalSonic ? 0f : defaultGravityScale;
         rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        RestoreVisualState();
+        ApplyBossColor(normalColor);
 
         if (playerTarget == null)
             playerTarget = FindFirstObjectByType<PlayerScript>();
@@ -153,8 +190,12 @@ public class BossRivalRacer : MonoBehaviour
     {
         raceActive = false;
         isGliding = false;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
         rb.gravityScale = defaultGravityScale;
         rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        ApplyBossColor(normalColor);
+        SetOffscreenIndicatorVisible(false);
     }
 
     public void ResetToStart()
@@ -163,6 +204,7 @@ public class BossRivalRacer : MonoBehaviour
         transform.rotation = startRotation;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+        rb.constraints = defaultConstraints;
         rb.gravityScale = defaultGravityScale;
         waypointIndex = 0;
         stateTimer = 0f;
@@ -171,6 +213,30 @@ public class BossRivalRacer : MonoBehaviour
         metalAttackState = MetalAttackState.Hover;
         raceActive = false;
         isGliding = false;
+        RestoreVisualState();
+        ApplyBossColor(normalColor);
+        SetOffscreenIndicatorVisible(false);
+    }
+
+    public void EnterDefeatedPose()
+    {
+        raceActive = false;
+        isGliding = false;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        rb.gravityScale = defaultGravityScale;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        metalAttackState = MetalAttackState.Hover;
+        stateTimer = 0f;
+        SetOffscreenIndicatorVisible(false);
+
+        if (visualTransform != null)
+            visualTransform.localRotation = Quaternion.Euler(defeatedSpriteEulerAngles);
+
+        if (spriteRenderer != null && defeatedSprite != null)
+            spriteRenderer.sprite = defeatedSprite;
+
+        ApplyBossColor(defeatedColor);
     }
 
     public void SetRaceManager(BossRaceManager manager, Transform explicitStartPoint)
@@ -196,7 +262,7 @@ public class BossRivalRacer : MonoBehaviour
         UpdateRaceGlideState(delta, grounded);
         MoveTowardsTarget(delta);
 
-        if (grounded && delta.y > jumpHeightThreshold)
+        if (grounded && rb.linearVelocity.y <= maxJumpTriggerFallSpeed && delta.y > jumpHeightThreshold)
             Jump();
 
         if (delta.magnitude <= waypointReachDistance && waypointIndex < waypoints.Length - 1)
@@ -279,6 +345,7 @@ public class BossRivalRacer : MonoBehaviour
         metalAttackState = MetalAttackState.Hover;
         hoverSide *= -1f;
         rb.linearVelocity = Vector2.zero;
+        ApplyBossColor(normalColor);
     }
 
     private void EnterTelegraph()
@@ -286,12 +353,14 @@ public class BossRivalRacer : MonoBehaviour
         stateTimer = 0f;
         metalAttackState = MetalAttackState.Telegraph;
         rb.linearVelocity = Vector2.zero;
+        ApplyBossColor(telegraphColor);
     }
 
     private void EnterDash()
     {
         stateTimer = 0f;
         metalAttackState = MetalAttackState.Dash;
+        ApplyBossColor(normalColor);
 
         Vector2 targetPoint = playerTarget.transform.position;
         dashDirection = (targetPoint - rb.position).normalized;
@@ -304,6 +373,7 @@ public class BossRivalRacer : MonoBehaviour
         stateTimer = 0f;
         metalAttackState = MetalAttackState.Recover;
         rb.linearVelocity = Vector2.zero;
+        ApplyBossColor(normalColor);
     }
 
     private void MoveTowardsTarget(Vector2 delta)
@@ -409,8 +479,27 @@ public class BossRivalRacer : MonoBehaviour
         return horizontalLead <= attackDetectionRange;
     }
 
+    private float GetMetalCruiseY()
+    {
+        return startPosition.y + raceCruiseHeight;
+    }
+
     private Vector2 GetRaceAnchor()
     {
+        if (behaviorMode == BossBehaviorMode.MetalSonic)
+        {
+            float anchorX = rb.position.x + flySpeed * 0.5f;
+
+            if (waypoints != null && waypoints.Length > 0)
+            {
+                Transform target = waypoints[Mathf.Clamp(waypointIndex, 0, waypoints.Length - 1)];
+                if (target != null)
+                    anchorX = target.position.x;
+            }
+
+            return new Vector2(anchorX, GetMetalCruiseY());
+        }
+
         if (waypoints != null && waypoints.Length > 0)
         {
             Transform target = waypoints[Mathf.Clamp(waypointIndex, 0, waypoints.Length - 1)];
@@ -441,6 +530,121 @@ public class BossRivalRacer : MonoBehaviour
             return;
 
         spriteRenderer.flipX = horizontalSpeed < 0f;
+    }
+
+    private void ApplyBossColor(Color color)
+    {
+        if (spriteRenderer != null)
+            spriteRenderer.color = color;
+    }
+
+    private void RestoreVisualState()
+    {
+        if (visualTransform != null)
+            visualTransform.localRotation = visualStartLocalRotation;
+
+        if (spriteRenderer != null)
+            spriteRenderer.sprite = defaultSprite;
+    }
+
+    private void EnsureOffscreenIndicator()
+    {
+        if (offscreenIndicatorRenderer != null)
+            return;
+
+        GameObject indicator = new GameObject("BossOffscreenIndicator");
+        indicator.transform.SetParent(transform, false);
+        indicator.hideFlags = HideFlags.DontSave;
+
+        offscreenIndicatorRenderer = indicator.AddComponent<SpriteRenderer>();
+        offscreenIndicatorRenderer.sprite = offscreenIndicatorSprite;
+        offscreenIndicatorRenderer.color = offscreenIndicatorColor;
+        offscreenIndicatorRenderer.sortingLayerID = spriteRenderer != null ? spriteRenderer.sortingLayerID : 0;
+        offscreenIndicatorRenderer.sortingOrder = spriteRenderer != null ? spriteRenderer.sortingOrder + 10 : 10;
+        indicator.transform.localScale = offscreenIndicatorScale;
+
+        GameObject label = new GameObject("DistanceLabel");
+        label.transform.SetParent(indicator.transform, false);
+        label.transform.localPosition = new Vector3(0f, -0.8f, 0f);
+
+        offscreenIndicatorText = label.AddComponent<TextMesh>();
+        offscreenIndicatorText.text = string.Empty;
+        offscreenIndicatorText.fontSize = 48;
+        offscreenIndicatorText.characterSize = 0.08f;
+        offscreenIndicatorText.anchor = TextAnchor.MiddleCenter;
+        offscreenIndicatorText.alignment = TextAlignment.Center;
+        offscreenIndicatorText.color = offscreenIndicatorColor;
+
+        SetOffscreenIndicatorVisible(false);
+    }
+
+    private void UpdateOffscreenIndicator()
+    {
+        if (!showOffscreenIndicator || !raceActive)
+        {
+            SetOffscreenIndicatorVisible(false);
+            return;
+        }
+
+        EnsureOffscreenIndicator();
+
+        Camera cam = targetCamera != null ? targetCamera : Camera.main;
+        if (cam == null)
+        {
+            SetOffscreenIndicatorVisible(false);
+            return;
+        }
+
+        Vector3 viewportPoint = cam.WorldToViewportPoint(transform.position);
+        bool isVisible = viewportPoint.z > 0f &&
+                         viewportPoint.x >= 0f && viewportPoint.x <= 1f &&
+                         viewportPoint.y >= 0f && viewportPoint.y <= 1f;
+
+        if (isVisible)
+        {
+            SetOffscreenIndicatorVisible(false);
+            return;
+        }
+
+        float clampedX = Mathf.Clamp(viewportPoint.x, offscreenViewportPadding.x, 1f - offscreenViewportPadding.x);
+        float clampedY = Mathf.Clamp(viewportPoint.y, offscreenViewportPadding.y, 1f - offscreenViewportPadding.y);
+        float worldDepth = Mathf.Abs(transform.position.z - cam.transform.position.z);
+        Vector3 indicatorWorldPos = cam.ViewportToWorldPoint(new Vector3(clampedX, clampedY, worldDepth));
+        indicatorWorldPos.z = transform.position.z;
+
+        offscreenIndicatorRenderer.transform.position = indicatorWorldPos;
+
+        Vector2 toBoss = (Vector2)(transform.position - indicatorWorldPos);
+        float angle = Mathf.Atan2(toBoss.y, toBoss.x) * Mathf.Rad2Deg - 90f;
+        offscreenIndicatorRenderer.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        if (offscreenIndicatorText != null)
+        {
+            offscreenIndicatorText.transform.rotation = Quaternion.identity;
+            if (showOffscreenDistance)
+            {
+                float distance = playerTarget != null
+                    ? Vector2.Distance(playerTarget.transform.position, transform.position)
+                    : toBoss.magnitude;
+                offscreenIndicatorText.text = Mathf.RoundToInt(distance).ToString();
+            }
+            else
+            {
+                offscreenIndicatorText.text = string.Empty;
+            }
+        }
+
+        offscreenIndicatorRenderer.color = offscreenIndicatorColor;
+        SetOffscreenIndicatorVisible(true);
+    }
+
+    private void SetOffscreenIndicatorVisible(bool visible)
+    {
+        if (offscreenIndicatorRenderer != null)
+            offscreenIndicatorRenderer.enabled = visible && offscreenIndicatorRenderer.sprite != null;
+
+        if (offscreenIndicatorText != null)
+            offscreenIndicatorText.gameObject.SetActive(visible && showOffscreenDistance);
     }
 
     private void OnDrawGizmosSelected()

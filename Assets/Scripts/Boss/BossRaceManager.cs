@@ -28,6 +28,7 @@ public class BossRaceManager : MonoBehaviour
     private void Awake()
     {
         ResolveReferences();
+        RegisterGoalAreaListener();
     }
 
     private void Start()
@@ -35,9 +36,15 @@ public class BossRaceManager : MonoBehaviour
         StartRace();
     }
 
+    private void OnDestroy()
+    {
+        UnregisterGoalAreaListener();
+    }
+
     public void StartRace()
     {
         ResolveReferences();
+        RegisterGoalAreaListener();
 
         raceFinished = false;
         raceStarted = true;
@@ -98,11 +105,21 @@ public class BossRaceManager : MonoBehaviour
     private void HandlePlayerWin(Collider2D finisher)
     {
         raceFinished = true;
-        rivalBoss?.StopRace();
+        rivalBoss?.EnterDefeatedPose();
         onPlayerWon?.Invoke();
 
         if (goalArea != null)
             goalArea.TryCompleteGoal(finisher);
+    }
+
+    private void HandleGoalAreaReached()
+    {
+        if (!raceStarted || raceFinished)
+            return;
+
+        raceFinished = true;
+        rivalBoss?.EnterDefeatedPose();
+        onPlayerWon?.Invoke();
     }
 
     private IEnumerator HandleLossRoutine()
@@ -133,5 +150,20 @@ public class BossRaceManager : MonoBehaviour
 
         if (rivalBoss != null)
             rivalBoss.SetRaceManager(this, rivalStartPoint);
+    }
+
+    private void RegisterGoalAreaListener()
+    {
+        if (goalArea != null)
+        {
+            goalArea.onGoalReached.RemoveListener(HandleGoalAreaReached);
+            goalArea.onGoalReached.AddListener(HandleGoalAreaReached);
+        }
+    }
+
+    private void UnregisterGoalAreaListener()
+    {
+        if (goalArea != null)
+            goalArea.onGoalReached.RemoveListener(HandleGoalAreaReached);
     }
 }

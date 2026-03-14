@@ -853,7 +853,7 @@ IEnumerator AirBoostGravityLock(float time)
         }
     }
 
-    bool IsGrounded()
+    public bool IsGrounded()
     {
         return isGrounded;
     }
