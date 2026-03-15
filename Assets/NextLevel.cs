@@ -10,6 +10,7 @@ public class NextLevel : MonoBehaviour
         "Level1",
         "Level2",
         "Level3",
+        "WinGame",
         "Boss"
     };
 

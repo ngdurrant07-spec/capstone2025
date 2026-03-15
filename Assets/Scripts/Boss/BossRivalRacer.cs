@@ -361,6 +361,7 @@ public class BossRivalRacer : MonoBehaviour
         stateTimer = 0f;
         metalAttackState = MetalAttackState.Dash;
         ApplyBossColor(normalColor);
+        SoundEffectManager.Play("BossAttack");
 
         Vector2 targetPoint = playerTarget.transform.position;
         dashDirection = (targetPoint - rb.position).normalized;
@@ -465,7 +466,6 @@ public class BossRivalRacer : MonoBehaviour
 
         return isGliding;
     }
-    
 
     private bool ShouldAttackPlayer()
     {

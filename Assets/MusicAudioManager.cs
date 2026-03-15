@@ -14,6 +14,12 @@ public class MusicAudioManager : MonoBehaviour
     [SerializeField] private string level3TrackName = "Level3";
     [SerializeField] private string levelClearTrackName = "LevelClear";
 
+    [SerializeField] private string bossTrackName = "Boss";
+
+    [SerializeField] private string WinGameTrackName = "WinGame";
+
+
+
     private Coroutine crossfadeRoutine;
 
     private void Awake()
