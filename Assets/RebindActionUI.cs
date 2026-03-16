@@ -68,7 +68,13 @@ public class RebindActionUI : MonoBehaviour
     private void OnDestroy()
     {
         activeRebind?.Dispose();
-        controls?.Dispose();
+
+        if (controls != null)
+        {
+            controls.Disable();
+            controls.Dispose();
+            controls = null;
+        }
     }
 
     private void BuildUi()

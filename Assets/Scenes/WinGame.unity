@@ -1122,8 +1122,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278242559
-  m_fontColor: {r: 1, g: 0.79884464, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
@@ -1193,6 +1193,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010743036}
   m_CullTransparentMesh: 1
+--- !u!1001 &1134094640
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 799060194236519762, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_Name
+      value: MusicLibrary Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -10.22123
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -12.5674
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936810404704610801, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_Pitch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936810404704610801, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 2e3fa945b3e3d4260b8a2655765fd59c, type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
 --- !u!1 &1287811159
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,6 +1558,7 @@ GameObject:
   - component: {fileID: 1791960766}
   - component: {fileID: 1791960765}
   - component: {fileID: 1791960764}
+  - component: {fileID: 1791960768}
   m_Layer: 5
   m_Name: WinBackButton
   m_TagString: Untagged
@@ -1581,13 +1647,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1791960762}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1791960768}
+        m_TargetAssemblyTypeName: WinBackButton, ProjectScripts
+        m_MethodName: WinBackButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1631,6 +1697,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1791960762}
   m_CullTransparentMesh: 1
+--- !u!114 &1791960768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791960762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1bd68466b3e4108acbf28a14c61b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  sceneName: Levels
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1638,3 +1717,4 @@ SceneRoots:
   - {fileID: 867064776}
   - {fileID: 23093918}
   - {fileID: 465211170}
+  - {fileID: 1134094640}

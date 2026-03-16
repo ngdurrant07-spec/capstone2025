@@ -5060,7 +5060,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5068,7 +5076,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.152
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135246744466057371, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1929180932821110725, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5120,7 +5132,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: fallDeathY
-      value: -30
+      value: -60
       objectReference: {fileID: 0}
     - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: glideTrail
@@ -5150,6 +5162,10 @@ PrefabInstance:
       propertyPath: rollSpeedBoost
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+      propertyPath: spriteRenderer
+      value: 
+      objectReference: {fileID: 2700343087019259556}
     - target: {fileID: 3031159738595044092, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: throwablePrefab
       value: 
@@ -5200,11 +5216,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.7
+      value: -12.6
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -20.889
+      value: -20.87
       objectReference: {fileID: 0}
     - target: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5356,6 +5372,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8253163023153796056}
   m_SourcePrefab: {fileID: 100100000, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+--- !u!212 &2700343087019259556 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4349129583278744299, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
+  m_PrefabInstance: {fileID: 1811218818178880591}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3399048728093313104 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3893754558403370015, guid: 4df9625c2012948d18a5ab49d50d3c66, type: 3}
@@ -5422,6 +5443,6 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.021092756, y: -0.05880368}
-  m_Size: {x: 0.1855477, y: 0.2200636}
+  m_Offset: {x: -0.01860244, y: -0.050336856}
+  m_Size: {x: 0.16861412, y: 0.20312995}
   m_Direction: 0

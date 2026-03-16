@@ -5388,7 +5388,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1009321404623643150, guid: e15cf11a795c24ad29595952103ad559, type: 3}
       propertyPath: bounceForce
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2236384798619420814, guid: e15cf11a795c24ad29595952103ad559, type: 3}
       propertyPath: m_SortingLayer
@@ -32293,6 +32293,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4760701338952906248, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: musicSlider
+      value: 
+      objectReference: {fileID: 1761348041}
     - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
       propertyPath: tracks.Array.data[2].clip
       value: 
@@ -33494,7 +33498,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1009321404623643150, guid: e15cf11a795c24ad29595952103ad559, type: 3}
       propertyPath: bounceForce
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2236384798619420814, guid: e15cf11a795c24ad29595952103ad559, type: 3}
       propertyPath: m_SortingLayer
@@ -96439,6 +96443,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
+--- !u!114 &1761348041 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6011679838225713857, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
+  m_PrefabInstance: {fileID: 1761348040}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1001 &1766179921
 PrefabInstance:
   m_ObjectHideFlags: 0

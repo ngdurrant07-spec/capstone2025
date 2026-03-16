@@ -4841,8 +4841,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: damage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
       propertyPath: maxFallTime
-      value: 1.9
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: resetFallDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13037,6 +13045,17 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &254776750 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6011679838225713857, guid: cd703f0cc19fa4f27ad669bb92ae074c, type: 3}
+  m_PrefabInstance: {fileID: 254776747}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1001 &263761291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42545,8 +42564,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: damage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
       propertyPath: maxFallTime
-      value: 1.5
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: resetFallDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -45906,8 +45933,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: damage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
       propertyPath: maxFallTime
-      value: 1.5
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: resetFallDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -51074,8 +51109,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: damage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
       propertyPath: maxFallTime
-      value: 1.5
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: resetFallDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -51582,6 +51625,10 @@ PrefabInstance:
       propertyPath: m_Resource
       value: 
       objectReference: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
+    - target: {fileID: 4760701338952906248, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: musicSlider
+      value: 
+      objectReference: {fileID: 254776750}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -53140,8 +53187,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: damage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
       propertyPath: maxFallTime
-      value: 1.5
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899791264628142134, guid: f3d4436ed0a5242498e69deedc0380ea, type: 3}
+      propertyPath: resetFallDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

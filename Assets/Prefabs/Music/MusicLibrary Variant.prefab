@@ -22,11 +22,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2303983779142212000, guid: b39c772e878534c82a50fd1b5f2ddb5a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.72388
+      value: 17.44727
       objectReference: {fileID: 0}
     - target: {fileID: 2303983779142212000, guid: b39c772e878534c82a50fd1b5f2ddb5a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.02815
+      value: -10.04186
       objectReference: {fileID: 0}
     - target: {fileID: 2303983779142212000, guid: b39c772e878534c82a50fd1b5f2ddb5a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -111,6 +111,12 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
   - trackName: LevelClear
     clip: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
+  - trackName: Boss
+    clip: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
+  - trackName: WinGame
+    clip: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
+  - trackName: Settings
+    clip: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
 --- !u!82 &1936810404704610801
 AudioSource:
   m_ObjectHideFlags: 0
@@ -122,7 +128,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
+  m_Resource: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

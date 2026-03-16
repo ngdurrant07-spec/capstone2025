@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-using UnityEngine.InputSystem;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -10,6 +9,7 @@ public class DialogueManager : MonoBehaviour
     [Header("UI Elements")]
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
+    public GameObject continueIndicator;
 
     [Header("Settings")]
     public float typingSpeed = 0.02f;
@@ -19,6 +19,8 @@ public class DialogueManager : MonoBehaviour
     private int index;
     private Transform currentNPC; // follow the NPC talking, not player
     private Coroutine typingCoroutine;
+    private string currentSentence;
+    private bool isTyping;
 
     private void Awake()
     {
@@ -26,6 +28,7 @@ public class DialogueManager : MonoBehaviour
         else Destroy(gameObject);
 
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        SetContinueIndicatorVisible(false);
     }
 
     private void Update()
@@ -39,12 +42,16 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Advance dialogue
-        bool advancePressed = Keyboard.current != null &&
-                              (Keyboard.current.upArrowKey.wasPressedThisFrame ||
-                               Keyboard.current.wKey.wasPressedThisFrame);
+        bool advancePressed = DialogueInputResolver.WasDialogueAdvancePressedThisFrame();
 
         if (dialoguePanel.activeSelf && advancePressed)
         {
+            if (isTyping)
+            {
+                FinishCurrentSentence();
+                return;
+            }
+
             ShowNextSentence();
         }
     }
@@ -65,8 +72,11 @@ public class DialogueManager : MonoBehaviour
         currentNPC = npcTransform;
         sentences = newSentences;
         index = 0;
+        currentSentence = null;
+        isTyping = false;
 
         dialoguePanel.SetActive(true);
+        SetContinueIndicatorVisible(false);
 
         ShowNextSentence();
     }
@@ -82,27 +92,57 @@ public class DialogueManager : MonoBehaviour
         if (dialogueText != null)
         {
             if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-            typingCoroutine = StartCoroutine(TypeSentence(sentences[index]));
+            currentSentence = DialogueInputResolver.ResolvePlaceholders(sentences[index]);
+            typingCoroutine = StartCoroutine(TypeSentence(currentSentence));
         }
         index++;
     }
 
     private IEnumerator TypeSentence(string sentence)
     {
+        isTyping = true;
+        SetContinueIndicatorVisible(false);
         dialogueText.text = "";
         foreach (char letter in sentence)
         {
             dialogueText.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
+
+        isTyping = false;
+        typingCoroutine = null;
+        SetContinueIndicatorVisible(index < sentences.Length);
+    }
+
+    private void FinishCurrentSentence()
+    {
+        if (dialogueText == null)
+            return;
+
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+
+        dialogueText.text = currentSentence ?? string.Empty;
+        isTyping = false;
+        typingCoroutine = null;
+        SetContinueIndicatorVisible(index < sentences.Length);
+    }
+
+    private void SetContinueIndicatorVisible(bool visible)
+    {
+        if (continueIndicator != null)
+            continueIndicator.SetActive(visible);
     }
 
     private void EndDialogue()
     {
         dialoguePanel.SetActive(false);
+        SetContinueIndicatorVisible(false);
         sentences = null;
         currentNPC = null;
         index = 0;
+        currentSentence = null;
+        isTyping = false;
         typingCoroutine = null;
     }
 }

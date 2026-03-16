@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 6834086823828771194}
   - component: {fileID: 6505728059683767329}
   m_Layer: 5
-  m_Name: VolumeSlider
+  m_Name: MusicVolumeSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1611,9 +1611,15 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7245469596329291749}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6239524840038360977, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 981552244162105436}
     - targetCorrespondingSourceObject: {fileID: 9081422444405939316, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1150910723199610791}
+    - targetCorrespondingSourceObject: {fileID: 9137857729799512142, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3082433844803937792}
   m_SourcePrefab: {fileID: 100100000, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
 --- !u!224 &493227152283262868 stripped
 RectTransform:
@@ -1631,6 +1637,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &1841555545838500457 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6239524840038360977, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
+  m_PrefabInstance: {fileID: 5699793286490545656}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &981552244162105436
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841555545838500457}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2958984697138559965 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7352644450883888677, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
@@ -1648,6 +1671,23 @@ CanvasGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3539277706887659916}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!1 &3587551390138711478 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9137857729799512142, guid: 6d23ec206c51047e5b61cd59082898ea, type: 3}
+  m_PrefabInstance: {fileID: 5699793286490545656}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &3082433844803937792
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3587551390138711478}
   m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1

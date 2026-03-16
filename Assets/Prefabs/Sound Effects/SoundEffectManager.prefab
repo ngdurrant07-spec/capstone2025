@@ -180,6 +180,9 @@ MonoBehaviour:
   - name: EnterDoor
     audioclips:
     - {fileID: 8300000, guid: a235d590ef2a04d1b85b61ef4c21337c, type: 3}
+  - name: BossAttack
+    audioclips:
+    - {fileID: 8300000, guid: fe0b1f9aeb45b41b089175aeeabd5d95, type: 3}
 --- !u!114 &3563280673177463721
 MonoBehaviour:
   m_ObjectHideFlags: 0

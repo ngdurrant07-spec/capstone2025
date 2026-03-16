@@ -19,7 +19,7 @@ public class PauseMenu : MonoBehaviour
         InputBindingOverrides.ApplySavedOverrides(controls.asset);
 
         // Toggle pause with the Pause action
-        controls.UI.Pause.performed += _ => TogglePause();
+        controls.UI.Pause.performed += OnPausePerformed;
     }
 
     void OnEnable()
@@ -40,7 +40,18 @@ public class PauseMenu : MonoBehaviour
 
     void OnDisable()
     {
+        controls?.Disable();
+    }
+
+    void OnDestroy()
+    {
+        if (controls == null)
+            return;
+
+        controls.UI.Pause.performed -= OnPausePerformed;
         controls.Disable();
+        controls.Dispose();
+        controls = null;
     }
 
     void Start()
@@ -64,6 +75,11 @@ public class PauseMenu : MonoBehaviour
             PauseGame();
         else
             ResumeGame();
+    }
+
+    private void OnPausePerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        TogglePause();
     }
 
     void PauseGame()
