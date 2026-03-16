@@ -108,11 +108,11 @@ MonoBehaviour:
   - trackName: Level2
     clip: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
   - trackName: Level3
-    clip: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
+    clip: {fileID: 8300000, guid: f04bbddd7e3094caaaf70b991b09e61a, type: 3}
   - trackName: LevelClear
     clip: {fileID: 8300000, guid: 62822a459c80140dba17ddbfc374b4e6, type: 3}
   - trackName: Boss
-    clip: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
+    clip: {fileID: 8300000, guid: febd717b4f2c14917a51a43ce8c866c2, type: 3}
   - trackName: WinGame
     clip: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
   - trackName: Settings
@@ -128,7 +128,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
+  m_Resource: {fileID: 8300000, guid: f04bbddd7e3094caaaf70b991b09e61a, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

@@ -134562,11 +134562,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4968418126729208485, guid: 966ff74bccd794b1ab9e38d94e25e7b4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.23
+      value: -2.78
       objectReference: {fileID: 0}
     - target: {fileID: 4968418126729208485, guid: 966ff74bccd794b1ab9e38d94e25e7b4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4968418126729208485, guid: 966ff74bccd794b1ab9e38d94e25e7b4, type: 3}
       propertyPath: m_LocalPosition.z
@@ -147040,7 +147040,7 @@ Transform:
   m_GameObject: {fileID: 584251665}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.23, y: -0.12, z: -10}
+  m_LocalPosition: {x: -2.78, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -281361,6 +281361,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4673677301201251229, guid: a6d693b6113584cfe97b7ebb2af98f78, type: 3}
+      propertyPath: fontOverride
+      value: 
+      objectReference: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+    - target: {fileID: 4673677301201251229, guid: a6d693b6113584cfe97b7ebb2af98f78, type: 3}
       propertyPath: targetMedals
       value: 2
       objectReference: {fileID: 0}
@@ -322340,11 +322344,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3399048728093313104, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.23
+      value: -2.78
       objectReference: {fileID: 0}
     - target: {fileID: 3399048728093313104, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.12
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3399048728093313104, guid: 3fbe6eace81d04df89f7050e07ff1bfa, type: 3}
       propertyPath: m_LocalPosition.z
@@ -338443,10 +338447,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1936810404704610801, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: f04bbddd7e3094caaaf70b991b09e61a, type: 3}
     - target: {fileID: 4760701338952906248, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
       propertyPath: musicSlider
       value: 
       objectReference: {fileID: 775244872}
+    - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: tracks.Array.data[3].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f04bbddd7e3094caaaf70b991b09e61a, type: 3}
+    - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: tracks.Array.data[5].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: febd717b4f2c14917a51a43ce8c866c2, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

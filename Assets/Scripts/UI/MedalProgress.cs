@@ -12,13 +12,14 @@ public static class MedalProgress
         if (string.IsNullOrWhiteSpace(sceneName))
             return;
 
-        medalCount = Mathf.Max(0, medalCount);
+        medalCount = Mathf.Clamp(medalCount, 0, MedalCounterUI.MaxMedals);
 
         int previousBest = GetBestForLevel(sceneName);
         if (medalCount > previousBest)
         {
             PlayerPrefs.SetInt(GetLevelKey(sceneName), medalCount);
-            PlayerPrefs.SetInt(TotalKey, GetSavedTotalMedals() + (medalCount - previousBest));
+            int updatedTotal = GetSavedTotalMedals() + (medalCount - previousBest);
+            PlayerPrefs.SetInt(TotalKey, Mathf.Clamp(updatedTotal, 0, MedalCounterUI.MaxMedals));
         }
 
         PlayerPrefs.SetString(LastSceneKey, sceneName);
@@ -31,12 +32,12 @@ public static class MedalProgress
         if (string.IsNullOrWhiteSpace(sceneName))
             return 0;
 
-        return PlayerPrefs.GetInt(GetLevelKey(sceneName), 0);
+        return Mathf.Clamp(PlayerPrefs.GetInt(GetLevelKey(sceneName), 0), 0, MedalCounterUI.MaxMedals);
     }
 
     public static int GetSavedTotalMedals()
     {
-        return PlayerPrefs.GetInt(TotalKey, 0);
+        return Mathf.Clamp(PlayerPrefs.GetInt(TotalKey, 0), 0, MedalCounterUI.MaxMedals);
     }
 
     public static string GetLastCompletedSceneName()
@@ -46,7 +47,7 @@ public static class MedalProgress
 
     public static int GetLastCompletedMedalCount()
     {
-        return PlayerPrefs.GetInt(LastCountKey, 0);
+        return Mathf.Clamp(PlayerPrefs.GetInt(LastCountKey, 0), 0, MedalCounterUI.MaxMedals);
     }
 
     public static void ClearSavedProgress(params string[] sceneNames)

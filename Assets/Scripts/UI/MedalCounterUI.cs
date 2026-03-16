@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class MedalCounterUI : MonoBehaviour
 {
+    public const int MaxMedals = 8;
+
     [Header("UI")]
     [SerializeField] private TMP_Text counterText;
     [SerializeField] private string label = "Medals: ";
@@ -28,7 +30,11 @@ public class MedalCounterUI : MonoBehaviour
 
     public static void AddMedals(int amount = 1)
     {
-        currentMedals += Mathf.Max(0, amount);
+        int medalsToAdd = Mathf.Max(0, amount);
+        if (medalsToAdd == 0 || currentMedals >= MaxMedals)
+            return;
+
+        currentMedals = Mathf.Clamp(currentMedals + medalsToAdd, 0, MaxMedals);
 
         if (instance != null)
             instance.UpdateText();
@@ -36,7 +42,7 @@ public class MedalCounterUI : MonoBehaviour
 
     public static int GetCurrentMedals()
     {
-        return currentMedals;
+        return Mathf.Clamp(currentMedals, 0, MaxMedals);
     }
 
     public void SetTargetMedals(int target)
@@ -58,7 +64,8 @@ public class MedalCounterUI : MonoBehaviour
         if (counterText == null)
             return;
 
-        counterText.SetText($"{label}{currentMedals}/{Mathf.Max(0, targetMedals)}");
+        int displayedTarget = Mathf.Min(Mathf.Max(0, targetMedals), MaxMedals);
+        counterText.SetText($"{label}{GetCurrentMedals()}/{displayedTarget}");
     }
 
     private void ApplyFontOverride()
