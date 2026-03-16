@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class TimeTrialAreaLock : MonoBehaviour
 {
+    private const string GlobalUnlockKey = "TimeTrialsUnlocked";
+
     [Header("Targets")]
     [SerializeField] private SpriteRenderer[] spriteRenderers;
     [SerializeField] private Collider2D[] collidersToDisable;
@@ -14,6 +16,7 @@ public class TimeTrialAreaLock : MonoBehaviour
 
     [Header("Startup")]
     [SerializeField] private bool startLocked = false;
+    [SerializeField] private bool requireGameCompletion = true;
 
     [Header("Progress Unlock")]
     [SerializeField] private bool persistUnlockByScene = false;
@@ -30,6 +33,9 @@ public class TimeTrialAreaLock : MonoBehaviour
         bool locked = startLocked;
         if (persistUnlockByScene && IsSavedUnlocked())
             locked = false;
+
+        if (requireGameCompletion && !AreTimeTrialsUnlocked())
+            locked = true;
 
         SetLocked(locked);
     }
@@ -138,5 +144,22 @@ public class TimeTrialAreaLock : MonoBehaviour
 
             PlayerPrefs.DeleteKey($"TimeTrialUnlocked_{sceneName.Trim()}");
         }
+    }
+
+    public static bool AreTimeTrialsUnlocked()
+    {
+        return PlayerPrefs.GetInt(GlobalUnlockKey, 0) == 1;
+    }
+
+    public static void UnlockTimeTrials()
+    {
+        PlayerPrefs.SetInt(GlobalUnlockKey, 1);
+        PlayerPrefs.Save();
+    }
+
+    public static void ClearGlobalUnlock()
+    {
+        PlayerPrefs.DeleteKey(GlobalUnlockKey);
+        PlayerPrefs.Save();
     }
 }

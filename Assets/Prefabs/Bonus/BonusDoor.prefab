@@ -527,6 +527,7 @@ MonoBehaviour:
   unlockedTint: {r: 1, g: 1, b: 1, a: 1}
   lockedTint: {r: 0.2264151, g: 0.21893913, b: 0.21893913, a: 1}
   startLocked: 0
+  requireGameCompletion: 1
 --- !u!1001 &831142868860166291
 PrefabInstance:
   m_ObjectHideFlags: 0

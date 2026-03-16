@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TimeTrialGoal : MonoBehaviour
 {
@@ -17,7 +18,12 @@ public class TimeTrialGoal : MonoBehaviour
         if (!other.CompareTag(playerTag)) return;
 
         if (timer != null)
+        {
+            if (timer.IsRunning)
+                TimeTrialProgress.SaveTime(SceneManager.GetActiveScene().name, timer.ElapsedSeconds);
+
             timer.StopTimer();
+        }
 
         if (hideGoalOnFinish)
         {

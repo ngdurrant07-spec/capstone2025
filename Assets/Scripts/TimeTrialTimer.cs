@@ -19,6 +19,17 @@ public class TimeTrialTimer : MonoBehaviour
 
     private float elapsedSeconds;
     private bool running;
+    private Collider2D triggerCollider;
+    private Renderer[] cachedRenderers;
+
+    public float ElapsedSeconds => elapsedSeconds;
+    public bool IsRunning => running;
+
+    void Awake()
+    {
+        triggerCollider = GetComponent<Collider2D>();
+        cachedRenderers = GetComponentsInChildren<Renderer>(true);
+    }
 
     void Start()
     {
@@ -26,6 +37,16 @@ public class TimeTrialTimer : MonoBehaviour
             timerText.gameObject.SetActive(false);
 
         UpdateText();
+    }
+
+    void OnEnable()
+    {
+        PlayerHealth.OnPlayerDied += HandlePlayerDied;
+    }
+
+    void OnDisable()
+    {
+        PlayerHealth.OnPlayerDied -= HandlePlayerDied;
     }
 
     void Update()
@@ -46,7 +67,10 @@ public class TimeTrialTimer : MonoBehaviour
             timerText.gameObject.SetActive(true);
 
         if (!wasRunning)
+        {
             onTrialStarted?.Invoke();
+            SoundEffectManager.Play("CollectTimeTrial");
+        }
 
         if (startOnce)
         {
@@ -63,7 +87,24 @@ public class TimeTrialTimer : MonoBehaviour
 
     public void ResetTimer()
     {
+        running = false;
         elapsedSeconds = 0f;
+
+        if (hideTextUntilStart && timerText != null)
+            timerText.gameObject.SetActive(false);
+
+        if (startOnce && triggerCollider != null)
+            triggerCollider.enabled = true;
+
+        if (hideTriggerOnStart && cachedRenderers != null)
+        {
+            foreach (Renderer cachedRenderer in cachedRenderers)
+            {
+                if (cachedRenderer != null)
+                    cachedRenderer.enabled = true;
+            }
+        }
+
         UpdateText();
     }
 
@@ -80,8 +121,14 @@ public class TimeTrialTimer : MonoBehaviour
     {
         if (timerText == null) return;
 
-        int minutes = Mathf.FloorToInt(elapsedSeconds / 60f);
-        float seconds = elapsedSeconds % 60f;
-        timerText.SetText($"{minutes:00}:{seconds:00.00}");
+        timerText.SetText(TimeTrialProgress.FormatTime(elapsedSeconds));
+    }
+
+    private void HandlePlayerDied()
+    {
+        if (!running)
+            return;
+
+        ResetTimer();
     }
 }

@@ -19,6 +19,7 @@ public class AirDashPad : MonoBehaviour
             player = other.GetComponentInParent<PlayerScript>();
         if (player == null) return;
         if (!player.IsGlidingActive) return;
+        SoundEffectManager.Play("AirDashPad");
 
         float dir = Mathf.Sign(player.linearVelocity.x);
         if (Mathf.Approximately(dir, 0f))

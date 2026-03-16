@@ -16,7 +16,9 @@ public class NewGameButton : MonoBehaviour
     public void NewGameButtonClick()
     {
         MedalProgress.ClearSavedProgress(scenesToReset);
+        TimeTrialProgress.ClearSavedProgress(scenesToReset);
         TimeTrialAreaLock.ClearSavedUnlocks(scenesToReset);
+        TimeTrialAreaLock.ClearGlobalUnlock();
 
         PlayerPrefs.DeleteKey("LastGameScene");
         PlayerPrefs.Save();

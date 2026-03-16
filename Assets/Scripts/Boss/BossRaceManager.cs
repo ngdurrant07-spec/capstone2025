@@ -106,6 +106,7 @@ public class BossRaceManager : MonoBehaviour
     {
         raceFinished = true;
         rivalBoss?.EnterDefeatedPose();
+        TimeTrialAreaLock.UnlockTimeTrials();
         onPlayerWon?.Invoke();
 
         if (goalArea != null)
@@ -119,6 +120,7 @@ public class BossRaceManager : MonoBehaviour
 
         raceFinished = true;
         rivalBoss?.EnterDefeatedPose();
+        TimeTrialAreaLock.UnlockTimeTrials();
         onPlayerWon?.Invoke();
     }
 

@@ -118665,6 +118665,123 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 54.47113, y: 19.859625}
   m_EdgeRadius: 0
+--- !u!1001 &165861171
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.13576
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 39.08202
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 804405340849566031, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451654943495809506, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_Name
+      value: TimeTrials
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 730563432}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 805067524}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockArea
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: LockArea
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeTrialAreaLock, ProjectScripts
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: TimeTrialAreaLock, ProjectScripts
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308462156365272456, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: onTrialStarted.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727809904880942987, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727809904880942987, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -37.6
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 69dc0681243b14e43af171657c813ad7, type: 3}
 --- !u!1001 &171512104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -119466,7 +119583,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -152614,8 +152731,8 @@ GameObject:
   - component: {fileID: 730563430}
   - component: {fileID: 730563429}
   - component: {fileID: 730563427}
-  - component: {fileID: 730563428}
   - component: {fileID: 730563431}
+  - component: {fileID: 730563432}
   m_Layer: 0
   m_Name: BonusDoor_1
   m_TagString: Untagged
@@ -152656,29 +152773,6 @@ MonoBehaviour:
   onBonusFailed:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &730563428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730563426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a529f1a9d524b43d98cbd6f63f86927c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectScripts::TimeTrialAreaLock
-  spriteRenderers:
-  - {fileID: 730563429}
-  collidersToDisable:
-  - {fileID: 1779843390}
-  behavioursToDisable:
-  - {fileID: 730563427}
-  unlockedTint: {r: 1, g: 1, b: 1, a: 1}
-  lockedTint: {r: 0.35, g: 0.35, b: 0.35, a: 1}
-  startLocked: 0
-  persistUnlockByScene: 0
-  saveKeyOverride: 
 --- !u!212 &730563429
 SpriteRenderer:
   serializedVersion: 2
@@ -152799,6 +152893,29 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.22, y: 0.33}
   m_EdgeRadius: 0
+--- !u!114 &730563432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730563426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a529f1a9d524b43d98cbd6f63f86927c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectScripts::TimeTrialAreaLock
+  spriteRenderers: []
+  collidersToDisable:
+  - {fileID: 730563431}
+  behavioursToDisable:
+  - {fileID: 730563427}
+  unlockedTint: {r: 1, g: 1, b: 1, a: 1}
+  lockedTint: {r: 0.35, g: 0.35, b: 0.35, a: 1}
+  startLocked: 0
+  requireGameCompletion: 0
+  persistUnlockByScene: 0
+  saveKeyOverride: 
 --- !u!1001 &732904855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -173619,6 +173736,10 @@ PrefabInstance:
       propertyPath: sfxSlider
       value: 
       objectReference: {fileID: 76853803}
+    - target: {fileID: 8632635478670032773, guid: 0500589a33cc04e11bbc7668f01a4707, type: 3}
+      propertyPath: 'fallbackSoundEffectGroups.Array.data[0].audioclips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -173789,7 +173910,7 @@ GameObject:
   - component: {fileID: 805067519}
   - component: {fileID: 805067522}
   - component: {fileID: 805067523}
-  - component: {fileID: 805067520}
+  - component: {fileID: 805067524}
   m_Layer: 0
   m_Name: BonusDoor_2
   m_TagString: Untagged
@@ -173872,29 +173993,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &805067520
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 805067517}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a529f1a9d524b43d98cbd6f63f86927c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectScripts::TimeTrialAreaLock
-  spriteRenderers:
-  - {fileID: 805067519}
-  collidersToDisable:
-  - {fileID: 1920677729}
-  behavioursToDisable:
-  - {fileID: 805067520}
-  unlockedTint: {r: 1, g: 1, b: 1, a: 1}
-  lockedTint: {r: 0.35, g: 0.35, b: 0.35, a: 1}
-  startLocked: 0
-  persistUnlockByScene: 0
-  saveKeyOverride: 
 --- !u!61 &805067522
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -173974,6 +174072,29 @@ MonoBehaviour:
   onBonusFailed:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &805067524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805067517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a529f1a9d524b43d98cbd6f63f86927c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectScripts::TimeTrialAreaLock
+  spriteRenderers: []
+  collidersToDisable:
+  - {fileID: 805067522}
+  behavioursToDisable:
+  - {fileID: 805067523}
+  unlockedTint: {r: 1, g: 1, b: 1, a: 1}
+  lockedTint: {r: 0.35, g: 0.35, b: 0.35, a: 1}
+  startLocked: 0
+  requireGameCompletion: 0
+  persistUnlockByScene: 0
+  saveKeyOverride: 
 --- !u!1001 &814095412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -267532,7 +267653,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.03
+      scalar: 0.3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -273171,11 +273292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7648438208132726138, guid: babbbb173f30446a5adaa71ef63447d1, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7648438208132726138, guid: babbbb173f30446a5adaa71ef63447d1, type: 3}
       propertyPath: m_LocalScale.y
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7648438208132726138, guid: babbbb173f30446a5adaa71ef63447d1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -287510,7 +287631,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -287681,7 +287802,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.03
+      scalar: 0.3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -334072,11 +334193,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8708581415540908725, guid: 3ed0c8a683ce54a6f96ddc37f28e18db, type: 3}
   m_PrefabInstance: {fileID: 1779843388}
   m_PrefabAsset: {fileID: 0}
---- !u!61 &1779843390 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 6664605434538842533, guid: 3ed0c8a683ce54a6f96ddc37f28e18db, type: 3}
-  m_PrefabInstance: {fileID: 1779843388}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1805121532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5900441850457249652, guid: 762a3285f4edc476294d8fe4e7bfc9e5, type: 3}
@@ -335467,11 +335583,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1589344583}
   m_SourcePrefab: {fileID: 100100000, guid: ddb82eeb9f17247f99736be81e6fcd32, type: 3}
---- !u!61 &1920677729 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 6664605434538842533, guid: 3ed0c8a683ce54a6f96ddc37f28e18db, type: 3}
-  m_PrefabInstance: {fileID: 1678550317}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1929560456 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 948630604023018322, guid: b70161ad391f94eff8bf15266129e354, type: 3}
@@ -338493,3 +338604,4 @@ SceneRoots:
   - {fileID: 1418457018}
   - {fileID: 2138456078}
   - {fileID: 1835841892}
+  - {fileID: 165861171}

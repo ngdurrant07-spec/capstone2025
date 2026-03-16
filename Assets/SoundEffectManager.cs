@@ -61,8 +61,8 @@ public class SoundEffectManager : MonoBehaviour
         AudioClip audioClip = soundEffectLibrary.GetRandomClip(soundName);
         if (audioClip != null)
         {
-            audioSource.volume = currentVolume;
-            audioSource.PlayOneShot(audioClip);
+            float clipVolumeScale = soundEffectLibrary.GetVolumeScale(soundName);
+            audioSource.PlayOneShot(audioClip, currentVolume * clipVolumeScale);
             return true;
         }
 

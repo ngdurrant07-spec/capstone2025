@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class LevelsMedalCounterOverlay : MonoBehaviour
 {
     private const string LevelsSceneName = "Levels";
+    private static readonly string[] DefaultTimeTrialScenes = { "Level1", "Level2", "Level3" };
 
     [Header("UI")]
     [SerializeField] private TMP_Text counterText;
@@ -14,6 +15,9 @@ public class LevelsMedalCounterOverlay : MonoBehaviour
     [Header("Display")]
     [SerializeField] private int medalLimit = 8;
     [SerializeField] private bool showLastClear = true;
+    [SerializeField] private bool showBestTimes = true;
+    [SerializeField] private string bestTimesLabel = "Best Times:";
+    [SerializeField] private string[] timeTrialScenes = DefaultTimeTrialScenes;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
@@ -99,7 +103,7 @@ public class LevelsMedalCounterOverlay : MonoBehaviour
         rectTransform.anchorMax = new Vector2(0.5f, 0f);
         rectTransform.pivot = new Vector2(0.5f, 0f);
         rectTransform.anchoredPosition = new Vector2(0f, 40f);
-        rectTransform.sizeDelta = new Vector2(600f, 90f);
+        rectTransform.sizeDelta = new Vector2(700f, 190f);
     }
 
     public void Refresh()
@@ -118,12 +122,40 @@ public class LevelsMedalCounterOverlay : MonoBehaviour
         int total = MedalProgress.GetSavedTotalMedals();
         int clampedLimit = Mathf.Max(0, medalLimit);
 
-        if (!showLastClear || string.IsNullOrEmpty(lastScene))
+        string displayText = $"{label}{total}/{clampedLimit}";
+        if (showLastClear && !string.IsNullOrEmpty(lastScene))
+            displayText += $"\nLast Clear: {lastScene} ({lastCount})";
+
+        if (showBestTimes)
+            displayText += BuildBestTimesText();
+
+        counterText.SetText(displayText);
+    }
+
+    private string BuildBestTimesText()
+    {
+        if (timeTrialScenes == null || timeTrialScenes.Length == 0)
+            return string.Empty;
+
+        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+        builder.Append('\n');
+        builder.Append(bestTimesLabel);
+
+        foreach (string sceneName in timeTrialScenes)
         {
-            counterText.SetText($"{label}{total}/{clampedLimit}");
-            return;
+            if (string.IsNullOrWhiteSpace(sceneName))
+                continue;
+
+            string trimmedSceneName = sceneName.Trim();
+            string formattedTime = TimeTrialProgress.HasRecordedTime(trimmedSceneName)
+                ? TimeTrialProgress.FormatTime(TimeTrialProgress.GetBestTime(trimmedSceneName))
+                : "--:--.--";
+            builder.Append('\n');
+            builder.Append(trimmedSceneName);
+            builder.Append(": ");
+            builder.Append(formattedTime);
         }
 
-        counterText.SetText($"{label}{total}/{clampedLimit}\nLast Clear: {lastScene} ({lastCount})");
+        return builder.ToString();
     }
 }
