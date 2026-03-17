@@ -32296,6 +32296,10 @@ PrefabInstance:
       propertyPath: tracks.Array.data[2].clip
       value: 
       objectReference: {fileID: 8300000, guid: b937167879602436798c2b00f6a26d3d, type: 3}
+    - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: tracks.Array.data[5].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f7187ecf74de148f59b71e6c24928243, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
