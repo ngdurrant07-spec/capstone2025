@@ -1113,7 +1113,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Total Medals: 7/8'
+  m_text: 'Total Medals: 0/8'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -1205,6 +1205,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MusicLibrary Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 980404119041410326, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}
     - target: {fileID: 1774208704724321942, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
       propertyPath: m_LocalPosition.x
       value: -10.22123

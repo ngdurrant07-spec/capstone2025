@@ -180,6 +180,14 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: tracks.Array.data[5].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f7187ecf74de148f59b71e6c24928243, type: 3}
+    - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
+      propertyPath: tracks.Array.data[6].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2e3fa945b3e3d4260b8a2655765fd59c, type: 3}
+    - target: {fileID: 8185967314508488340, guid: 61dedee9617224555bfc7b9f7177e2bc, type: 3}
       propertyPath: tracks.Array.data[8].clip
       value: 
       objectReference: {fileID: 8300000, guid: af10b4d9c3b744769be96c10c05ec768, type: 3}

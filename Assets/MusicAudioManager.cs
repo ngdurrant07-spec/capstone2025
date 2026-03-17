@@ -18,7 +18,13 @@ public class MusicAudioManager : MonoBehaviour
     [SerializeField] private string level2TrackName = "Level2";
     [SerializeField] private string level3TrackName = "Level3";
     [SerializeField] private string levelClearTrackName = "LevelClear";
+
+    [SerializeField] private string BossTrackName = "Boss";
+
+    [SerializeField] private string WinGameTrackName = "WinGame";
     [SerializeField] private string settingSceneTrackName = "Settings";
+
+        [SerializeField] private string levelSelectTrackName = "LevelSelect";
 
     private float currentVolume = 1f;
     private Coroutine crossfadeRoutine;
@@ -166,6 +172,17 @@ public class MusicAudioManager : MonoBehaviour
                 break;
             case "SettingsScene":
                 PlayMusic(settingSceneTrackName);
+                break;
+            case "Boss":
+            case "BossScene":
+                PlayMusic(BossTrackName);
+                break;
+            case "WinGame":
+            case "WinGameScene":
+                PlayMusic(WinGameTrackName);
+                break;
+                case "LevelSelectScene":
+                PlayMusic(levelSelectTrackName);
                 break;
         }
     }
