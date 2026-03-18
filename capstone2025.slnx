@@ -1,4 +1,5 @@
 ﻿<Solution>
   <Project Path="ProjectScripts.csproj" />
+  <Project Path="Simple2DPlatformerBE2.Readme.Editor.csproj" />
   <Project Path="Unity.InputSystem.RebindingUI.csproj" />
 </Solution>
