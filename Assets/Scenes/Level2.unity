@@ -783,6 +783,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: DirectionalDashPad (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
       value: -204.04843
@@ -4349,6 +4361,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: DirectionalDashPad (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
       value: -195.04843
@@ -4488,6 +4512,18 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (17)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5173,7 +5209,7 @@ Transform:
   m_GameObject: {fileID: 152034381}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.059999, y: 48.08, z: -10}
+  m_LocalPosition: {x: 11.067568, y: 48.08, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42256,6 +42292,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: DirectionalDashPad (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
       value: -189.04843
@@ -42320,6 +42368,14 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -42586,6 +42642,18 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54257,6 +54325,14 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -71464,7 +71540,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4968418126729208485, guid: 966ff74bccd794b1ab9e38d94e25e7b4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11.059999
+      value: 11.067568
       objectReference: {fileID: 0}
     - target: {fileID: 4968418126729208485, guid: 966ff74bccd794b1ab9e38d94e25e7b4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -72193,6 +72269,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: DirectionalDashPad (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
       value: -171.04843
@@ -72446,6 +72530,18 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -120800,6 +120896,18 @@ PrefabInstance:
     - target: {fileID: 6965374124441488257, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_Name
       value: DirectionalDashPad (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: horizontalGravityDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: launchVelocityHoldTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703948329664259024, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
+      propertyPath: postLaunchControlLockTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8871718405662842516, guid: ec01b35b91e0946b79ed30123a200aba, type: 3}
       propertyPath: m_LocalPosition.x
